@@ -14,32 +14,32 @@ return new class extends Migration
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
             $table->string("name", 32);
-            $table->boolean("indexed")->default(false);
         });
         
         Schema::create("post_has_tags", function (Blueprint $table) {
-            $table->foreignId("post");
-            $table->foreignId("tag");
+            $table->foreignId("post_id");
+            $table->foreignId("tag_id");
             $table->timestamps();
-            $table->primary(["post", "tag"]);
-            $table->foreign("post")->references("id")->on("posts");
-            $table->foreign("tag")->references("id")->on("tags");
+            $table->boolean("indexed")->default(false);
+            $table->primary(["post_id", "tag_id"]);
+            $table->foreign("post_id")->references("id")->on("posts");
+            $table->foreign("tag_id")->references("id")->on("tags");
         });
 
         Schema::create("followed_tags", function (Blueprint $table) {
-            $table->foreignId("user");
-            $table->foreignId("tag");
-            $table->primary(["user", "tag"]);
-            $table->foreign("user")->references("id")->on("users");
-            $table->foreign("tag")->references("id")->on("tags");
+            $table->foreignId("user_id");
+            $table->foreignId("tag_id");
+            $table->primary(["user_id", "tag_id"]);
+            $table->foreign("user_id")->references("id")->on("users");
+            $table->foreign("tag_id")->references("id")->on("tags");
         });
 
         Schema::create("blocked_tags", function (Blueprint $table) {
-            $table->foreignId("user");
-            $table->foreignId("tag");
-            $table->primary(["user", "tag"]);
-            $table->foreign("user")->references("id")->on("users");
-            $table->foreign("tag")->references("id")->on("tags");
+            $table->foreignId("user_id");
+            $table->foreignId("tag_id");
+            $table->primary(["user_id", "tag_id"]);
+            $table->foreign("user_id")->references("id")->on("users");
+            $table->foreign("tag_id")->references("id")->on("tags");
         });
     }
 

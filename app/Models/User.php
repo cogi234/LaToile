@@ -53,7 +53,7 @@ class User extends Authenticatable
     /**
      * The users I follow
      */
-    public function follows() : BelongsToMany
+    public function followed_users() : BelongsToMany
     {
         return $this->belongsToMany(User::class, "followed_users", "user", "followed");
     }
@@ -69,7 +69,7 @@ class User extends Authenticatable
     /**
      * The users I have blocked
      */
-    public function blocks() : BelongsToMany
+    public function blocked_users() : BelongsToMany
     {
         return $this->belongsToMany(User::class, "blocked_users", "user", "blocked");
     }
@@ -96,5 +96,21 @@ class User extends Authenticatable
     public function likes() : BelongsToMany
     {
         return $this->belongsToMany(Post::class, "likes");
+    }
+
+    /**
+     * The tags I follow
+     */
+    public function followed_tags() : BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, "followed_tags");
+    }
+
+    /**
+     * The users that have blocked this tag
+     */
+    public function blocked_tags() : BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, "blocked_tags");
     }
 }

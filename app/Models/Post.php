@@ -12,7 +12,6 @@ class Post extends Model
 {
     use HasFactory;
 
-    
     //Relationships
 
     public function user() : BelongsTo
@@ -58,5 +57,13 @@ class Post extends Model
     public function likes() :BelongsToMany
     {
         return $this->belongsToMany(User::class, "likes");
+    }
+
+    /**
+     * The tags on this post
+     */
+    public function tags() :BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, "post_has_tags");
     }
 }
