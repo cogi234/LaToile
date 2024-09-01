@@ -89,4 +89,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Post::class);
     }
+
+    /**
+     * The posts I have liked
+     */
+    public function likes() : BelongsToMany
+    {
+        return $this->belongsToMany(Post::class, "likes");
+    }
 }
