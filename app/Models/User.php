@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -20,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'moderator',
     ];
 
     /**
@@ -43,5 +45,39 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    //Relationships
+
+    /**
+     * The users I follow
+     */
+    public function follows() : BelongsToMany
+    {
+        return $this->belongsToMany(User::class, "followed_users", "user", "followed");
+    }
+    
+    /**
+     * The users that follow me
+     */
+    public function followers() : BelongsToMany
+    {
+        return $this->belongsToMany(User::class, "followed_users", "followed", "user");
+    }
+
+    /**
+     * The users I have blocked
+     */
+    public function blocks() : BelongsToMany
+    {
+        return $this->belongsToMany(User::class, "blocked_users", "user", "blocked");
+    }
+
+    /**
+     * The users that have blocked me
+     */
+    public function blockers() : BelongsToMany
+    {
+        return $this->belongsToMany(User::class, "blocked_users", "blocked", "user");
     }
 }
