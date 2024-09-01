@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -79,5 +80,13 @@ class User extends Authenticatable
     public function blockers() : BelongsToMany
     {
         return $this->belongsToMany(User::class, "blocked_users", "blocked", "user");
+    }
+
+    /**
+     * My posts
+     */
+    public function posts() : HasMany
+    {
+        return $this->hasMany(Post::class);
     }
 }

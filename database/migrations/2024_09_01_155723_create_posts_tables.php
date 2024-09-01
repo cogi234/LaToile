@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->text("content")->nullable();
-            $table->foreignId("user");
-            $table->foreign("user")->references("id")->on("users");
+            $table->foreignId("user_id");
+            $table->foreign("user_id")->references("id")->on("users");
             $table->foreignId("original")->nullable();
             $table->foreign("original")->references("id")->on("posts");
             $table->foreignId("previous")->nullable();
@@ -24,12 +24,12 @@ return new class extends Migration
         });
 
         Schema::create('likes', function (Blueprint $table){
-            $table->foreignId("user");
-            $table->foreignId("post");
+            $table->foreignId("user_id");
+            $table->foreignId("post_id");
             $table->timestamps();
-            $table->primary(["user", "post"]);
-            $table->foreign("user")->references("id")->on("users");
-            $table->foreign("post")->references("id")->on("posts");
+            $table->primary(["user_id", "post_id"]);
+            $table->foreign("user_id")->references("id")->on("users");
+            $table->foreign("post_id")->references("id")->on("posts");
         });
     }
 
