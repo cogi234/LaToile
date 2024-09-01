@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->text("content")->nullable();
+            $table->foreignId("user");
+            $table->foreign("user")->references("id")->on("users");
+            $table->foreignId("original")->nullable();
+            $table->foreign("original")->references("id")->on("posts");
+            $table->foreignId("previous")->nullable();
+            $table->foreign("previous")->references("id")->on("posts");
+        });
+
+        Schema::create('likes', function (Blueprint $table){
+            $table->foreignId("user");
+            $table->foreignId("post");
+            $table->timestamps();
+            $table->primary(["user", "post"]);
+            $table->foreign("user")->references("id")->on("users");
+            $table->foreign("post")->references("id")->on("posts");
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('posts');
+        Schema::dropIfExists('likes');
+    }
+};
