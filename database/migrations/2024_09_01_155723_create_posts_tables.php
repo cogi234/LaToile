@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->text("content")->nullable();
+            $table->text("previous_content")->nullable();
             $table->foreignId("user_id");
             $table->foreign("user_id")->references("id")->on("users");
             $table->foreignId("original")->nullable();
