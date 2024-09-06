@@ -18,10 +18,10 @@ return new class extends Migration
             $table->text("previous_content")->nullable();
             $table->foreignId("user_id");
             $table->foreign("user_id")->references("id")->on("users");
-            $table->foreignId("original")->nullable();
-            $table->foreign("original")->references("id")->on("posts");
-            $table->foreignId("previous")->nullable();
-            $table->foreign("previous")->references("id")->on("posts");
+            $table->foreignId("original_id")->nullable();
+            $table->foreign("original_id")->references("id")->on("posts");
+            $table->foreignId("previous_id")->nullable();
+            $table->foreign("previous_id")->references("id")->on("posts");
         });
 
         Schema::create('likes', function (Blueprint $table){
