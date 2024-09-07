@@ -25,6 +25,16 @@ class Post extends Model
         'original',
         'previous'
     ];
+    /**
+     * Some attributes get cast
+     */
+    protected function casts() : array
+    {
+        return [
+            'content' => 'array',
+            'previous_content' => 'array'
+        ];
+    }
 
     //Relationships
 

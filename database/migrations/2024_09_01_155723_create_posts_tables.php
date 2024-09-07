@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->text("content")->nullable();
-            $table->text("previous_content")->nullable();
+            $table->json("content")->nullable();
+            $table->json("previous_content")->nullable();
             $table->foreignId("user_id");
             $table->foreign("user_id")->references("id")->on("users");
             $table->foreignId("original_id")->nullable();

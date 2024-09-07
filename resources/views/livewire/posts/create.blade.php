@@ -5,7 +5,8 @@ use Livewire\Attributes\Validate;
 use App\Models\Post;
 
 new class extends Component {
-    #[Validate('required|string|min:3')]
+    #[Validate('required', message: "Il faut du texte pour publier!")]
+    #[Validate('min:3', message: "Il faut du texte pour publier!")]
     public string $text = "";
 
     private function splitParagraphs(string $block_content) : array {
@@ -28,12 +29,12 @@ new class extends Component {
         $validated = $this->validate();
         
         $blocks = $this->splitParagraphs($validated['text']);
-        $encoded_content = json_encode(array_filter($blocks, function($block) {
+        $filtered_blocks = array_filter($blocks, function($block) {
             return strlen(trim($block['content'])) > 0; //We filter out empty blocks
-        }));
+        });
         
         $post = new Post;
-        $post->content = $encoded_content;
+        $post->content = $filtered_blocks;
         $post->user_id = Auth::user()->id;
         $post->save();
 
@@ -42,14 +43,17 @@ new class extends Component {
 
 }; ?>
 
-<div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4">
-    <form wire:submit='store'>
-        <textarea
-            wire:model="text"
-            placeholder="Partagez vos pensées"
-            class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
-        ></textarea>
-        <div class="text-red-600 font-bold mt-2">@error('text') {{ $message }} @enderror</div>
-        <x-primary-button class="mt-4 mx-auto">{{ __('Publier') }}</x-primary-button>
-    </form>
+<div>
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4">
+        <form wire:submit='store'>
+            <textarea
+                wire:model="text"
+                placeholder="Partagez vos pensées"
+                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+            ></textarea>
+            <hr class="mt-2" />
+            @error('text') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
+            <x-primary-button class="mt-2 mx-auto">{{ __('Publier') }}</x-primary-button>
+        </form>
+    </div>
 </div>
