@@ -42,7 +42,7 @@ new class extends Component {
 
 }; ?>
 
-<div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6 my-4">
+<div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-4">
     <form wire:submit='store'>
         <textarea
             wire:model="text"
@@ -50,6 +50,6 @@ new class extends Component {
             class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
         ></textarea>
         <div class="text-red-600 font-bold mt-2">@error('text') {{ $message }} @enderror</div>
-        <x-primary-button class="mt-4">{{ __('Publier') }}</x-primary-button>
+        <x-primary-button class="mt-4 mx-auto">{{ __('Publier') }}</x-primary-button>
     </form>
 </div>
