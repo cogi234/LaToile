@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->text("content")->nullable();
-            $table->text("previous_content")->nullable();
+            $table->json("content")->nullable();
+            $table->json("previous_content")->nullable();
             $table->foreignId("user_id");
             $table->foreign("user_id")->references("id")->on("users");
-            $table->foreignId("original")->nullable();
-            $table->foreign("original")->references("id")->on("posts");
-            $table->foreignId("previous")->nullable();
-            $table->foreign("previous")->references("id")->on("posts");
+            $table->foreignId("original_id")->nullable();
+            $table->foreign("original_id")->references("id")->on("posts");
+            $table->foreignId("previous_id")->nullable();
+            $table->foreign("previous_id")->references("id")->on("posts");
         });
 
         Schema::create('likes', function (Blueprint $table){
