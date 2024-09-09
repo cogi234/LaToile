@@ -12,6 +12,30 @@ class Post extends Model
 {
     use HasFactory;
 
+    
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'content',
+        'previous_content',
+        'user_id',
+        'original',
+        'previous'
+    ];
+    /**
+     * Some attributes get cast
+     */
+    protected function casts() : array
+    {
+        return [
+            'content' => 'array',
+            'previous_content' => 'array'
+        ];
+    }
+
     //Relationships
 
     public function user() : BelongsTo
@@ -24,7 +48,7 @@ class Post extends Model
      */
     public function original() : BelongsTo
     {
-        return $this->belongsTo(Post::class, "original");
+        return $this->belongsTo(Post::class, "original_id", "id");
     }
 
     /**
@@ -32,7 +56,7 @@ class Post extends Model
      */
     public function shares() : HasMany
     {
-        return $this->hasMany(Post::class, "original");
+        return $this->hasMany(Post::class, "original_id", "id");
     }
 
     /**
@@ -40,7 +64,7 @@ class Post extends Model
      */
     public function previous() : BelongsTo
     {
-        return $this->belongsTo(Post::class, "previous");
+        return $this->belongsTo(Post::class, "previous_id");
     }
 
     /**
@@ -48,7 +72,7 @@ class Post extends Model
      */
     public function direct_shares() : HasMany
     {
-        return $this->hasMany(Post::class, "previous");
+        return $this->hasMany(Post::class, "previous_id");
     }
 
     /**
