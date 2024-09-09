@@ -5,6 +5,23 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
+
+new class extends Component
+{
+    use WithFileUploads;
+
+    public $newImage = false;
+    
+    public function save()
+    {
+        $this->validate([
+            'newImage' => 'image|max:1024', // 1MB Max
+        ]);
+
+        $this->newImage->store('avatars');
+    }
+};
 
 new class extends Component
 {
@@ -72,8 +89,16 @@ new class extends Component
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
         <div>
             <!-- Photo de profil -->
-
+            <x-input-label for="avatar" :value="__('Image de profil')" />
+            <div class="imageUploader"
+                newImage='$newImage' 
+                controlId='Avatar' 
+                imageSrc='$avatar'  
+                waitingImage="images/Loading_icon.gif">
+            </div>
+            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
         </div>
+        
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" placeholder="Username"/>
@@ -117,3 +142,9 @@ new class extends Component
         </div>
     </form>
 </section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{ asset('js/validation.js') }}"></script>
+<script src="{{ asset('js/imageControl.js') }}"></script>
+<script defer>
+    $("#addPhotoCmd").hide();
+</script>
