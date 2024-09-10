@@ -26,9 +26,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <div id="suivis-content" class="content-section" style="display: block;">
-                        @auth
-                            <livewire:posts.post />
-                        @endauth
+                        <livewire:posts.post />
                     </div>
                     <div id="abonnements-content" class="content-section" style="display: none;">
                         <h2>{{ __('Posts Suivis') }}</h2>
