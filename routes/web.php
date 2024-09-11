@@ -12,4 +12,5 @@ Route::view('profile', 'profile')
 
 Route::get('/post/{id}', [PostController::class, 'show']);
 
+
 require __DIR__.'/auth.php';
