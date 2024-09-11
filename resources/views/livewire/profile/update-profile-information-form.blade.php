@@ -11,17 +11,20 @@ new class extends Component
 {
     use WithFileUploads;
 
+    public $avatar;
     public string $name = '';
     public string $email = '';
-    public $photo;
+    public ?string $bio = null;
 
     /**
      * Mount the component.
      */
     public function mount(): void
     {
+        $this->avatar = Auth::user()->avatar ?? 'images/no-avatar.png'; // Valeur par défaut si l'avatar n'existe pas
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->bio = Auth::user()->bio;
     }
 
     /**
@@ -31,14 +34,23 @@ new class extends Component
     {
         $user = Auth::user();
 
+        if (!$this->avatar) {
+            $this->avatar = 'images/no-avatar.png'; // Photo par défaut
+        }
+
         $validated = $this->validate([
-            'photo' => ['required', 'photo'],
+            'avatar' => ['nullable', 'image'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
-            'bio' => ['string']
+            'bio' => ['nullable', 'string']
         ]);
 
         $user->fill($validated);
+
+        if ($this->avatar && !is_string($this->avatar)) {
+            // Si un fichier est téléchargé, sauvegarder l'image
+            $user->avatar = $this->avatar->store('profile-photos', 'public');
+        }
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -78,29 +90,29 @@ new class extends Component
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
         <div>
             <!-- Photo de profil -->
-            <x-input-label for="avatar" :value="__('Image de profil')" />
+            <x-input-label for="avatar" :value="__('Image de profil')" class="mb-4"/>
             
             <a x-data x-on:click="$refs.fileInput.click()">
-                <input type="file" wire:model="photo" x-ref="fileInput" style="display:none">
+                <input type="file" wire:model="avatar" x-ref="fileInput" style="display:none">
                 
-                @if ($photo)
-                    <img src="{{ $photo->temporaryUrl() }}" alt="Photo de profil" height="200" width="200" title="{{$photo->temporaryUrl()}}">
+                @if ($avatar && !is_string($avatar))
+                    <img src="{{ $avatar->temporaryUrl() }}" alt="Photo de profil" height="200" width="200" title="{{ $avatar->temporaryUrl() }}">
                 @else
-                    <img src="images/no-avatar.png" alt="Pas de photo" height="200" width="200" title="image par défaut">
+                    <img src="{{ $avatar }}" alt="Photo par défaut" height="200" width="200" title="Photo par défaut">
                 @endif
             </a>
         
-            <div wire:loading wire:target="photo">
+            <div wire:loading wire:target="avatar" class="dark:text-gray-100">
                 Uploading...
             </div>
             
-            @error('photo')
-                <span class="error">{{ $message }}</span>
+            @error('avatar')
+                <span class="error" class="dark:text-gray-100">{{ $message }}</span>
             @enderror
         </div>
         
         <div>
-            <x-input-label for="name" :value="__('Name')" />
+            <x-input-label for="name" :value="__('Nom')" />
             <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full"
                 required autofocus autocomplete="name" placeholder="Username" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
