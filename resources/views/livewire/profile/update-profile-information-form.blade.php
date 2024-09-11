@@ -32,10 +32,10 @@ new class extends Component
         $user = Auth::user();
 
         $validated = $this->validate([
-            'photo' => ['required', 'photo', ''],
+            'photo' => ['required', 'photo'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
-            'bio' => ['string', 'max:8']
+            'bio' => ['string']
         ]);
 
         $user->fill($validated);
@@ -79,20 +79,26 @@ new class extends Component
         <div>
             <!-- Photo de profil -->
             <x-input-label for="avatar" :value="__('Image de profil')" />
-            <input type="file" wire:model="photo">
-            <div wire:loading wire:target="photo">Uploading...</div>
+            
+            <a x-data x-on:click="$refs.fileInput.click()">
+                <input type="file" wire:model="photo" x-ref="fileInput" style="display:none">
+                
+                @if ($photo)
+                    <img src="{{ $photo->temporaryUrl() }}" alt="Photo de profil" height="200" width="200" title="{{$photo->temporaryUrl()}}">
+                @else
+                    <img src="images/no-avatar.png" alt="Pas de photo" height="200" width="200" title="image par défaut">
+                @endif
+            </a>
+        
+            <div wire:loading wire:target="photo">
+                Uploading...
+            </div>
+            
             @error('photo')
                 <span class="error">{{ $message }}</span>
             @enderror
-            @if ($photo) 
-                <img src="{{ $photo->temporaryUrl() }}" height="200" width="200">
-            @else
-                <img src="images/no-avatar.png" height="200" width="200">
-            @endif
-            
-            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
         </div>
-
+        
         <div>
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full"
