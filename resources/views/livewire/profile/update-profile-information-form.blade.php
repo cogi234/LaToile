@@ -97,8 +97,10 @@ new class extends Component
                 
                 @if ($avatar && !is_string($avatar))
                     <img src="{{ $avatar->temporaryUrl() }}" alt="Photo de profil" height="200" width="200" title="{{ $avatar->temporaryUrl() }}">
+                @elseif ($avatar == null)
+                    <img src="images/no-avatar.png" alt="Photo par défaut" height="200" width="200" title="photo de base">
                 @else
-                    <img src="{{ $avatar }}" alt="Photo par défaut" height="200" width="200" title="Photo par défaut">
+                    <img src="{{ $avatar }}" alt="Photo actuelle" height="200" width="200" title="photo actuelle">
                 @endif
             </a>
         
