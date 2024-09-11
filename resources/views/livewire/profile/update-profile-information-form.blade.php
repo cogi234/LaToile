@@ -49,7 +49,7 @@ new class extends Component
 
         if ($this->avatar && !is_string($this->avatar)) {
             // Si un fichier est téléchargé, sauvegarder l'image
-            $user->avatar = $this->avatar->store('profile-photos', 'public');
+            $user->avatar = $this->avatar->store('profile-avatar', 'public');
         }
 
         if ($user->isDirty('email')) {
@@ -147,7 +147,9 @@ new class extends Component
         </div>
         <div>
             <x-input-label for="bio" :value="__('Bio')" />
-            <textarea wire:model="bio" id="bio" name="bio" class="mt-1 block w-full" rows="5" placeholder="Bio"></textarea>
+            <textarea wire:model="bio" id="bio" name="bio" 
+                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-11"
+                rows="5" placeholder="Bio"></textarea>
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
         <div class="flex items-center gap-4">
