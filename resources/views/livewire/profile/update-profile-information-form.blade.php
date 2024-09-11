@@ -49,7 +49,7 @@ new class extends Component
 
         if ($this->avatar && !is_string($this->avatar)) {
             // Si un fichier est téléchargé, sauvegarder l'image
-            $user->avatar = $this->avatar->store('profile-avatar', 'public');
+            $user->avatar = $this->avatar->store('profile-photo', 'public');
         }
 
         if ($user->isDirty('email')) {
