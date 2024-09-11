@@ -11,22 +11,9 @@ new class extends Component
 {
     use WithFileUploads;
 
-    public $newImage = false;
-    
-    public function save()
-    {
-        $this->validate([
-            'newImage' => 'image|max:1024', // 1MB Max
-        ]);
-
-        $this->newImage->store('avatars');
-    }
-};
-
-new class extends Component
-{
     public string $name = '';
     public string $email = '';
+    public $photo;
 
     /**
      * Mount the component.
@@ -45,8 +32,10 @@ new class extends Component
         $user = Auth::user();
 
         $validated = $this->validate([
+            'photo' => ['required', 'photo', ''],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'bio' => ['string', 'max:8']
         ]);
 
         $user->fill($validated);
@@ -90,32 +79,40 @@ new class extends Component
         <div>
             <!-- Photo de profil -->
             <x-input-label for="avatar" :value="__('Image de profil')" />
-            <div class="imageUploader"
-                newImage='$newImage' 
-                controlId='Avatar' 
-                imageSrc='$avatar'  
-                waitingImage="images/Loading_icon.gif">
-            </div>
+            <input type="file" wire:model="photo">
+            <div wire:loading wire:target="photo">Uploading...</div>
+            @error('photo')
+                <span class="error">{{ $message }}</span>
+            @enderror
+            @if ($photo) 
+                <img src="{{ $photo->temporaryUrl() }}" height="200" width="200">
+            @else
+                <img src="images/no-avatar.png" height="200" width="200">
+            @endif
+            
             <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
         </div>
-        
+
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" placeholder="Username"/>
+            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full"
+                required autofocus autocomplete="name" placeholder="Username" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" placeholder="Email"/>
+            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full"
+                required autocomplete="username" placeholder="Email" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
-            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
+            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !auth()->user()->hasVerifiedEmail())
                 <div>
                     <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
                         {{ __('Your email address is unverified.') }}
 
-                        <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                        <button wire:click.prevent="sendVerification"
+                            class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
@@ -142,9 +139,3 @@ new class extends Component
         </div>
     </form>
 </section>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="{{ asset('js/validation.js') }}"></script>
-<script src="{{ asset('js/imageControl.js') }}"></script>
-<script defer>
-    $("#addPhotoCmd").hide();
-</script>
