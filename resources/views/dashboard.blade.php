@@ -26,7 +26,7 @@
             <div class="bg-transparent overflow-hidden">
                 <div class="text-gray-900 dark:text-gray-100">
                     <div id="suivis-content" class="content-section" style="display: block;">
-                        <livewire:posts.post />
+                        <livewire:posts.viewall />
                     </div>
                     <div id="abonnements-content" class="content-section" style="display: none;">
                         <h2>{{ __('Posts Suivis') }}</h2>
