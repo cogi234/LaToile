@@ -33,7 +33,7 @@
                         <p>Voici les posts des utilisateurs que vous suivez.</p>
                     </div>
                     <div id="tags-content" class="content-section" style="display: none;">
-                        <h2>'Posts par Tags</h2>
+                        <h2>Posts par Tags</h2>
                         <p>Voici les posts filtrés par tags.</p>
                     </div>
                 </div>

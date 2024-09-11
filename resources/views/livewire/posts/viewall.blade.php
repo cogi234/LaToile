@@ -27,13 +27,13 @@ new class extends Component {
 }; ?>
 
 <!-- Blade Template -->
-<div wire:scroll="loadMore">
+<div>
     @foreach ($posts as $post)
         <x-post-view :post="$post">{{ $post->title }}</x-post-view>
     @endforeach
 
     @if ($moreAvailable)
-        <div wire:click='loadMore'>Chargement de plus de posts...</div>
+        <x-primary-button wire:click='loadMore' class="mt-2 mx-auto">Charger plus de posts</x-primary-button>
     @else
         <div>Il n'y a plus de post à voir.</div>
     @endif
