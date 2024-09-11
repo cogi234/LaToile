@@ -148,7 +148,7 @@ new class extends Component
         <div>
             <x-input-label for="bio" :value="__('Bio')" />
             <textarea wire:model="bio" id="bio" name="bio" 
-                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-11"
+                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-[140px]"
                 rows="5" placeholder="Bio"></textarea>
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
