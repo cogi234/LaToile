@@ -5,8 +5,8 @@ use Livewire\Attributes\Validate;
 use App\Models\Post;
 
 new class extends Component {
-    #[Validate('required', message: "Il faut du texte pour publier!")]
-    #[Validate('min:3', message: "Il faut du texte pour publier!")]
+    #[Validate('required', message: "Il est impossible de publier un post vide!")]
+    #[Validate('min:3', message: "Il est impossible de publier un post vide!")]
     public string $text = "";
 
     private function splitParagraphs(string $block_content) : array {
@@ -49,9 +49,8 @@ new class extends Component {
             <textarea
                 wire:model="text"
                 placeholder="Partagez vos pensées"
-                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm"
+                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white"
             ></textarea>
-            <hr class="mt-2" />
             @error('text') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
             <x-primary-button class="mt-2 mx-auto">{{ __('Publier') }}</x-primary-button>
         </form>
