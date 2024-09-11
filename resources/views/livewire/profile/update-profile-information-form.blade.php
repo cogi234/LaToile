@@ -11,20 +11,21 @@ new class extends Component
 {
     use WithFileUploads;
 
-    public $avatar;
+    public $avatar = null;
     public string $name = '';
     public string $email = '';
-    public ?string $bio = null;
+    public ?string $bio = '';
 
     /**
      * Mount the component.
      */
     public function mount(): void
     {
-        $this->avatar = Auth::user()->avatar ?? 'images/no-avatar.png'; // Valeur par défaut si l'avatar n'existe pas
+        $this->avatar = Storage::get("/storage/" . Auth::user()->avatar);
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
         $this->bio = Auth::user()->bio;
+        Log::info(Storage::exists("/storage/" . Auth::user()->avatar));
     }
 
     /**
@@ -34,9 +35,11 @@ new class extends Component
     {
         $user = Auth::user();
 
-        if (!$this->avatar) {
-            $this->avatar = 'images/no-avatar.png'; // Photo par défaut
-        }
+        Log::info($this->avatar);
+
+        //if (!$this->avatar) {
+            //$this->avatar = 'images/no-avatar.png'; // Photo par défaut
+        //}
 
         $validated = $this->validate([
             'avatar' => ['nullable', 'image'],
@@ -44,8 +47,9 @@ new class extends Component
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'bio' => ['nullable', 'string']
         ]);
-
+        
         $user->fill($validated);
+        
 
         if ($this->avatar && !is_string($this->avatar)) {
             // Si un fichier est téléchargé, sauvegarder l'image
@@ -147,7 +151,7 @@ new class extends Component
         </div>
         <div>
             <x-input-label for="bio" :value="__('Bio')" />
-            <textarea wire:model="bio" id="bio" name="bio" 
+            <textarea wire:model="bio" id="bio" name="bio" type="text"
                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full min-h-[140px]"
                 rows="5" placeholder="Bio"></textarea>
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
