@@ -1,6 +1,5 @@
 
 
-
 <div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-4 md:p-5 sm:p-2 md:mb-5 sm:mb-3 w-full">
     <div class="post-header flex items-center">
         <!-- Image de profil -->
