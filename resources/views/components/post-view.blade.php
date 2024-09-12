@@ -8,7 +8,12 @@
 
         <!-- Nom et date -->
         <div>
-            <h4 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ $post->user->name }}</h4>
+            <h4 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+                {{ $post->user->name }}
+                @auth
+                    <livewire:user.follow id="{{ $post->user->id }}" />
+                @endauth
+            </h4>
             <p class="text-sm text-gray-600 dark:text-gray-400">{{ strftime('%d %B %Y à %H:%M', strtotime($post->created_at)) }}</p>
         </div>
     </div>
