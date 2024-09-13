@@ -1,6 +1,6 @@
 
 
-<div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg mb-4 md:p-5 sm:p-2 md:mb-5 sm:mb-3 w-full">
+<div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full">
     <div class="post-header flex items-center">
         <!-- Image de profil -->
         <img src="{{ $post->user->avatar ?? 'path/to/default/avatar.png' }}" alt="Profile Image" class="w-12 h-12 rounded-full mr-4 shadow-lg">

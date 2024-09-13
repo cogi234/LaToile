@@ -1,13 +1,13 @@
 <x-app-layout>
     <div class="py-6">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto px-3 sm:px-6 sm:px-8">
             @auth
                 <livewire:posts.create />
             @endauth
             <br />
 
             <!-- Ajout des onglets -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg md:mb-5 sm:mb-3">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5">
                 <div class="tabs p-6 text-gray-900 dark:text-gray-100">
                     <!-- Les blocs sont maintenant des liens entièrement cliquables -->
                     <a href="javascript:void(0);" class="tab active" id="suivis-tab" onclick="showContent('suivis')">
