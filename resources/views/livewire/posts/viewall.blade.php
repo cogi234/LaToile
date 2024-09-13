@@ -28,6 +28,15 @@ new class extends Component {
             $this->moreAvailable = $newPosts->count() == 10;
         }
     }
+    
+    #[On('reset-post-views')]
+    public function resetPosts()
+    {
+        $this->posts = Post::orderby('id', 'desc')->take(10)->with('user')->get();
+
+        // Check if there are more pages to load
+        $this->moreAvailable = $this->posts->count() == 10;
+    }
 }; ?>
 
 <!-- Blade Template -->

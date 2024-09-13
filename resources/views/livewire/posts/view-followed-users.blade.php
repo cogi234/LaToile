@@ -38,7 +38,6 @@ new class extends Component {
         }
     }
 
-    
     #[On('reset-post-views')]
     public function resetPosts(){
         //Get the ids of all users we follow
