@@ -1,6 +1,6 @@
 
 
-<div class="post-header flex items-center">
+<div {{ $attributes->merge(['class' =>"post-header flex items-center"]) }}>
     <!-- Image de profil -->
     <img src="{{ $user->avatar ?? 'path/to/default/avatar.png' }}" alt="Profile Image" class="w-12 h-12 rounded-full mr-4 shadow-lg">
 

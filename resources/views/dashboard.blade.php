@@ -29,8 +29,7 @@
                         <livewire:posts.viewall />
                     </div>
                     <div id="abonnements-content" class="content-section" style="display: none;">
-                        <h2>Posts Suivis</h2>
-                        <p>Voici les posts des utilisateurs que vous suivez.</p>
+                        <livewire:posts.view-followed-users />
                     </div>
                     <div id="tags-content" class="content-section" style="display: none;">
                         <h2>Posts par Tags</h2>
@@ -82,6 +81,11 @@
 
     <script>
         function showContent(tab) {
+            //Envoyer l'event pour reset le contenu des tabs
+            this.dispatchEvent(
+                new Event('reset-post-views')
+            );
+
             // Cacher tous les contenus
             document.getElementById('suivis-content').style.display = 'none';
             document.getElementById('abonnements-content').style.display = 'none';
