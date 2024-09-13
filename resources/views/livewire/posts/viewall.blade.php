@@ -4,13 +4,15 @@ use Livewire\Volt\Component;
 use App\Models\Post;
 
 new class extends Component {
-    public $posts = [];
+    public $posts;
     public $moreAvailable = true;
 
     public function mount()
     {
-            $this->posts = Post::orderby('id', 'desc')->take(10)->get();
-            //User::find(1)->posts
+        $this->posts = Post::orderby('id', 'desc')->take(10)->get();
+
+        // Check if there are more pages to load
+        $this->moreAvailable = $this->posts->isNotEmpty();
     }
 
     public function loadMore()
@@ -19,7 +21,7 @@ new class extends Component {
             $newPosts = Post::where('id', '<', $this->posts->last()->id)->orderby('id', 'desc')->take(10)->get();
 
             // Merge the new posts with the existing ones
-            $this->posts = $this->posts->merge($newPosts);
+            $this->posts = $this->posts->concat($newPosts);
 
             // Check if there are more pages to load
             $this->moreAvailable = $newPosts->isNotEmpty();
