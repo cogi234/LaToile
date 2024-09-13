@@ -1,6 +1,6 @@
 
 
-<div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full">
+<div {{ $attributes->merge(['class' => "post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full"]) }}>
     <div class="post-header flex items-center">
         <!-- Image de profil -->
         <img src="{{ $post->user->avatar ?? 'path/to/default/avatar.png' }}" alt="Profile Image" class="w-12 h-12 rounded-full mr-4 shadow-lg">
@@ -10,7 +10,7 @@
             <h4 class="text-lg font-bold text-gray-900 dark:text-gray-100">
                 {{ $post->user->name }}
                 @auth
-                    <livewire:user.follow id="{{ $post->user->id }}" />
+                    <livewire:user.follow id="{{ $post->user->id }}" :key="$post->id" />
                 @endauth
             </h4>
             <p class="text-sm text-gray-600 dark:text-gray-400">{{ strftime('%d %B %Y à %H:%M', strtotime($post->created_at)) }}</p>
