@@ -7,16 +7,25 @@
 
     <!-- Nom et date -->
     <div>
-        <h4 class="text-lg font-bold text-gray-900 dark:text-gray-100">
-            {{ $user->name }}
+        <div class="text-gray-900 dark:text-gray-200">
+            <a href="/user/{{$user->id}}" class="text-lg font-bold text-gray-700 dark:text-white">
+                {{ $user->name }}
+            </a>
+
+            @if ($sharedPost != null && $sharedPost->user != null)
+                a partagé un post de 
+                <a href="/user/{{$sharedPost->user->id}}" class="text-lg font-bold text-gray-700 dark:text-white">
+                    {{ $sharedPost->user->name }}
+                </a>
+            @else
             @auth
                 <livewire:user.follow id="{{ $user->id }}" :key="$key" />
             @endauth
-            @if ($sharedPost != null && $sharedPost->user != null)
-                a partagé {{ $sharedPost->user->name }}
             @endif
-        </h4>
+        </div>
+
         <p class="text-sm text-gray-600 dark:text-gray-400">{{ strftime('%d %B %Y à %H:%M',
-            strtotime($time)) }}</p>
+            strtotime($time)) }}
+        </p>
     </div>
 </div>
