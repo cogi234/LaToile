@@ -2,30 +2,25 @@
 
 namespace App\View\Components;
 
-use App\Models\User;
-use App\Models\Post;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class PostUser extends Component
+class PostContent extends Component
 {
     /**
      * Create a new component instance.
      */
     public function __construct(
-        public User $user,
-        public string $time,
-        public string $key,
-        public ?Post $sharedPost = null
-    ) {
-    }
+        public array $content,
+        public int $postId
+    ) { }
 
     /**
      * Get the view / contents that represent the component.
      */
     public function render(): View|Closure|string
     {
-        return view('components.post-user');
+        return view('components.post-content');
     }
 }
