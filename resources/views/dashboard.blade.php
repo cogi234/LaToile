@@ -1,41 +1,44 @@
 <x-app-layout>
     <div class="py-6">
-        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto px-3 sm:px-6 sm:px-8">
             @auth
                 <livewire:posts.create />
             @endauth
             <br />
 
             <!-- Ajout des onglets -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg md:mb-5 sm:mb-3">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5">
                 <div class="tabs p-6 text-gray-900 dark:text-gray-100">
                     <!-- Les blocs sont maintenant des liens entièrement cliquables -->
-                    <a href="javascript:void(0);" class="tab active" id="suivis-tab" onclick="showContent('suivis')">
-                        {{ __('Voir tout') }}
+                    <a href="javascript:void(0);" class="tab active" id="all-tab" onclick="showContent('all')">
+                        Tous les posts
                     </a>
-                    <a href="javascript:void(0);" class="tab" id="abonnements-tab" onclick="showContent('abonnements')">
-                        {{ __('Abonnements') }}
-                    </a>
-                    <a href="javascript:void(0);" class="tab" id="tags-tab" onclick="showContent('tags')">
-                        {{ __('Par Tags') }}
-                    </a>
+                    @auth
+                        <a href="javascript:void(0);" class="tab" id="abonnements-tab" onclick="showContent('abonnements')">
+                            Par Utilisateurs suivis
+                        </a>
+                        <a href="javascript:void(0);" class="tab" id="tags-tab" onclick="showContent('tags')">
+                            Par Tags suivis
+                        </a>
+                    @endauth
                 </div>
             </div>
 
             <!-- Contenu associé aux onglets -->
             <div class="bg-transparent overflow-hidden">
                 <div class="text-gray-900 dark:text-gray-100">
-                    <div id="suivis-content" class="content-section" style="display: block;">
+                    <div id="all-content" class="content-section" style="display: block;">
                         <livewire:posts.viewall />
                     </div>
-                    <div id="abonnements-content" class="content-section" style="display: none;">
-                        <h2>{{ __('Posts Suivis') }}</h2>
-                        <p>{{ __('Voici les posts des utilisateurs que vous suivez.') }}</p>
-                    </div>
-                    <div id="tags-content" class="content-section" style="display: none;">
-                        <h2>{{ __('Posts par Tags') }}</h2>
-                        <p>{{ __('Voici les posts filtrés par tags.') }}</p>
-                    </div>
+                    @auth
+                        <div id="abonnements-content" class="content-section" style="display: none;">
+                            <livewire:posts.view-followed-users />
+                        </div>
+                        <div id="tags-content" class="content-section" style="display: none;">
+                            <h2>Posts par Tags</h2>
+                            <p>Voici les posts filtrés par tags.</p>
+                        </div>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -82,15 +85,24 @@
 
     <script>
         function showContent(tab) {
+            //Envoyer l'event pour reset le contenu des tabs
+            this.dispatchEvent(
+                new Event('reset-post-views')
+            );
+
             // Cacher tous les contenus
-            document.getElementById('suivis-content').style.display = 'none';
-            document.getElementById('abonnements-content').style.display = 'none';
-            document.getElementById('tags-content').style.display = 'none';
+            document.getElementById('all-content').style.display = 'none';
+            @auth
+                document.getElementById('abonnements-content').style.display = 'none';
+                document.getElementById('tags-content').style.display = 'none';
+            @endauth
 
             // Enlever la classe active de tous les onglets
-            document.getElementById('suivis-tab').classList.remove('active');
-            document.getElementById('abonnements-tab').classList.remove('active');
-            document.getElementById('tags-tab').classList.remove('active');
+            document.getElementById('all-tab').classList.remove('active');
+            @auth
+                document.getElementById('abonnements-tab').classList.remove('active');
+                document.getElementById('tags-tab').classList.remove('active');
+            @endauth
 
             // Afficher la section sélectionnée et rendre l'onglet actif
             document.getElementById(tab + '-content').style.display = 'block';
@@ -99,7 +111,7 @@
 
         // Initialiser l'affichage pour que "Suivis" soit visible par défaut
         document.addEventListener('DOMContentLoaded', (event) => {
-            showContent('suivis');
+            showContent('all');
         });
         
     </script>

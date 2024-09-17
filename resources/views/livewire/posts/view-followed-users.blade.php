@@ -2,6 +2,7 @@
 
 use Livewire\Volt\Component;
 use App\Models\Post;
+use App\Models\User;
 use Livewire\Attributes\On; 
 
 new class extends Component {
@@ -10,16 +11,24 @@ new class extends Component {
 
     public function mount()
     {
-        $this->posts = Post::orderby('id', 'desc')->take(10)->with('user')->get();
+        //Get the ids of all users we follow
+        $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
+
+        $this->posts = Post::whereIn('user_id', $followedUserIds)
+            ->orderby('id', 'desc')->take(10)->with('user')->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->posts->isNotEmpty();
     }
 
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = Post::where('id', '<', $this->posts->last()->id)->orderby('id', 'desc')->take(10)->with('user')->get();
+            //Get the ids of all users we follow
+            $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
+
+            $newPosts = Post::whereIn('user_id', $followedUserIds)->where('id', '<', $this->posts->last()->id)
+                ->orderby('id', 'desc')->take(10)->with('user')->get();
 
             // Merge the new posts with the existing ones
             $this->posts = $this->posts->concat($newPosts);
@@ -28,14 +37,17 @@ new class extends Component {
             $this->moreAvailable = $newPosts->count() == 10;
         }
     }
-    
+
     #[On('reset-post-views')]
-    public function resetPosts()
-    {
-        $this->posts = Post::orderby('id', 'desc')->take(10)->with('user')->get();
+    public function resetPosts(){
+        //Get the ids of all users we follow
+        $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
+
+        $this->posts = Post::whereIn('user_id', $followedUserIds)
+            ->orderby('id', 'desc')->take(10)->with('user')->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->posts->isNotEmpty();
     }
 }; ?>
 
