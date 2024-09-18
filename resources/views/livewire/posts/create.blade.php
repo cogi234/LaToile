@@ -161,11 +161,14 @@ new class extends Component {
             ></textarea>
             @error('text') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
             <div class="mt-2">
+                <p class="text-black dark:text-white">Tags:</p>
                 @foreach ($tags as $tag)
+                    <span class="m-1 text-gray-800 dark:text-gray-300">#
                     <input type="text" wire:model.blur='tags.{{ $loop->index }}'
                         wire:key='tag_{{ $loop->index }}' maxlength="32" style="width: {{strlen($tag)}}ch"
-                        class="inline-block m-1 py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
-                        focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white"/>
+                        class="inline-block ml-[-3px] py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
+                        focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300"/>
+                    </span>
                 @endforeach
             </div>
             @error('tags') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
