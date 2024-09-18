@@ -82,6 +82,10 @@ class Post extends Model
     {
         return $this->belongsToMany(User::class, "likes");
     }
+    public function likeCount(): int
+    {
+        return $this->likes()->count();
+    }
 
     /**
      * The tags on this post
