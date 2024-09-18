@@ -1,4 +1,4 @@
-<div onclick="window.open('/post/{{ $post->id }}', '_blank')" {{ $attributes->merge(['class' => "post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full"]) }}>
+<div onclick="window.open('/post/{{ $post->id }}', '_blank')" {{ $attributes->merge(['class' => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full"]) }}>
     <!-- L'utilisateur qui a publier le post -->
     <x-post-user
         :user="$post->user"
@@ -61,7 +61,7 @@
         </div>
         <div class="post-actions mt-4 flex items-center">
             <!-- Signaler -->
-            <button title="Signaler le post" class="share-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-400 dark:hover:text-red-400">
+            <button title="Signaler le post" class="share-button flex items-center text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-500">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                 </svg>
