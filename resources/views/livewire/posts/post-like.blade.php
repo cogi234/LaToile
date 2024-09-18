@@ -64,8 +64,9 @@ public function unlike()
     ?>
 
 <div>
-    <button wire:click="toggleLike" title="Aimer"
-        class="like-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-500 mr-4 dark:hover:text-red-500 ">
+    <button wire:click="toggleLike" title="Aimer" 
+        class="like-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-500 mr-4 dark:hover:text-red-500"
+        onclick="event.stopPropagation()">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
             class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round"
