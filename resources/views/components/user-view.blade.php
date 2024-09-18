@@ -7,14 +7,14 @@
 
             {{-- Nom et Abonnés / Abonnement --}}
             <div>
-                <h2 class="text-xl font-semibold">{{ $user->name }}</h2>
-                <p class="">Abonnés : {{ $user->followers()->count() }}</p>
-                <p>Abonnements : {{ $user->followed_users()->count() }}</p>
+                <h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $user->name }}</h2>
+                <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
+                <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p>
             </div>
         </div>
         {{-- Biographie + Modérateur? --}}
     <div class="mt-4">
-        <p class="text-gray-600">{{ $user->bio ?? 'Aucune biographie disponible.' }}</p>
+        <p class="text-gray-600 dark:text-gray-300">{{ $user->bio ?? 'Aucune biographie disponible.' }}</p>
         @if($user->moderator)
             <div class="flex flex-row items-center">
                 <p class="text-green-500 font-bold">Modérateur</p>
