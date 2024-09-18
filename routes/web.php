@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,8 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 Route::get('/post/{id}', [PostController::class, 'show']);
+
+Route::get('/user/{id}', [UserController::class, 'show']);
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
