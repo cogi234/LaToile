@@ -10,6 +10,10 @@ use Illuminate\Http\Request;
 Route::view('/', 'dashboard')
     ->name('dashboard');
 
+Route::get('/search/{query?}', function (?string $query = null) {
+    return view('search', ['query' => $query]);
+});
+
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
