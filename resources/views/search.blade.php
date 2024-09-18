@@ -28,7 +28,7 @@
                     </div>
                     @auth
                     <div id="users-content" class="content-section" style="display: none;">
-                        {{-- <livewire:posts.view-searched-users /> --}}
+                        <livewire:search.view-searched-users query="$query"/>
                         <h2>Posts par users</h2>
                     </div>
                     <div id="tags-content" class="content-section" style="display: none;">
@@ -87,7 +87,7 @@
     </style>
 
     <script>
-        
+
 
         function showContent(tab) {
             //Envoyer l'event pour reset le contenu des tabs
