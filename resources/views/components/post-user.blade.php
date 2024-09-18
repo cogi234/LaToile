@@ -10,7 +10,7 @@
         <div class="text-gray-900 dark:text-gray-200 flex flex-row">
             <div class="flex flex-row items-center">
                 <a href="/user/{{$user->id}}" onclick="event.stopPropagation()"
-                    class="mx-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white">
+                    class="mx-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white hover:dark:text-gray-300">
                     {{ $user->name }}
                 </a>
                 @if($user->moderator)
@@ -25,7 +25,7 @@
             @if ($sharedPost != null && $sharedPost->user != null)
             a partagé un post de
             <a href="/user/{{$sharedPost->user->id}}" onclick="event.stopPropagation()"
-                class="mx-2 text-lg font-bold text-gray-700 dark:text-white">
+                class="mx-2 text-lg font-bold text-gray-700 dark:text-white hover:dark:text-gray-300">
                 {{ $sharedPost->user->name }}
             </a>
             @else
