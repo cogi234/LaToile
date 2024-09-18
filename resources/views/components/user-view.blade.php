@@ -1,5 +1,5 @@
 <div class="max-w-5xl mx-auto px-3 sm:px-8">
-    <div class="post bg-white overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full">
+    <div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full">
         <div class="flex items-center ">
             <!-- Image de profil -->
             <img src="{{ asset($user->avatar ?? 'images/default-avatar.jpg') }}" alt="Profile Image"
