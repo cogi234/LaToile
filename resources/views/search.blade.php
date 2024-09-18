@@ -24,7 +24,7 @@
                 <div class="text-gray-900 dark:text-gray-100">
                     <div id="posts-content" class="content-section" style="display: block;">
                         {{-- <livewire:posts.view-searched-posts /> --}}
-                        <h2>Posts par query</h2>
+                        <h2>Posts par query {{ $query }}</h2>
                     </div>
                     @auth
                     <div id="users-content" class="content-section" style="display: none;">
@@ -87,7 +87,7 @@
     </style>
 
     <script>
-        // Search Bar
+        
 
         function showContent(tab) {
             //Envoyer l'event pour reset le contenu des tabs
