@@ -15,7 +15,7 @@
             $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
 
             $this->posts = Post::whereIn('user_id', $followedUserIds)
-                ->orderby('id', 'desc')->take(10)->with('user')->get();
+                ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
 
             // Check if there are more pages to load
             $this->moreAvailable = $this->posts->isNotEmpty();
@@ -28,7 +28,7 @@
                 $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
 
                 $newPosts = Post::whereIn('user_id', $followedUserIds)->where('id', '<', $this->posts->last()->id)
-                    ->orderby('id', 'desc')->take(10)->with('user')->get();
+                    ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
 
                 // Merge the new posts with the existing ones
                 $this->posts = $this->posts->concat($newPosts);

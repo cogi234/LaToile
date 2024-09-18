@@ -13,8 +13,8 @@
 
     <!-- Contenu du post -->
     <div class="post-content ml-4 mt-4 text-gray-900 dark:text-gray-100">
-        @if ($post->previous_content != null)
-        <hr />
+        @if ($post->previous_content != null && $post->content != null)
+        <hr class="mb-2" />
         <x-post-user
             :user="$post->user"
             :time="$post->created_at"
@@ -22,6 +22,19 @@
         @endif
         <x-post-content :content="$post->content" :postId="$post->id" />
     </div>
+
+    <!-- Tags -->
+    @if ($post->tags()->count() > 0)
+        <div>
+            <hr class="mb-3 border-gray-600" />
+            @foreach ($post->tags as $tag)
+                <a href="/tag/{{ $tag->id }}" target="_blank" onclick="event.stopPropagation()"
+                    class="p-1 m-1 rounded-md dark:bg-gray-900 dark:text-gray-400">
+                    #{{ $tag->name }}
+                </a>
+            @endforeach
+        </div>
+    @endif
 
     <!-- Boutons d'action (J'aime, Reposter, Partager) -->
     <div class="flex justify-between items-center">
