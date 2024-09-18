@@ -159,7 +159,7 @@ new class extends Component
             @if (auth()->check() && !auth()->user()->hasVerifiedEmail())
                 <div>
                     <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
-                        Votre adresse email n\'est pas vérifiée.
+                        Votre adresse email n'est pas vérifiée.
 
                         <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
                             Cliquez ici pour renvoyer le courriel de vérification.

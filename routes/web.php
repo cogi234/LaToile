@@ -3,12 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
 
 Route::view('/', 'dashboard')
     ->name('dashboard');
+
+Route::get('/search/{query?}', [SearchController::class, 'search']);
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])
