@@ -5,19 +5,26 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 
 new class extends Component
 {
+    use WithFileUploads;
+
+    public $avatar = null;
     public string $name = '';
     public string $email = '';
+    public ?string $bio = '';
 
     /**
      * Mount the component.
      */
     public function mount(): void
     {
+        $this->avatar = "/storage/" . Auth::user()->avatar;
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
+        $this->bio = Auth::user()->bio;
     }
 
     /**
@@ -28,11 +35,19 @@ new class extends Component
         $user = Auth::user();
 
         $validated = $this->validate([
+            'avatar' => ['nullable', 'image', 'max:2048'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'bio' => ['nullable', 'string']
         ]);
-
+        
         $user->fill($validated);
+        
+
+        if ($this->avatar && !is_string($this->avatar)) {
+            // Si un fichier est téléchargé, sauvegarder l'image
+            $user->avatar = $this->avatar->store('profile-photo', 'public');
+        }
 
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;
@@ -65,15 +80,38 @@ new class extends Component
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Informations de profil') }}
+            Informations de profil
         </h2>
 
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __("Mettez à jour les informations de profil et l'adresse e-mail de votre compte.") }}
+            Mettez à jour les informations de profil et l'adresse e-mail de votre compte.
         </p>
     </header>
 
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
+        <div>
+            <!-- Photo de profil -->
+            <x-input-label for="avatar" :value="__('Photo de profil')" class="mb-4"/>
+            
+            <a x-data x-on:click="$refs.fileInput.click()">
+                <input type="file" wire:model="avatar" x-ref="fileInput" style="display:none">
+                
+                @if ($avatar == null || $avatar == '')
+                    <img src="images/no-avatar.png" alt="Photo par défaut" height="200" width="200" title="photo de base">
+                @else
+                    <img src="{{ $avatar }}" alt="Photo actuelle" height="200" width="200" title="photo actuelle">
+                @endif
+            </a>
+        
+            <div wire:loading wire:target="avatar" class="dark:text-gray-100">
+                Uploading...
+            </div>
+            
+            @error('avatar')
+                <span class="error" class="text-red">{{ $message }}</span>
+            @enderror
+        </div>
+        
         <div>
             <x-input-label for="name" :value="__('Nom')" />
             <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
@@ -82,35 +120,42 @@ new class extends Component
 
         <div>
             <x-input-label for="email" :value="__('Courriel')" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
+            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full"
+                required autocomplete="email" placeholder="Courriel" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
-                @if ( auth()->user()->hasVerifiedEmail())
+            @if (auth()->user()->hasVerifiedEmail())
                 <div>
                     <p class="text-sm mt-2  text-green-600 dark:text-green-400">
-                        {{ __('Votre adresse email est vérifiée.') }}
+                        Votre adresse email est vérifiée.
                     </p>
-
                 </div>
             @endif
-            @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
+
+            @if (auth()->check() && !auth()->user()->hasVerifiedEmail())
                 <div>
                     <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
-                        {{ __('Votre adresse email n\'est pas vérifiée.') }}
+                        Votre adresse email n\'est pas vérifiée.
 
                         <button wire:click.prevent="sendVerification" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                            {{ __('Cliquez ici pour renvoyer le courriel de vérification.') }}
+                            Cliquez ici pour renvoyer le courriel de vérification.
                         </button>
                     </p>
 
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
-                            {{ __('Un nouveau lien de vérification a été envoyé à votre adresse courriel') }}
-                        </p>
-                    @endif
+                @if (session('status') === 'verification-link-sent')
+                    <p class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
+                        Un nouveau lien de vérification a été envoyé à votre adresse courriel
+                    </p>
+                @endif
                 </div>
             @endif
         </div>
-
+        <div>
+            <x-input-label for="bio" :value="__('Bio')" />
+            <textarea wire:model="bio" id="bio" name="bio" type="text"
+                class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full min-h-[140px]"
+                rows="5" placeholder="Bio"></textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+        </div>
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Enregistrée') }}</x-primary-button>
 
