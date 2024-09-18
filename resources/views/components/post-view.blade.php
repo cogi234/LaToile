@@ -1,28 +1,24 @@
-
-
 <div {{ $attributes->merge(['class' => "post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full"]) }}>
     <!-- L'utilisateur qui a publier le post -->
-    <x-post-user 
-        :user="$post->user" 
-        :time="$post->created_at" 
+    <x-post-user
+        :user="$post->user"
+        :time="$post->created_at"
         :key="'user' . $post->id"
-        :sharedPost="$post->previous"
-        />
+        :sharedPost="$post->previous" />
 
     @if ($post->previous_content != null)
-        <!-- Le contenu des posts precedents dans la chaine de partage -->
-            <x-post-content :content="$post->previous_content" :postId="$post->id" />
+    <!-- Le contenu des posts precedents dans la chaine de partage -->
+    <x-post-content :content="$post->previous_content" :postId="$post->id" />
     @endif
 
     <!-- Contenu du post -->
     <div class="post-content ml-4 mt-4 text-gray-900 dark:text-gray-100">
         @if ($post->previous_content != null)
-            <hr />
-            <x-post-user 
-                :user="$post->user" 
-                :time="$post->created_at" 
-                :key="$post->id"
-                />
+        <hr />
+        <x-post-user
+            :user="$post->user"
+            :time="$post->created_at"
+            :key="$post->id" />
         @endif
         <x-post-content :content="$post->content" :postId="$post->id" />
     </div>
@@ -73,3 +69,5 @@
         </div>
     </div>
 </div>
+
+<x-script-showPostEditor />
