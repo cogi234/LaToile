@@ -6,15 +6,41 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
+use Livewire\Attributes\Validate;
+use Livewire\Attributes\Locked;
 
 new class extends Component
 {
     use WithFileUploads;
 
+    #[Validate('nullable')]
+    #[Validate('image', message: 'Ca doit etre une image.')]
     public $avatar = null;
+    #[Validate('required', message: 'Le nom ne peut pas etre vide.')]
+    #[Validate('max:255', message: 'Le nom est trop long.')]
     public string $name = '';
+    #[Validate('required', message: "L'adresse courriel ne peut pas etre vide.")]
+    #[Validate('max:255', message: "L'adresse courriel est trop longue.")]
+    #[Validate('lowercase', message: "L'adresse courriel doit etre en minuscule.")]
+    #[Validate('email', message: 'Ca doit etre une adresse courriel valide.')]
     public string $email = '';
+    #[Validate('nullable')]
     public ?string $bio = '';
+
+    #[Locked]
+    public string $avatarPath = "";
+
+    public function rules()
+    {
+        return [
+            'name' => [
+                Rule::unique('users')->ignore(Auth::user()->id)
+            ],
+            'email' => [
+                Rule::unique('users')->ignore(Auth::user()->id)
+            ]
+        ];
+    }
 
     /**
      * Mount the component.
@@ -22,8 +48,9 @@ new class extends Component
     public function mount(): void
     {
         if (Auth::user()->avatar != null && Auth::user()->avatar != ''){
-            $this->avatar = "/storage/" . Auth::user()->avatar;
+            $this->avatarPath = Auth::user()->avatar;
         }
+        
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
         $this->bio = Auth::user()->bio;
@@ -35,18 +62,12 @@ new class extends Component
     public function updateProfileInformation(): void
     {
         $user = Auth::user();
-
-        $validated = $this->validate([
-            'avatar' => ['nullable', 'image', 'max:2048'],
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
-            'bio' => ['nullable', 'string']
-        ]);
+        $validated = $this->validate();
         
         $user->fill($validated);
         
 
-        if ($this->avatar && !is_string($this->avatar)) {
+        if ($this->avatar != null) {
             // Si un fichier est téléchargé, sauvegarder l'image
             $user->avatar = $this->avatar->store('profile-photo', 'public');
         }
@@ -98,10 +119,12 @@ new class extends Component
             <a x-data x-on:click="$refs.fileInput.click()">
                 <input type="file" wire:model="avatar" x-ref="fileInput" style="display:none">
                 
-                @if ($avatar == null || $avatar == '')
-                    <img src="images/no-avatar.png" alt="Photo par défaut" height="200" width="200" title="photo de base">
+                @if ($avatar != null && !is_string($avatar))
+                    <img src="{{ $avatar->temporaryUrl() }}" alt="Photo de profil" height="200" width="200" title="{{ $avatar->temporaryUrl() }}">
+                @elseif ($avatarPath != null && $avatarPath != '')
+                    <img src="{{ $avatarPath }}" alt="Photo actuelle" height="200" width="200" title="photo actuelle">
                 @else
-                    <img src="{{ $avatar }}" alt="Photo actuelle" height="200" width="200" title="photo actuelle">
+                    <img src="images/no-avatar.png" alt="Photo par défaut" height="200" width="200" title="photo de base">
                 @endif
             </a>
         
@@ -110,7 +133,7 @@ new class extends Component
             </div>
             
             @error('avatar')
-                <span class="error" class="text-red">{{ $message }}</span>
+                <span class="error text-red-600">{{ $message }}</span>
             @enderror
         </div>
         

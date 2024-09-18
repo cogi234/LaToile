@@ -49,6 +49,16 @@ class User extends Authenticatable
         ];
     }
 
+    //Random functions
+
+    public function getAvatar()
+    {
+        if ($this->avatar == null || $this->avatar == '')
+            return "/images/no-avatar.png";
+        else
+            return $this->avatar;
+    }
+
     //Relationships
 
     /**
