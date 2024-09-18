@@ -28,8 +28,7 @@
                     </div>
                     @auth
                     <div id="users-content" class="content-section" style="display: none;">
-                        <livewire:search.view-searched-users query="$query"/>
-                        <h2>Posts par users</h2>
+                        <livewire:search.view-searched-users query="{{$query}}"/>
                     </div>
                     <div id="tags-content" class="content-section" style="display: none;">
                         <h2>Posts par Tags</h2>
