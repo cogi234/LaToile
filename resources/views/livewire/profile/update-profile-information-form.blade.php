@@ -159,10 +159,10 @@ new class extends Component
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Enregistrée') }}</x-primary-button>
+            <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             <x-action-message class="me-3" on="profile-updated">
-                {{ __('Enregistrée') }}
+                {{ __('Saved.') }}
             </x-action-message>
         </div>
     </form>

@@ -10,7 +10,7 @@
             @php
                 $user = App\Models\User::find($block['id']);
             @endphp
-                <hr />
+                <hr class="mb-2" />
                 <x-post-user :user="$user" :time="$block['time']" :key="$postId . '_' . $block['id'] . '_' . $block['time']" />
         @endif
     @endforeach

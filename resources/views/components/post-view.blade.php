@@ -13,8 +13,8 @@
 
     <!-- Contenu du post -->
     <div class="post-content ml-4 mt-4 text-gray-900 dark:text-gray-100">
-        @if ($post->previous_content != null)
-        <hr />
+        @if ($post->previous_content != null && $post->content != null)
+        <hr class="mb-2" />
         <x-post-user
             :user="$post->user"
             :time="$post->created_at"
@@ -23,16 +23,24 @@
         <x-post-content :content="$post->content" :postId="$post->id" />
     </div>
 
+    <!-- Tags -->
+    @if ($post->tags()->count() > 0)
+        <div>
+            <hr class="mb-3 border-gray-600" />
+            @foreach ($post->tags as $tag)
+                <a href="/tag/{{ $tag->id }}" target="_blank" onclick="event.stopPropagation()"
+                    class="p-1 m-1 rounded-md dark:bg-gray-900 dark:text-gray-400">
+                    #{{ $tag->name }}
+                </a>
+            @endforeach
+        </div>
+    @endif
+
     <!-- Boutons d'action (J'aime, Reposter, Partager) -->
     <div class="flex justify-between items-center">
         <div class="post-actions mt-4 flex items-center">
             <!-- J'aime -->
-            <button title="Aimer" class="like-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-500 mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-                </svg>
-                <span class="ml-1">{{ $post->likes->count() }}</span>
-            </button>
+            @livewire('posts.post-like', ['postId' => $post->id])
 
             <!-- Commentaire -->
             <button title="Commenter" class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-400 dark:hover:text-blue-500 mr-4">

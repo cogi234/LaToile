@@ -36,6 +36,17 @@ class Post extends Model
         ];
     }
 
+    //Custom functions
+
+    public function addTag(string $tagText) : void
+    {
+        $tag = Tag::firstOrCreate([
+            'name' => $tagText
+        ]);
+
+        $this->tags()->attach($tag);
+    }
+
     //Relationships
 
     public function user() : BelongsTo
@@ -81,6 +92,10 @@ class Post extends Model
     public function likes() :BelongsToMany
     {
         return $this->belongsToMany(User::class, "likes");
+    }
+    public function likeCount(): int
+    {
+        return $this->likes()->count();
     }
 
     /**

@@ -9,6 +9,8 @@ use App\Models\Post;
 new class extends Component {
     public string $text = "";
 
+    public Array $tags = [''];
+
     #[Locked]
     public array $previousContent = [];
     #[Locked]
@@ -31,6 +33,21 @@ new class extends Component {
         }
 
         return $blocks;
+    }
+
+    public function updated($property) {
+        if (str_starts_with($property, 'tags')) {
+            $newTags = [];
+            foreach ($this->tags as $tag) {
+                $newTag = trim($tag);
+                if (strlen($newTag) > 0) {
+                    $newTags[] = $newTag;
+                }
+            }
+            $newTags[] = '';
+            $this->tags = $newTags;
+        }
+
     }
 
     #[On('open-post-editor')]
@@ -56,7 +73,7 @@ new class extends Component {
 
     #[On('close-post-editor')]
     public function close(){
-        $this->reset('text', 'previousContent', 'sharedPostId', 'enabled');
+        $this->reset('text', 'tags', 'previousContent', 'sharedPostId', 'enabled');
     }
     
     public function store() {
@@ -72,6 +89,12 @@ new class extends Component {
             //If we are posting something, the text needs to be at least 5 characters long
             $this->addError('text', 'Il est impossible de publier un post avec moins de 5 caractères!');
             return;
+        }
+        foreach ($this->tags as $tag) {
+            if (!is_string($tag)){
+                $this->addError('tags', 'Il est impossible de publier un post avec moins de 5 caractères!');
+                return;
+            }
         }
         
         $blocks = $this->splitParagraphs($this->text);
@@ -91,7 +114,18 @@ new class extends Component {
             //If the previous post is part of a chain, we set the original to its original, otherwise, the previous post is the original
             $post->original_id = $previousPost->original_id ?? $previousPost->id;
         }
+
         $post->save();
+
+        //We add the tags
+        $alreadyAdded = [];
+        foreach ($this->tags as $tag) {
+            $newTag = trim($tag);
+            if (strlen($newTag) > 0 && !in_array($newTag, $alreadyAdded)) {
+                $alreadyAdded[] = $newTag;
+                $post->addTag($newTag);
+            }
+        }
 
         $this->close();
     }
@@ -122,9 +156,22 @@ new class extends Component {
             <textarea
                 wire:model="text"
                 placeholder="Partagez vos pensées"
-                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-20"
+                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                    rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-20"
             ></textarea>
             @error('text') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
+            <div class="mt-2">
+                <p class="text-black dark:text-white">Tags:</p>
+                @foreach ($tags as $tag)
+                    <span class="m-1 text-gray-800 dark:text-gray-300">#
+                    <input type="text" wire:model.blur='tags.{{ $loop->index }}'
+                        wire:key='tag_{{ $loop->index }}' maxlength="32" style="width: {{strlen($tag)}}ch"
+                        class="inline-block ml-[-3px] py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
+                        focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300"/>
+                    </span>
+                @endforeach
+            </div>
+            @error('tags') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
             <x-primary-button class="mt-2 mx-auto">Publier</x-primary-button>
         </form>
     </div>
