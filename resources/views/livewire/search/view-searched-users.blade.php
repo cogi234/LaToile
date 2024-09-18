@@ -46,7 +46,7 @@ new class extends Component {
 
                         <!-- Nom et Abonnés / Abonnement -->
                         <div>
-                            <h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $matchedUser->name }}</h2>
+                            <a href="" class="hover:underline"><h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $matchedUser->name }}</h2></a>
                             <p class="text-black dark:text-gray-100">Abonnés : {{ $matchedUser->followers()->count() }}</p>
                             <p class="text-black dark:text-gray-100">Abonnements : {{ $matchedUser->followed_users()->count() }}</p>
                         </div>
@@ -62,7 +62,7 @@ new class extends Component {
 
                 <!-- Biographie + Modérateur -->
                 <div class="mt-4">
-                    <p class="text-gray-600 dark:text-gray-300">{{ $matchedUser->bio ?? 'Aucune biographie disponible.' }}</p>
+                    <p class="text-gray-600 dark:text-gray-300">{{ $matchedUser->bio}}</p>
                     @if($matchedUser->moderator)
                         <div class="flex flex-row items-center">
                             <p class="text-green-500 font-bold">Modérateur</p>
@@ -88,4 +88,3 @@ new class extends Component {
         </x-primary-button>
     @endif
 </div>
-
