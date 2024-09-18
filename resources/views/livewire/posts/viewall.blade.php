@@ -39,7 +39,7 @@ new class extends Component {
     }
 }; ?>
 
-<!-- Blade Template -->
+<!-- Show more button -->
 <div>
     @foreach ($posts as $post)
         <x-post-view :post="$post" wire:key='post_{{ $post->id }}'>{{ $post->title }}</x-post-view>
