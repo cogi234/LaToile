@@ -21,11 +21,10 @@ new class extends Component
      */
     public function mount(): void
     {
-        $this->avatar = Storage::get("/storage/" . Auth::user()->avatar);
+        $this->avatar = "/storage/" . Auth::user()->avatar;
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
         $this->bio = Auth::user()->bio;
-        Log::info(Storage::exists("/storage/" . Auth::user()->avatar));
     }
 
     /**
@@ -35,14 +34,8 @@ new class extends Component
     {
         $user = Auth::user();
 
-        Log::info($this->avatar);
-
-        //if (!$this->avatar) {
-            //$this->avatar = 'images/no-avatar.png'; // Photo par défaut
-        //}
-
         $validated = $this->validate([
-            'avatar' => ['nullable', 'image'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'bio' => ['nullable', 'string']
@@ -99,9 +92,7 @@ new class extends Component
             <a x-data x-on:click="$refs.fileInput.click()">
                 <input type="file" wire:model="avatar" x-ref="fileInput" style="display:none">
                 
-                @if ($avatar && !is_string($avatar))
-                    <img src="{{ $avatar->temporaryUrl() }}" alt="Photo de profil" height="200" width="200" title="{{ $avatar->temporaryUrl() }}">
-                @elseif ($avatar == null)
+                @if ($avatar == null || $avatar == '')
                     <img src="images/no-avatar.png" alt="Photo par défaut" height="200" width="200" title="photo de base">
                 @else
                     <img src="{{ $avatar }}" alt="Photo actuelle" height="200" width="200" title="photo actuelle">
@@ -113,7 +104,7 @@ new class extends Component
             </div>
             
             @error('avatar')
-                <span class="error" class="dark:text-gray-100">{{ $message }}</span>
+                <span class="error" class="text-red">{{ $message }}</span>
             @enderror
         </div>
         
