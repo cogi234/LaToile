@@ -21,7 +21,9 @@ new class extends Component
      */
     public function mount(): void
     {
-        $this->avatar = "/storage/" . Auth::user()->avatar;
+        if (Auth::user()->avatar != null && Auth::user()->avatar != ''){
+            $this->avatar = "/storage/" . Auth::user()->avatar;
+        }
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
         $this->bio = Auth::user()->bio;
