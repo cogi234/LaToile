@@ -1,6 +1,6 @@
 <div {{ $attributes->merge(['class' =>"post-header flex items-center"]) }}>
     <!-- Image de profil -->
-    <a class="no-underline" href="/user/{{$user->id}}">
+    <a class="no-underline" href="/user/{{$user->id}}" onclick="event.stopPropagation()">
         <img src="{{ asset($user->avatar ?? 'images/default-avatar.jpg') }}" alt="Profile Image"
             class="w-12 h-12 rounded-full mr-4 shadow-lg">
     </a>
@@ -9,7 +9,8 @@
     <div>
         <div class="text-gray-900 dark:text-gray-200 flex flex-row">
             <div class="flex flex-row items-center">
-                <a href="/user/{{$user->id}}" class="mx-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white">
+                <a href="/user/{{$user->id}}" onclick="event.stopPropagation()"
+                    class="mx-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white">
                     {{ $user->name }}
                 </a>
                 @if($user->moderator)
@@ -23,7 +24,8 @@
 
             @if ($sharedPost != null && $sharedPost->user != null)
             a partagé un post de
-            <a href="/user/{{$sharedPost->user->id}}" class="mx-2 text-lg font-bold text-gray-700 dark:text-white">
+            <a href="/user/{{$sharedPost->user->id}}" onclick="event.stopPropagation()"
+                class="mx-2 text-lg font-bold text-gray-700 dark:text-white">
                 {{ $sharedPost->user->name }}
             </a>
             @else
