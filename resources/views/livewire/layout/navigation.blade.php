@@ -39,8 +39,8 @@ new class extends Component
 
             <!-- Search Bar -->
             <div class="items-center content-center mx-6 w-72 " x-data="{ query: '' }">
-                <form action="" method="GET" class="relative w-full flex flex-row dark:!text-gray-100">
-                    <input type="text" name="query" x-model="query"
+                <form action="search" method="GET" class="relative w-full flex flex-row dark:!text-gray-100">
+                    <input type="text" name="query" id="searchBar" x-model="query"
                         class="block w-full pl-10 pr-4 py-2 bg-gray-100/60 text-gray-900 rounded-full focus:outline-none focus:bg-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm dark:placeholder:text-white/65 dark:!bg-slate-400/50 dark:!text-gray-100"
                         placeholder="Rechercher...">
 
@@ -73,7 +73,7 @@ new class extends Component
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                             @auth
-                            <img src="{{ auth()->user()->avatar ?? 'path/to/default/avatar.png' }}" alt="Profile Image"
+                            <img src="{{ auth()->user()->avatar ?? 'images/no-avatar.png' }}" alt="Profile Image"
                                 class="w-8 h-8 rounded-full mr-4 shadow-lg">
                             <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name"
                                 x-on:profile-updated.window="name = $event.detail.name"></div>
