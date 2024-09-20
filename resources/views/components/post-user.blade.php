@@ -56,7 +56,7 @@
                 </svg>
             </button>
             <!-- Supprimer -->
-            <button title="Supprimer le post" onclick="event.stopPropagation();"
+            <button title="Supprimer le post" onclick="event.stopPropagation()"
                 class="like-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-500 mr-4">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
