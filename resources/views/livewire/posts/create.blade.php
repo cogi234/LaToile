@@ -56,18 +56,23 @@ new class extends Component {
         $this->enabled = true;
         if ($sharedId >= 0) {
             $previousPost = Post::find($sharedId);
+
             //We combine the previous post's previous content, its user and its content to make a new previous_content
-            $this->previousContent = array_merge(
-                $previousPost->previous_content ?? [],
-                [
+            if ($previousPost->content != null){
+                $this->previousContent = array_merge(
+                    $previousPost->previous_content ?? [],
                     [
-                        "type" => "user",
-                        "id" => $previousPost->user->id,
-                        "time" => $previousPost->created_at
-                    ]
-                ],
-                $previousPost->content
-            );
+                        [
+                            "type" => "user",
+                            "id" => $previousPost->user->id,
+                            "time" => $previousPost->created_at
+                        ]
+                    ],
+                    $previousPost->content
+                );
+            } else {
+                $this->previousContent = $previousPost->previous_content;
+            }
         }
     }
 
