@@ -22,7 +22,7 @@ class Post extends Model
         'content',
         'previous_content',
         'user_id',
-        'original',
+        'original_post',
         'previous'
     ];
     /**
@@ -111,7 +111,7 @@ class Post extends Model
     /**
      * The original post we are a share of/response to
      */
-    public function original() : BelongsTo
+    public function original_post() : BelongsTo
     {
         return $this->belongsTo(Post::class, "original_id", "id");
     }
@@ -122,6 +122,18 @@ class Post extends Model
     public function shares() : HasMany
     {
         return $this->hasMany(Post::class, "original_id", "id");
+    }
+
+    /**
+     * The posts which are shares of/responses to the original post
+     */
+    public function original_shares() : HasMany
+    {
+        //If there's no original id, this is the original
+        if ($this->original_id == null)
+            return $this->shares();
+        //Otherwise, we get the original's shares
+        return $this->original_post->shares();
     }
 
     /**
