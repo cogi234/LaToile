@@ -99,7 +99,7 @@ new class extends Component {
             $post = $previousPost->share(Auth::user()->id, $filteredBlocks);
         } else {
             $post = new Post;
-            $post->content = $filtered_blocks;
+            $post->content = $filteredBlocks;
             $post->user_id = Auth::user()->id;
             $post->save();
         }

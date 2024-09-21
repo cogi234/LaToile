@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -80,23 +81,37 @@ class Post extends Model
         );
     }
 
-    public function addTag(string $tagText) : void
+    public function addTag(string $tagText, bool $indexed = false) : void
     {
         $tag = Tag::firstOrCreate([
             'name' => $tagText
         ]);
 
         $this->tags()->attach($tag);
+
+        //If we want to index the tag, we need to update directly the value, because Eloquent doesn't support modifying pivot values
+        if ($indexed) {
+            DB::table('post_has_tags')
+                ->where('post_id', $this->id)
+                ->where('tag_id', $tag->id)
+                ->update([ 'indexed' => true ]);
+        }
     }
 
     public function addTags(array $tags) : void
     {
         $alreadyAdded = [];
+        $indexesLeft = 10;
         foreach ($tags as $tag) {
             $newTag = trim($tag);
             if (strlen($newTag) > 0 && !in_array($newTag, $alreadyAdded)) {
                 $alreadyAdded[] = $newTag;
-                $this->addTag($newTag);
+                if ($indexesLeft > 0){
+                    $this->addTag($newTag, true);
+                    $indexesLeft--;
+                } else {
+                    $this->addTag($newTag);
+                }
             }
         }
     }
@@ -169,6 +184,6 @@ class Post extends Model
      */
     public function tags() :BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, "post_has_tags");
+        return $this->belongsToMany(Tag::class, "post_has_tags")->withPivot('indexed', 'created_at', 'updated_at');
     }
 }
