@@ -40,7 +40,7 @@
     <div class="flex justify-between items-center">
         <div class="post-actions mt-4 flex items-center">
             <!-- J'aime -->
-            @livewire('posts.post-like', ['postId' => $post->id])
+            <livewire:posts.like id="{{ $post->id }}" :key="'like_' . $post->id" />
 
             <!-- Commentaire -->
             <button title="Commenter" class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-400 dark:hover:text-blue-500 mr-4">
