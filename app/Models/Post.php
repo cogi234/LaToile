@@ -37,6 +37,48 @@ class Post extends Model
     }
 
     //Custom functions
+    
+    /**
+     * Shares
+     * @param int $userId The user who is creating the new post.
+     * @param array|null $content The content of the new post. Should be an array in the right format.
+     * @return \App\Models\Post
+     */
+    public function share(int $userId, ?array $content = null) : Post
+    {
+        $newPost = new Post;
+
+        $newPost->content = $content;
+        $newPost->user_id = $userId;
+        $newPost->previous_id = $this->id;
+        $newPost->previous_content = $this->createPreviousContent();
+        $newPost->original_id = $this->original_id ?? $this->id;
+
+        $newPost->save();
+
+        return $newPost;
+    }
+
+    public function createPreviousContent() : array
+    {
+        if ($this->content == null || sizeof($this->content) == 0) {
+            //If there's no content, this is a simple share and we just copy the already existing previous content
+            return $this->previousContent;
+        }
+
+        //If there's content, we combine it with the previous content and a user block
+        return array_merge(
+            $this->previous_content ?? [],
+            [
+                [
+                    'type' => 'user',
+                    'id' => $this->user_id,
+                    'time' => $this->created_at
+                ]
+                ],
+                $this->content
+        );
+    }
 
     public function addTag(string $tagText) : void
     {
@@ -45,6 +87,18 @@ class Post extends Model
         ]);
 
         $this->tags()->attach($tag);
+    }
+
+    public function addTags(array $tags) : void
+    {
+        $alreadyAdded = [];
+        foreach ($tags as $tag) {
+            $newTag = trim($tag);
+            if (strlen($newTag) > 0 && !in_array($newTag, $alreadyAdded)) {
+                $alreadyAdded[] = $newTag;
+                $this->addTag($newTag);
+            }
+        }
     }
 
     //Relationships
