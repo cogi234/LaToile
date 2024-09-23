@@ -11,7 +11,9 @@ use Illuminate\Http\Request;
 Route::view('/', 'dashboard')
     ->name('dashboard');
 
-Route::get('/search/{query?}', [SearchController::class, 'search']);
+Route::get('/search', [SearchController::class, 'search'])->name('search');
+
+//Route::get('/search/{query?}', [SearchController::class, 'search']);
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])

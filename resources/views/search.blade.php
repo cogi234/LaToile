@@ -23,8 +23,7 @@
             <div class="bg-transparent overflow-hidden">
                 <div class="text-gray-900 dark:text-gray-100">
                     <div id="posts-content" class="content-section" style="display: block;">
-                        {{-- <livewire:posts.view-searched-posts /> --}}
-                        <h2>Posts par query {{ $query }}</h2>
+                        <livewire:search.view-searched-posts query="{{$query}}"/>
                     </div>
                     @auth
                     <div id="users-content" class="content-section" style="display: none;">
@@ -83,10 +82,14 @@
         .content-section.active {
             display: block;
         }
+
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
     </style>
 
     <script>
-
 
         function showContent(tab) {
             //Envoyer l'event pour reset le contenu des tabs
@@ -111,6 +114,17 @@
             // Afficher la section sélectionnée et rendre l'onglet actif
             document.getElementById(tab + '-content').style.display = 'block';
             document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        function highlightText(query) {
+            const postsContent = document.querySelectorAll('.post'); // Sélectionnez tous les éléments de la classe 'post'
+            
+            postsContent.forEach(post => {
+                const postHTML = post.innerHTML;
+                const regex = new RegExp(`(${query})`, 'gi'); // Crée une expression régulière pour le mot à surligner
+                const newHTML = postHTML.replace(regex, '<span class="highlight">$1</span>'); // Remplace le mot par une version surlignée
+                post.innerHTML = newHTML;
+            });
         }
     </script>
 

@@ -30,7 +30,6 @@ new class extends Component {
         // Check if there are more pages to load
         $this->moreAvailable = $this->matchedUsers->isNotEmpty();
     }
-
 }; ?>
 
 <div>
