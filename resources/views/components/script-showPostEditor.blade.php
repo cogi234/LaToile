@@ -15,9 +15,4 @@
             );
         }
     }
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-        // Initialiser l'affichage pour que "Suivis" soit visible par défaut
-        showContent('all');
-    });
 </script>

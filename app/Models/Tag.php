@@ -23,7 +23,7 @@ class Tag extends Model
      */
     public function posts() : BelongsToMany
     {
-        return $this->belongsToMany(Post::class, "post_has_tags");
+        return $this->belongsToMany(Post::class, "post_has_tags")->withPivot('indexed', 'created_at', 'updated_at');
     }
 
     /**

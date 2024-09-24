@@ -56,18 +56,8 @@ new class extends Component {
         $this->enabled = true;
         if ($sharedId >= 0) {
             $previousPost = Post::find($sharedId);
-            //We combine the previous post's previous content, its user and its content to make a new previous_content
-            $this->previousContent = array_merge(
-                $previousPost->previous_content ?? [],
-                [
-                    [
-                        "type" => "user",
-                        "id" => $previousPost->user->id,
-                        "time" => $previousPost->created_at
-                    ]
-                ],
-                $previousPost->content
-            );
+
+            $this->previousContent = $previousPost->createPreviousContent();
         }
     }
 
@@ -97,35 +87,25 @@ new class extends Component {
             }
         }
         
+        //Create a content array from the text
         $blocks = $this->splitParagraphs($this->text);
-        $filtered_blocks = array_filter($blocks, function($block) {
-            return strlen(trim($block['content'])) > 0; //We filter out empty blocks
+        $filteredBlocks = array_filter($blocks, function($block) {
+            return $block['type'] == 'text' && strlen(trim($block['content'])) > 0; //We filter out empty blocks
         });
-        
-        $post = new Post;
-        $post->content = $filtered_blocks;
-        $post->user_id = Auth::user()->id;
-        //If the shared post id is positive, we are sharing a post
+
+        //If the shared post id is positive, we are sharing a post. Otherwise, we are creating a new post
         if ($this->sharedPostId >= 0) {
             $previousPost = Post::find($this->sharedPostId);
-            //We set the previous_id and previous_content
-            $post->previous_id = $this->sharedPostId;
-            $post->previous_content = $this->previousContent;
-            //If the previous post is part of a chain, we set the original to its original, otherwise, the previous post is the original
-            $post->original_id = $previousPost->original_id ?? $previousPost->id;
+            $post = $previousPost->share(Auth::user()->id, $filteredBlocks);
+        } else {
+            $post = new Post;
+            $post->content = $filteredBlocks;
+            $post->user_id = Auth::user()->id;
+            $post->save();
         }
-
-        $post->save();
 
         //We add the tags
-        $alreadyAdded = [];
-        foreach ($this->tags as $tag) {
-            $newTag = trim($tag);
-            if (strlen($newTag) > 0 && !in_array($newTag, $alreadyAdded)) {
-                $alreadyAdded[] = $newTag;
-                $post->addTag($newTag);
-            }
-        }
+        $post->addTags($this->tags);
 
         $this->close();
     }
