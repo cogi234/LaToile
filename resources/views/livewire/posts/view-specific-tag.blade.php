@@ -2,7 +2,7 @@
 
 use Livewire\Volt\Component;
 use App\Models\Post;
-use App\Models\User;
+use App\Models\Tag;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
 
@@ -12,13 +12,13 @@ new class extends Component {
     #[Locked]
     public $moreAvailable = true;
     #[Locked]
-    public $userId;
+    public $tagId;
 
-    public function mount($userId)
+    public function mount($tagId)
     {
-        $this->userId = $userId;
+        $this->tagId = $tagId;
 
-        $this->posts = User::find($this->userId)->posts()
+        $this->posts = Tag::find($this->tagId)->posts()
             ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
 
         // Vérifie s'il y a plus de posts à charger
@@ -28,7 +28,7 @@ new class extends Component {
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = User::find($this->userId)->posts()
+            $newPosts = Tag::find($this->tagId)->posts()
                 ->where('id', '<', $this->posts->last()->id)
                 ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
 
@@ -39,20 +39,20 @@ new class extends Component {
             $this->moreAvailable = $newPosts->count() == 10;
         }
     }
+    
 
     #[On('reset-post-views')]
     public function resetPosts()
     {
-        $this->posts = User::find($this->userId)->posts()
+        $this->posts = Tag::find($this->tagId)->posts()
             ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
 
         // Vérifie s'il y a plus de posts à charger
         $this->moreAvailable = $this->posts->count() == 10;
     }
-};
-?>
 
-<!-- Blade Template -->
+}; ?>
+
 <div>
     @foreach ($posts as $post)
     <x-post-view :post="$post" wire:key='post_{{ $post->id }}'>{{ $post->title }}</x-post-view>

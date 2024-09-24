@@ -18,7 +18,7 @@
                 ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
 
             // Check if there are more pages to load
-            $this->moreAvailable = $this->posts->isNotEmpty();
+            $this->moreAvailable = $this->posts->count() == 10;
         }
 
         public function loadMore()
@@ -66,6 +66,6 @@
                 Charger plus de posts
             </x-primary-button>
         @else
-            <div>Il n'y a plus de post à voir, revenez plus tard.</div>
+            <div class="dark:text-gray-300 text-center">Il n'y a plus de post à voir, revenez plus tard.</div>
         @endif
     </div>
