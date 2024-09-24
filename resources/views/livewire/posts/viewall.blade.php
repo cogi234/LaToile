@@ -54,6 +54,6 @@ new class extends Component {
             Charger plus de posts
         </x-primary-button>
     @else
-        <div>Il n'y a plus de post à voir, revenez plus tard.</div>
+        <div class="dark:text-gray-300 text-center">Il n'y a plus de post à voir, revenez plus tard.</div>
     @endif
 </div>
