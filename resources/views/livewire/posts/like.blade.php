@@ -15,6 +15,8 @@ new class extends Component {
     #[Locked]
     public bool $isLiked;
 
+    public string $formatedLikeCount;
+
     public function mount(int $id)
     {
         $this->postId = $id;
@@ -60,6 +62,39 @@ new class extends Component {
             $this->like();
         }
     }
+    
+    function numberFormatShort( $precision = 1 ) {
+    $n = $likecount;
+	if ($n < 900) {
+		// 0 - 900
+		$n_format = number_format($n, $precision);
+		$suffix = '';
+	} else if ($n < 900000) {
+		// 0.9k-850k
+		$n_format = number_format($n / 1000, $precision);
+		$suffix = 'K';
+	} else if ($n < 900000000) {
+		// 0.9m-850m
+		$n_format = number_format($n / 1000000, $precision);
+		$suffix = 'M';
+	} else if ($n < 900000000000) {
+		// 0.9b-850b
+		$n_format = number_format($n / 1000000000, $precision);
+		$suffix = 'B';
+	} else {
+		// 0.9t+
+		$n_format = number_format($n / 1000000000000, $precision);
+		$suffix = 'T';
+	}
+	if ( $precision > 0 ) {
+		$dotzero = '.' . str_repeat( '0', $precision );
+		$n_format = str_replace( $dotzero, '', $n_format );
+	}
+
+	return $n_format . $suffix;
+}
+
+    
 };
 
 ?>
@@ -73,6 +108,6 @@ new class extends Component {
             <path stroke-linecap="round" stroke-linejoin="round"
                 d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
         </svg>
-        <span class="ml-1">{{ $likeCount }}</span>
+        <span class="ml-1">{{ numberFormatShort() }}</span>
     </button>
 </div>
