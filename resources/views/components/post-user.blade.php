@@ -1,7 +1,7 @@
 <div {{ $attributes->merge(['class' =>"post-header flex items-center"]) }}>
     <!-- Image de profil -->
     <a class="no-underline" href="/user/{{$user->id}}" onclick="event.stopPropagation()">
-        <img src="{{ asset($user->getAvatar()) }}" alt="Profile Image"
+        <img src="{{ $user->getAvatar() }}" alt="Profile Image"
             class="w-12 h-12 rounded-full mr-4 shadow-lg">
     </a>
 
