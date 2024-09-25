@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('group', function (Blueprint $table) {
+        Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });
 
-        Schema::create("group_membership", function (Blueprint $table) {
+        Schema::create("group_memberships", function (Blueprint $table) {
             $table->timestamps();
             $table->enum("status", ["invite", "member"]);
             $table->foreignId("user");
@@ -43,8 +43,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('group');
-        Schema::dropIfExists('group_membership');
+        Schema::dropIfExists('groups');
+        Schema::dropIfExists('group_memberships');
         Schema::dropIfExists('group_messages');
     }
 };
