@@ -45,7 +45,7 @@ new class extends Component {
 
                         <!-- Nom et Abonnés / Abonnement -->
                         <div>
-                            <a href="" class="hover:underline"><h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $matchedUser->name }}</h2></a>
+                            <a href="/user/{{$matchedUser->id}}" class="hover:underline"><h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $matchedUser->name }}</h2></a>
                             <p class="text-black dark:text-gray-100">Abonnés : {{ $matchedUser->followers()->count() }}</p>
                             <p class="text-black dark:text-gray-100">Abonnements : {{ $matchedUser->followed_users()->count() }}</p>
                         </div>
