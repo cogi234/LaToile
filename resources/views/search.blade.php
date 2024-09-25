@@ -26,14 +26,12 @@
                         <div id="posts-content" class="content-section" style="display: block;">
                             <livewire:search.view-searched-posts query="{{$query}}"/>
                         </div>
-                        @auth
                         <div id="users-content" class="content-section" style="display: none;">
                             <livewire:search.view-searched-users query="{{$query}}"/>
                         </div>
                         <div id="tags-content" class="content-section" style="display: none;">
-                            <h2>Posts par Tags</h2>
+                            <livewire:search.view-searched-tag query="{{$query}}"/>
                         </div>
-                        @endauth
                     </div>
                 </div>
             </div>
