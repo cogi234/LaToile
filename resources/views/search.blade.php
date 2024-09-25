@@ -82,15 +82,13 @@
         .content-section.active {
             display: block;
         }
-
-        .highlight {
-            background-color: yellow;
-            color: black;
-            font-weight: bold;
-        }
     </style>
 
     <script>
+        window.onload = function(){
+            document.getElementById('searchBar').value = "{{$query}}";
+        };
+
         function showContent(tab) {
             //Envoyer l'event pour reset le contenu des tabs
             this.dispatchEvent(
@@ -114,23 +112,6 @@
             // Afficher la section sélectionnée et rendre l'onglet actif
             document.getElementById(tab + '-content').style.display = 'block';
             document.getElementById(tab + '-tab').classList.add('active');
-
-            document.getElementById('searchBar').value = "{{$query}}";
-
-            if (tab === 'posts') {
-                highlightText("{{ $query }}");
-            }
-        }
-
-        function highlightText(query) {
-            const postsContent = document.querySelectorAll('.post');
-            
-            postsContent.forEach(post => {
-                const postHTML = post.innerHTML;
-                const regex = new RegExp(`(${query})`, 'gi');
-                const newHTML = postHTML.replace(regex, '<span class="highlight">$1</span>');
-                post.innerHTML = newHTML;
-            });
         }
     </script>
 
