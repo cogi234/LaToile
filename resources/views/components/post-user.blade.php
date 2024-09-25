@@ -37,7 +37,7 @@
             @endif
             @endauth
             @endif
-            @if ($isEdited == 1)
+            @if (1 == 0)
             <span class="italic self-center ml-5">Post modifié</span>
             @endif
         </div>
