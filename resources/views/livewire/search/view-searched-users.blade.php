@@ -30,7 +30,6 @@ new class extends Component {
         // Check if there are more pages to load
         $this->moreAvailable = $this->matchedUsers->isNotEmpty();
     }
-
 }; ?>
 
 <div>
@@ -41,12 +40,12 @@ new class extends Component {
                     <!-- Image de profil et détails -->
                     <div class="flex items-center">
                         <!-- Image de profil -->
-                        <img src="{{ asset($matchedUser->avatar ?? 'images/default-avatar.jpg') }}" alt="Profile Image"
+                        <img src="{{ $matchedUser->getAvatar() }}" alt="Profile Image"
                             class="w-20 h-20 rounded-full mr-4 shadow-lg">
 
                         <!-- Nom et Abonnés / Abonnement -->
                         <div>
-                            <a href="" class="hover:underline"><h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $matchedUser->name }}</h2></a>
+                            <a href="/user/{{$matchedUser->id}}" class="hover:underline"><h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $matchedUser->name }}</h2></a>
                             <p class="text-black dark:text-gray-100">Abonnés : {{ $matchedUser->followers()->count() }}</p>
                             <p class="text-black dark:text-gray-100">Abonnements : {{ $matchedUser->followed_users()->count() }}</p>
                         </div>

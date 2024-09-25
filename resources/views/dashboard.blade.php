@@ -148,6 +148,5 @@
             document.getElementById('editPostModal').classList.add('hidden');
         }
     </script>
-
-
+    <x-script-showPostEditor />
 </x-app-layout>

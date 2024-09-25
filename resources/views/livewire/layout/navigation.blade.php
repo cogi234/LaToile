@@ -39,7 +39,8 @@ new class extends Component
 
             <!-- Search Bar -->
             <div class="items-center content-center mx-6 w-72 " x-data="{ query: '' }">
-                <form action="search" method="GET" class="relative w-full flex flex-row dark:!text-gray-100">
+                
+                <form id="searchForm" action="{{ route('search') }}" method="GET" class="relative w-full flex flex-row dark:!text-gray-100">
                     <input type="text" name="query" id="searchBar" x-model="query"
                         class="block w-full pl-10 pr-4 py-2 bg-gray-100/60 text-gray-900 rounded-full focus:outline-none focus:bg-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm dark:placeholder:text-white/65 dark:!bg-slate-400/50 dark:!text-gray-100"
                         placeholder="Rechercher...">
@@ -73,7 +74,7 @@ new class extends Component
                         <button
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
                             @auth
-                            <img src="{{ asset(auth()->user()->avatar ?? 'images/no-avatar.png') }}" alt="Profile Image"
+                            <img src="{{ auth()->user()->getAvatar() }}" alt="Profile Image"
                                 class="w-8 h-8 rounded-full mr-4 shadow-lg">
                             <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name"
                                 x-on:profile-updated.window="name = $event.detail.name"></div>
@@ -145,7 +146,7 @@ new class extends Component
             <a href="{{ url('user/' . auth()->user()->id) }}">
                 <div class="px-4 flex flex-row items-center">
                     @auth
-                    <img src="{{ asset($user->avatar ?? 'images/default-avatar.jpg') }}" alt="Profile Image"
+                    <img src="{{ auth()->user()->getAvatar() }}" alt="Profile Image"
                         class="w-8 h-8 rounded-full mr-4 shadow-lg">
                     <div class="flex flex-col">
                         <div class="font-medium text-base text-gray-800 dark:text-gray-200"
@@ -182,3 +183,26 @@ new class extends Component
         </div>
     </div>
 </nav>
+
+<script>
+   document.getElementById('searchForm').addEventListener('submit', function(event) {
+        const searchBar = document.getElementById('searchBar');
+        if (searchBar.value.trim() === '') {
+            event.preventDefault();
+        }
+    });
+</script>
+
+
+
+
+{{-- Fonctionnalité pour bouton de retour --}}
+{{-- @unless (request()->routeIs('dashboard') || url()->previous() === url()->full() || url()->previous() === url('/'))
+                <div class="flex items-center justify-end">
+                    <a href="{{ url()->previous() }}" class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition duration-300 ease-in-out mr-4">
+                        <svg class="w-6 h-6 text-gray-800 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </a>
+                </div>
+            @endunless --}}
