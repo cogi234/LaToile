@@ -4,7 +4,7 @@
         <div class="flex sm:items-center items-start sm:flex-row flex-col sm:pt-0 pt-4">
             <!-- Image de profil -->
             <div class="flex flex-row">
-                <img src="{{ asset($user->avatar ?? 'images/no-avatar.png') }}" alt="Profile Image"
+                <img src="{{ asset($user->getAvatar()) }}" alt="Profile Image"
                     class="w-20 h-20 rounded-full mr-4 shadow-lg">
 
                 {{-- Nom et Abonnés / Abonnement --}}

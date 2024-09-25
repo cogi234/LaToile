@@ -40,7 +40,7 @@ new class extends Component {
                     <!-- Image de profil et détails -->
                     <div class="flex items-center">
                         <!-- Image de profil -->
-                        <img src="{{ asset($matchedUser->avatar ?? 'images/default-avatar.jpg') }}" alt="Profile Image"
+                        <img src="{{ asset($matchedUser->getAvatar()) }}" alt="Profile Image"
                             class="w-20 h-20 rounded-full mr-4 shadow-lg">
 
                         <!-- Nom et Abonnés / Abonnement -->
