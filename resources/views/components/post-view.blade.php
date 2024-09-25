@@ -4,7 +4,6 @@
         :user="$post->user"
         :time="$post->created_at"
         :postId="$post->id"
-        :isEdited="$post->isEdited"
         :key="'user' . $post->id"
         :sharedPost="$post->previous" />
 
@@ -21,7 +20,6 @@
             :user="$post->user"
             :time="$post->created_at"
             :postId="$post->id"
-            :isEdited="$post->isEdited"
             :key="$post->id" />
         @endif
         <x-post-content :content="$post->content" :postId="$post->id" />

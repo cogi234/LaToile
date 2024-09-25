@@ -55,7 +55,7 @@ class PostController extends Controller
 
         // Mettre à jour le contenu du post au format JSON
         $post->content = $newContent;
-        $post->isEdited = 1; // isEdited à true
+
         $post->save();
 
         return redirect()->route('dashboard');
