@@ -18,7 +18,9 @@ class PostUser extends Component
         public string $time,
         public int $postId,
         public string $key,
-        public ?Post $sharedPost = null
+        public ?Post $sharedPost = null,
+        public bool $edited = false,
+        public bool $displayEditButtons = true,
     ) { }
 
     /**
