@@ -39,8 +39,8 @@ new class extends Component
 
             <!-- Search Bar -->
             <div class="items-center content-center mx-6 w-72 " x-data="{ query: '' }">
-                <form action="{{ route('search') }}" method="GET" class="relative w-full flex flex-row dark:!text-gray-100">
-                    <input type="text" name="query" id="searchBar" value="{{ request('query') }}" x-model="query"
+                <form id="searchForm" action="{{ route('search') }}" method="GET" class="relative w-full flex flex-row dark:!text-gray-100">
+                    <input type="text" name="query" id="searchBar" x-model="query"
                         class="block w-full pl-10 pr-4 py-2 bg-gray-100/60 text-gray-900 rounded-full focus:outline-none focus:bg-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm dark:placeholder:text-white/65 dark:!bg-slate-400/50 dark:!text-gray-100"
                         placeholder="Rechercher...">
 
@@ -184,9 +184,10 @@ new class extends Component
 </nav>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var query = @json(request('query', ''));  // Safely get the query from the request, default is empty
-        document.getElementById("searchBar").value = query;
+   document.getElementById('searchForm').addEventListener('submit', function(event) {
+        const searchBar = document.getElementById('searchBar');
+        if (searchBar.value.trim() === '') {
+            event.preventDefault();
+        }
     });
-    document.getElementById("searchBar").value = "{{ request('query') }}";
 </script>
