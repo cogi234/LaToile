@@ -16,6 +16,8 @@ class PostUser extends Component
     public function __construct(
         public User $user,
         public string $time,
+        public int $postId,
+        public int $isEdited,
         public string $key,
         public ?Post $sharedPost = null
     ) { }

@@ -10,7 +10,7 @@ new class extends Component {
 
     public function mount()
     {
-        $this->posts = Post::orderby('id', 'desc')->take(10)->with('user')->get();
+        $this->posts = Post::orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
@@ -19,7 +19,7 @@ new class extends Component {
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = Post::where('id', '<', $this->posts->last()->id)->orderby('id', 'desc')->take(10)->with('user')->get();
+            $newPosts = Post::where('id', '<', $this->posts->last()->id)->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
 
             // Merge the new posts with the existing ones
             $this->posts = $this->posts->concat($newPosts);
@@ -54,6 +54,6 @@ new class extends Component {
             Charger plus de posts
         </x-primary-button>
     @else
-        <div>Il n'y a plus de post à voir, revenez plus tard.</div>
+        <div class="dark:text-gray-300 text-center">Il n'y a plus de post à voir, revenez plus tard.</div>
     @endif
 </div>

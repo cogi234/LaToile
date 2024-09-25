@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Tag extends Model
 {
     use HasFactory;
+    
+    public $timestamps = false;
+
+    protected $fillable = [
+        'name'
+    ];
 
     //Relationships
 
@@ -17,7 +23,7 @@ class Tag extends Model
      */
     public function posts() : BelongsToMany
     {
-        return $this->belongsToMany(Post::class, "post_has_tags");
+        return $this->belongsToMany(Post::class, "post_has_tags")->withPivot('indexed', 'created_at', 'updated_at');
     }
 
     /**
