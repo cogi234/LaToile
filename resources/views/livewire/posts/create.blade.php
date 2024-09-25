@@ -108,6 +108,8 @@ new class extends Component {
         $post->addTags($this->tags);
 
         $this->close();
+
+        return redirect()->route('dashboard');
     }
 
 }; ?>
@@ -117,18 +119,19 @@ new class extends Component {
         fixed
     @else
         hidden
-    @endif inset-0 bg-gray-200/75 dark:bg-gray-900/75">
+    @endif inset-0 bg-gray-900 bg-opacity-50">
     <div class="relative top-1/4 w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
         <!-- Top command bar -->
         <div class="flex flex-row-reverse pb-2">
             <!-- Close button -->
-            <button wire:click='close'
-                 class="ml-2 flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-400 dark:hover:text-blue-500">
+            <button wire:click='close' title="Fermez le panneau"
+                 class="ml-2 flex items-center text-gray-600 dark:text-gray-400 hover:text-red-400 dark:hover:text-red-500">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
+        <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Publier un post</span>
         <!-- Previous content -->
         <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" class="ml-4" />
 

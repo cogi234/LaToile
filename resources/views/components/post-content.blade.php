@@ -11,7 +11,7 @@
                 $user = App\Models\User::find($block['id']);
             @endphp
                 <hr class="mb-2" />
-                <x-post-user :user="$user" :time="$block['time']" :key="$postId . '_' . $block['id'] . '_' . $block['time']" />
+                <x-post-user :user="$user" :time="$block['time']" :postId="$postId" :isEdited="0" :key="$postId . '_' . $block['id'] . '_' . $block['time']" />
         @endif
     @endforeach
 </div>
