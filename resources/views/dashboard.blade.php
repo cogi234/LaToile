@@ -107,30 +107,40 @@
     </style>
 
     <script>
-        function showContent(tab) {
-            //Envoyer l'event pour reset le contenu des tabs
-            this.dispatchEvent(
-                new Event('reset-post-views')
-            );
+        document.addEventListener('DOMContentLoaded', function() {
+        // Charger l'onglet sélectionné précédemment
+        const lastTab = localStorage.getItem('lastTab') || 'all'; // 'all' par défaut
+        showContent(lastTab);
+    });
 
-            // Cacher tous les contenus
-            document.getElementById('all-content').style.display = 'none';
-            @auth
-            document.getElementById('abonnements-content').style.display = 'none';
-            document.getElementById('tags-content').style.display = 'none';
-            @endauth
+    function showContent(tab) {
+        // Enregistrer l'onglet actif dans localStorage
+        localStorage.setItem('lastTab', tab);
 
-            // Enlever la classe active de tous les onglets
-            document.getElementById('all-tab').classList.remove('active');
-            @auth
-            document.getElementById('abonnements-tab').classList.remove('active');
-            document.getElementById('tags-tab').classList.remove('active');
-            @endauth
+        // Envoyer l'event pour reset le contenu des tabs
+        this.dispatchEvent(
+            new Event('reset-post-views')
+        );
 
-            // Afficher la section sélectionnée et rendre l'onglet actif
-            document.getElementById(tab + '-content').style.display = 'block';
-            document.getElementById(tab + '-tab').classList.add('active');
-        }
+        // Cacher tous les contenus
+        document.getElementById('all-content').style.display = 'none';
+        @auth
+        document.getElementById('abonnements-content').style.display = 'none';
+        document.getElementById('tags-content').style.display = 'none';
+        @endauth
+
+        // Enlever la classe active de tous les onglets
+        document.getElementById('all-tab').classList.remove('active');
+        @auth
+        document.getElementById('abonnements-tab').classList.remove('active');
+        document.getElementById('tags-tab').classList.remove('active');
+        @endauth
+
+        // Afficher la section sélectionnée et rendre l'onglet actif
+        document.getElementById(tab + '-content').style.display = 'block';
+        document.getElementById(tab + '-tab').classList.add('active');
+    }
     </script>
+
 
 </x-app-layout>
