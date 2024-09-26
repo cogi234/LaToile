@@ -17,10 +17,13 @@ class PostUser extends Component
         public User $user,
         public string $time,
         public int $postId,
+        public array $postContent = [],
         public string $key,
         public ?Post $sharedPost = null,
         public bool $edited = false,
-        public bool $displayEditButtons = true,
+        public string $timeEdited = '',
+        public bool $displayEditButton = true,
+        public bool $displayDeleteButton = true,
     ) { }
 
     /**

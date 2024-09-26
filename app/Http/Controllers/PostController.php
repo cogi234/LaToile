@@ -43,8 +43,6 @@ class PostController extends Controller
 
         // Trouver le post par son ID
         $post = Post::findOrFail($id);
-
-
         
         $newContent = [
             [
