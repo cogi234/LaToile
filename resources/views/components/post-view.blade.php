@@ -2,8 +2,17 @@
     => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:dark:bg-gray-700 overflow-hidden
     shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0"]) }}>
     <!-- L'utilisateur qui a publier le post -->
-    <x-post-user :user="$post->user" :time="$post->created_at" :postId="$post->id" :key="'user' . $post->id"
-        :sharedPost="$post->previous" displayEditButtons="{{ true }}" />
+    <x-post-user 
+    :user="$post->user" 
+    :time="$post->created_at" 
+    :postId="$post->id" 
+    :key="'user' . $post->id" 
+    :postContent="$post->content" 
+    edited="{{$post->created_at != $post->updated_at}}" 
+    :timeEdited="$post->updated_at" 
+    :sharedPost="$post->previous" 
+    displayEditButton="{{ true }}"
+    displayDeleteButton="{{ true }}" />
 
     @if ($post->previous_content != null)
     <!-- Le contenu des posts precedents dans la chaine de partage -->
@@ -14,8 +23,16 @@
     <div class="post-content ml-4 mt-4 text-gray-900 dark:text-gray-100">
         @if ($post->previous_content != null && $post->content != null)
         <hr class="mb-2" />
-        <x-post-user :user="$post->user" :time="$post->created_at" :postId="$post->id" :key="$post->id"
-            edited="{{$post->created_at != $post->updated_at}}" displayEditButtons="{{ false }}" />
+        <x-post-user 
+        :user="$post->user" 
+        :time="$post->created_at" 
+        :key="$post->id" 
+        :postId="$post->id" 
+        :postContent="$post->content" 
+        edited="{{$post->created_at != $post->updated_at}}" 
+        :timeEdited="$post->updated_at"
+        displayEditButton="{{ false }}"
+        displayDeleteButton="{{ false }}" />
         @endif
         <x-post-content :content="$post->content" :postId="$post->id" />
     </div>
@@ -105,18 +122,14 @@
                 </svg>
             </button>
         </div>
-        @php
-        $contentArray = is_array($post->content) ? $post->content : json_decode($post->content, true);
-        $textContent = isset($contentArray[0]['content']) ? $contentArray[0]['content'] : '';
-        @endphp
-        <form action="{{ route('posts.updatePost', $post->id) }}" method="POST" id="editPostForm">
+        <form method="POST" id="editPostForm">
             @csrf
             @method('PATCH')
             <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Modifier le post</span>
 
             <textarea name="newContent" id="postContent" placeholder="Texte du post modifié ici" rows="5" class="w-full p-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
                     rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-20 rounded"
-                minlength="5" required>{{ $textContent }}</textarea>
+                minlength="5" required></textarea>
             <div class="flex justify-end mt-4">
                 <button type="button" onclick="closeEditPopup()"
                     class="mr-2 px-4 py-2 bg-gray-300 dark:bg-gray-100/50 hover:bg-gray-400 rounded transition ease-in-out duration-150">Annuler</button>
@@ -142,11 +155,7 @@
                 </svg>
             </button>
         </div>
-        @php
-        $contentArray = is_array($post->content) ? $post->content : json_decode($post->content, true);
-        $textContent = isset($contentArray[0]['content']) ? $contentArray[0]['content'] : '';
-        @endphp
-        <form action="{{ route('posts.deletePost', $post->id) }}" method="POST" style="display: inline;">
+        <form method="POST" id="deletePostForm" style="display: inline;">
             @csrf
             @method('DELETE')
             <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Êtes-vous sûr de vouloir supprimer ce

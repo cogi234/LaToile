@@ -23,6 +23,8 @@ class Post extends Model
         'content',
         'previous_content',
         'user_id',
+        'post_id',
+        'post_content',
         'original_post',
         'previous'
     ];
@@ -74,6 +76,8 @@ class Post extends Model
                 [
                     'type' => 'user',
                     'id' => $this->user_id,
+                    'post_id' => $this->id,
+                    'post_content' => $this->content,
                     'time' => $this->created_at
                 ]
                 ],

@@ -1,5 +1,12 @@
 <script>
-    function openEditPopup() {
+    function openEditPopup(actionURL, postContent) {
+        document.getElementById('editPostForm').action = actionURL;
+        // Décoder le contenu du post et mettre à jour le champ de texte
+        let contentArray = Array.isArray(postContent) ? postContent : JSON.parse(postContent);
+        let textContent = contentArray[0] && contentArray[0].content ? contentArray[0].content : '';
+
+        document.getElementById('postContent').value = textContent;
+
         document.getElementById('editPostModal').classList.remove('hidden');
     }
 
@@ -8,7 +15,8 @@
         document.getElementById('editPostModal').classList.add('hidden');
     }
 
-    function openDeleteConfirmationPopup() {
+    function openDeleteConfirmationPopup(actionURL) {
+        document.getElementById('deletePostForm').action = actionURL;
         document.getElementById('deleteConfirmationModal').classList.remove('hidden');
     }
 
