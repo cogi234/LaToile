@@ -120,7 +120,8 @@ new class extends Component {
     @else
         hidden
     @endif inset-0 bg-gray-900 bg-opacity-50">
-    <div class="relative top-1/4 w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+    <div class="relative top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+
         <!-- Top command bar -->
         <div class="flex flex-row-reverse pb-2">
             <!-- Close button -->
