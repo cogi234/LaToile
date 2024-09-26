@@ -52,18 +52,3 @@ new class extends Component
     </div>
     @endif
 </div>
-
-
-{{-- <div class="overflow-x-auto">
-    <div class="grid grid-cols-1 gap-4">
-        <div class="overflow-x-auto whitespace-nowrap">
-            <div class="grid grid-rows-4 grid-flow-col gap-4">
-                    <div class="border p-2 rounded bg-black shadow-md text-center">
-                        @foreach ($matchedTags as $tag)
-                            {{ $tag->name }}
-                        @endforeach
-                    </div>
-            </div>
-        </div>
-    </div>
-</div> --}}
