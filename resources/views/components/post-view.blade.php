@@ -6,8 +6,9 @@
         :key="'user' . $post->id" 
         :user="$post->user" 
         :post="$post"
-        displayEditButton="{{ true }}"
-        displayDeleteButton="{{ true }}" />
+        displayEditButton="true"
+        displayDeleteButton="true"
+        main="true"/>
 
     @if ($post->previous_content != null)
     <!-- Le contenu des posts precedents dans la chaine de partage -->
@@ -15,7 +16,7 @@
     @endif
 
     <!-- Contenu du post -->
-    <div class="post-content ml-4 mt-4 text-gray-900 dark:text-gray-100">
+    <div class="ml-4 text-gray-900 dark:text-gray-100">
         @if ($post->previous_content != null && $post->content != null)
         <hr class="mb-2" />
         <x-post-user 
@@ -25,8 +26,8 @@
         displayEditButton="{{ false }}"
         displayDeleteButton="{{ false }}" />
         @endif
-        <x-post-content :postId="$post->id" :content="$post->content" />
     </div>
+    <x-post-content :postId="$post->id" :content="$post->content" />
 
     <!-- Tags -->
     @if ($post->tags()->count() > 0)

@@ -23,33 +23,45 @@
                 </div>
                 @endif
             </div>
-
-            @if ($post->previous != null && $post->previous->user != null)
-            <span class="ml-2 self-center">a partagé un post de</span>
-            <a href="/user/{{$post->previous->user->id}}" onclick="event.stopPropagation()"
-                class="mx-2 text-lg font-bold text-gray-700 dark:text-white hover:dark:text-gray-300">
-                {{ $post->previous->user->name }}
-            </a>
-            @else
+            
             @auth
             @if (auth()->user()->id !== $user->id)
             <livewire:user.follow id="{{ $user->id }}" :key="$key" />
             @endif
             @endauth
+
+            @if ($post != null && $post->previous_content != null && $main)
+            <span class="ml-2 self-center">a partagé un post de</span>
+
+            @if ($post != null &&$post->previous != null && $post->previous->user != null)
+            <a href="/user/{{$post->previous->user->id}}" onclick="event.stopPropagation()"
+                class="mx-2 text-lg font-bold text-gray-700 dark:text-white hover:dark:text-gray-300">
+                {{ $post->previous->user->name }}
+            </a>
+            @else
+            <span class="mx-2 text-lg font-bold font-italic text-gray-700 dark:text-white hover:dark:text-gray-300"> post supprimé </span>
             @endif
-            @if ($post->created_at != $post->updated_at)
+
+            @endif
+
+            @if ($post != null && $post->created_at != $post->updated_at)
             <span class="italic self-center ml-5">
                 Post modifié le {{ strftime('%d %B %Y à %H:%M', strtotime($post->updated_at)) }}
             </span>
             @endif
         </div>
-
+        @if ($post != null)
         <p class="text-sm text-gray-600 dark:text-gray-400">
             {{ strftime('%d %B %Y à %H:%M', strtotime($post->created_at)) }}
         </p>
+        @else
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+            {{ strftime('%d %B %Y à %H:%M', strtotime(now())) }}
+        </p>
+        @endif
     </div>
     @auth
-    @if (auth()->user()->id == $user->id || auth()->user()->moderator)
+    @if ($post != null && auth()->user()->id == $user->id || auth()->user()->moderator)
     <div class="ml-auto flex flex-row items-start self-start space-x-2">
         @if ($displayEditButton && auth()->user()->id == $user->id)
         <!-- Éditer -->

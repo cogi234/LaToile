@@ -41,11 +41,13 @@ class DatabaseSeeder extends Seeder
 
         $posts = Post::all();
         foreach ($posts as $post) {
+            $updated_at = $post->updated_at;
             $content = $post->content;
             for ($i = 0; $i < sizeof($content); $i++) {
                 $content[$i]['post_id'] = $post->id;
             }
             $post->content = $content;
+            $post->updated_at = $updated_at;
             $post->save();
         }
     }

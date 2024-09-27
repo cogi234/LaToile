@@ -44,7 +44,7 @@ class LoginForm extends Form
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'form.emailOrUser' => trans('auth.failed'),
+                'form.emailOrUser' => 'Ces identifications sont invalides.',
             ]);
         }
 

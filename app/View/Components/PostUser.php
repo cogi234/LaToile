@@ -16,9 +16,10 @@ class PostUser extends Component
     public function __construct(
         public string $key,
         public User $user,
-        public Post $post,
+        public ?Post $post,
         public bool $displayEditButton = true,
         public bool $displayDeleteButton = true,
+        public bool $main = false
     ) { }
 
     /**

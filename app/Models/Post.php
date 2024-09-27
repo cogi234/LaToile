@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\PostDeleting;
 use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,15 @@ class Post extends Model
             'previous_content' => 'array'
         ];
     }
+
+    /**
+     * The event map for the model.
+     *
+     * @var array<string, string>
+     */
+    protected $dispatchesEvents = [
+        'deleting' => PostDeleting::class,
+    ];
 
     //Custom functions
 
@@ -190,6 +200,13 @@ class Post extends Model
     public function direct_shares(): HasMany
     {
         return $this->hasMany(Post::class, "previous_id");
+    }
+    /**
+     * The posts which are direct shares of/responses to this post, eager loaded
+     */
+    public function eager_direct_shares(): HasMany
+    {
+        return $this->hasMany(Post::class, "previous_id")->with('eager_direct_shares');
     }
 
     /**

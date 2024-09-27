@@ -40,7 +40,7 @@ new class extends Component {
         //Validate
         $this->resetValidation();
         $textLength = strlen($this->text);
-        if ($post->previous == null && $textLength == 0) {
+        if ($post->previous_content == null && $textLength == 0) {
             //If we are not sharing a post, we need some text to post
             $this->addError('text', 'Il est impossible de publier un post vide!');
             return;
