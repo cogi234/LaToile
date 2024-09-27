@@ -76,15 +76,34 @@ class Post extends Model
                 [
                     'type' => 'user',
                     'id' => $this->user_id,
-                    'post_id' => $this->id,
-                    'post_content' => $this->content,
-                    'time' => $this->created_at
+                    'post_id' => $this->id
                 ]
             ],
             array_map(function($block){
                 $block['post_id'] = $this->id;
+                return $block;
             }, $this->content)
         );
+    }
+
+    public static function parseTextToBlocks(string $text) : array {
+        $blocks = [];
+        $paragraphs = explode("\n", $text);
+
+        foreach ($paragraphs as $paragraph) {
+            if (strlen(trim($paragraph)) > 0) {
+                $blocks[] = [
+                    'type' => 'text',
+                    'content' => $paragraph
+                ];
+            }
+        }
+
+        $filteredBlocks = array_filter($blocks, function($block) {
+            return $block['type'] == 'text' && strlen(trim($block['content'])) > 0; //We filter out empty blocks
+        });
+
+        return $filteredBlocks;
     }
 
     public function addTag(string $tagText, bool $indexed = false): void

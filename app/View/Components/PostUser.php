@@ -14,14 +14,9 @@ class PostUser extends Component
      * Create a new component instance.
      */
     public function __construct(
-        public User $user,
-        public string $time,
-        public int $postId,
-        public array $postContent = [],
         public string $key,
-        public ?Post $sharedPost = null,
-        public bool $edited = false,
-        public string $timeEdited = '',
+        public User $user,
+        public Post $post,
         public bool $displayEditButton = true,
         public bool $displayDeleteButton = true,
     ) { }

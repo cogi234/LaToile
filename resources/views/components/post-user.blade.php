@@ -24,11 +24,11 @@
                 @endif
             </div>
 
-            @if ($sharedPost != null && $sharedPost->user != null)
+            @if ($post->previous != null && $post->previous->user != null)
             <span class="ml-2 self-center">a partagé un post de</span>
-            <a href="/user/{{$sharedPost->user->id}}" onclick="event.stopPropagation()"
+            <a href="/user/{{$post->previous->user->id}}" onclick="event.stopPropagation()"
                 class="mx-2 text-lg font-bold text-gray-700 dark:text-white hover:dark:text-gray-300">
-                {{ $sharedPost->user->name }}
+                {{ $post->previous->user->name }}
             </a>
             @else
             @auth
@@ -37,13 +37,15 @@
             @endif
             @endauth
             @endif
-            @if ($edited)
-            <span class="italic self-center ml-5">Post modifié le {{ strftime('%d %B %Y à %H:%M', strtotime($timeEdited)) }}</span>
+            @if ($post->created_at != $post->updated_at)
+            <span class="italic self-center ml-5">
+                Post modifié le {{ strftime('%d %B %Y à %H:%M', strtotime($post->updated_at)) }}
+            </span>
             @endif
         </div>
 
-        <p class="text-sm text-gray-600 dark:text-gray-400">{{ strftime('%d %B %Y à %H:%M',
-            strtotime($time)) }}
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+            {{ strftime('%d %B %Y à %H:%M', strtotime($post->created_at)) }}
         </p>
     </div>
     @auth
@@ -51,7 +53,7 @@
     <div class="ml-auto flex flex-row items-start self-start space-x-2">
         @if ($displayEditButton && auth()->user()->id == $user->id)
         <!-- Éditer -->
-        <button value="{{$postId}}" title="Éditer le post" onclick="event.stopPropagation(); openEditPopup('{{ route('posts.updatePost', $postId) }}', {{ json_encode($postContent) }});"
+        <button value="{{$post->id}}" title="Éditer le post" onclick="event.stopPropagation(); showPostEditor({{$post->id}});"
             class="like-button flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:blue-red-500 mr-4">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="size-6">
@@ -62,7 +64,7 @@
         @endif
         @if ($displayDeleteButton && auth()->user()->id == $user->id || auth()->user()->moderator)
         <!-- Supprimer -->
-        <button value="{{$postId}}" title="Supprimer le post" onclick="event.stopPropagation(); openDeleteConfirmationPopup('{{ route('posts.deletePost', $postId) }}');"
+        <button title="Supprimer le post" onclick="event.stopPropagation(); showPostDeletePopup({{$post->id}});"
             class="like-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-500">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="size-6">
@@ -75,5 +77,3 @@
     @endif
     @endauth
 </div>
-
-<x-script-show-edit-post-popup />

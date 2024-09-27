@@ -21,9 +21,6 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 Route::get('/post/{id}', [PostController::class, 'show']);
-Route::delete('/posts/{id}', [PostController::class, 'deletePost'])->name('posts.deletePost');
-Route::patch('/posts/{id}', [PostController::class, 'updatePost'])->name('posts.updatePost');
-
 Route::get('/user/{id}', [UserController::class, 'show']);
 Route::get('/tag/{id}', [TagController::class, 'show']);
 

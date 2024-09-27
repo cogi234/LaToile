@@ -9,7 +9,7 @@ use App\Models\Post;
 new class extends Component {
     public string $text = "";
 
-    public Array $tags = [''];
+    public array $tags = [''];
 
     #[Locked]
     public array $previousContent = [];
@@ -18,22 +18,6 @@ new class extends Component {
     #[Locked]
     public bool $enabled = false;
 
-
-    private function splitParagraphs(string $block_content) : array {
-        $blocks = [];
-        $paragraphs = explode("\n", $block_content);
-
-        foreach ($paragraphs as $paragraph) {
-            if (strlen(trim($paragraph)) > 0) {
-                $blocks[] = [
-                    'type' => 'text',
-                    'content' => $paragraph
-                ];
-            }
-        }
-
-        return $blocks;
-    }
 
     public function updated($property) {
         if (str_starts_with($property, 'tags')) {
@@ -50,7 +34,7 @@ new class extends Component {
 
     }
 
-    #[On('open-post-editor')]
+    #[On('open-post-creator')]
     public function open(int $sharedId = -1) {
         $this->sharedPostId = $sharedId;
         $this->enabled = true;
@@ -61,7 +45,7 @@ new class extends Component {
         }
     }
 
-    #[On('close-post-editor')]
+    #[On('close-post-creator')]
     public function close(){
         $this->reset('text', 'tags', 'previousContent', 'sharedPostId', 'enabled');
     }
@@ -82,34 +66,40 @@ new class extends Component {
         }
         foreach ($this->tags as $tag) {
             if (!is_string($tag)){
-                $this->addError('tags', 'Il est impossible de publier un post avec moins de 5 caractères!');
+                $this->addError('tags', 'Un des tag n\'est pas du texte!');
                 return;
             }
         }
         
         //Create a content array from the text
-        $blocks = $this->splitParagraphs($this->text);
-        $filteredBlocks = array_filter($blocks, function($block) {
-            return $block['type'] == 'text' && strlen(trim($block['content'])) > 0; //We filter out empty blocks
-        });
+        $blocks = Post::parseTextToBlocks($this->text);
 
         //If the shared post id is positive, we are sharing a post. Otherwise, we are creating a new post
         if ($this->sharedPostId >= 0) {
             $previousPost = Post::find($this->sharedPostId);
-            $post = $previousPost->share(Auth::user()->id, $filteredBlocks);
+            $post = $previousPost->share(Auth::user()->id, $blocks);
         } else {
             $post = new Post;
-            $post->content = $filteredBlocks;
+            $post->content = $blocks;
             $post->user_id = Auth::user()->id;
-            $post->save();
         }
+
+        //We add the post_id to the content blocks
+        if ($post->content != null){
+            $content = $post->content;
+            for ($i = 0; $i < sizeof($content); $i++) {
+                $content[$i]['post_id'] = $post->id;
+            }
+            $post->content = $content;
+        }
+        $post->save();
 
         //We add the tags
         $post->addTags($this->tags);
 
-        $this->close();
+        $this->dispatch('reset-post-views');
 
-        return redirect()->route('dashboard');
+        $this->close();
     }
 
 }; ?>
@@ -159,4 +149,24 @@ new class extends Component {
             <x-primary-button class="mt-2 mx-auto">Publier</x-primary-button>
         </form>
     </div>
+
+    <!-- Script with the function to show the post editor -->
+    <script>
+        function showPostCreator(postId = -1) {
+            //Envoyer l'event pour activer le post editor
+            if (postId < 0) {
+                this.dispatchEvent(
+                    new Event('open-post-creator')
+                );
+            } else {
+                this.dispatchEvent(
+                    new CustomEvent('open-post-creator', {
+                        detail: {
+                            sharedId: postId
+                        }
+                    })
+                );
+            }
+        }
+    </script>
 </div>

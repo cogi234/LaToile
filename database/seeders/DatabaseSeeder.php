@@ -38,5 +38,15 @@ class DatabaseSeeder extends Seeder
         User::factory()->count(10)->create();
         //Create 30 dummy posts
         Post::factory()->count(30)->create();
+
+        $posts = Post::all();
+        foreach ($posts as $post) {
+            $content = $post->content;
+            for ($i = 0; $i < sizeof($content); $i++) {
+                $content[$i]['post_id'] = $post->id;
+            }
+            $post->content = $content;
+            $post->save();
+        }
     }
 }

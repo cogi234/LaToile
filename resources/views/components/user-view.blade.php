@@ -68,5 +68,3 @@
         padding: 20px;
     }
 </style>
-
-<x-script-showPostEditor />
