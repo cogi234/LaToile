@@ -50,7 +50,8 @@
 
             <!-- Commentaire -->
             <button title="Commenter"
-                class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-400 dark:hover:text-blue-500 mr-4">
+                class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-400 dark:hover:text-blue-500 mr-4"
+                onclick="showPostCreator({{$post->id}}); event.stopPropagation()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
