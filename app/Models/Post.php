@@ -13,7 +13,7 @@ class Post extends Model
 {
     use HasFactory;
 
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -31,7 +31,7 @@ class Post extends Model
     /**
      * Some attributes get cast
      */
-    protected function casts() : array
+    protected function casts(): array
     {
         return [
             'content' => 'array',
@@ -40,14 +40,14 @@ class Post extends Model
     }
 
     //Custom functions
-    
+
     /**
      * Shares
      * @param int $userId The user who is creating the new post.
      * @param array|null $content The content of the new post. Should be an array in the right format.
      * @return \App\Models\Post
      */
-    public function share(int $userId, ?array $content = null) : Post
+    public function share(int $userId, ?array $content = null): Post
     {
         $newPost = new Post;
 
@@ -62,7 +62,7 @@ class Post extends Model
         return $newPost;
     }
 
-    public function createPreviousContent() : array
+    public function createPreviousContent(): array
     {
         if ($this->content == null || sizeof($this->content) == 0) {
             //If there's no content, this is a simple share and we just copy the already existing previous content
@@ -80,12 +80,14 @@ class Post extends Model
                     'post_content' => $this->content,
                     'time' => $this->created_at
                 ]
-                ],
-                $this->content
+            ],
+            array_map(function($block){
+                $block['post_id'] = $this->id;
+            }, $this->content)
         );
     }
 
-    public function addTag(string $tagText, bool $indexed = false) : void
+    public function addTag(string $tagText, bool $indexed = false): void
     {
         $tag = Tag::firstOrCreate([
             'name' => $tagText
@@ -98,11 +100,11 @@ class Post extends Model
             DB::table('post_has_tags')
                 ->where('post_id', $this->id)
                 ->where('tag_id', $tag->id)
-                ->update([ 'indexed' => true ]);
+                ->update(['indexed' => true]);
         }
     }
 
-    public function addTags(array $tags) : void
+    public function addTags(array $tags): void
     {
         $alreadyAdded = [];
         $indexesLeft = 10;
@@ -110,7 +112,7 @@ class Post extends Model
             $newTag = trim($tag);
             if (strlen($newTag) > 0 && !in_array($newTag, $alreadyAdded)) {
                 $alreadyAdded[] = $newTag;
-                if ($indexesLeft > 0){
+                if ($indexesLeft > 0) {
                     $this->addTag($newTag, true);
                     $indexesLeft--;
                 } else {
@@ -122,7 +124,7 @@ class Post extends Model
 
     //Relationships
 
-    public function user() : BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -130,7 +132,7 @@ class Post extends Model
     /**
      * The original post we are a share of/response to
      */
-    public function original_post() : BelongsTo
+    public function original_post(): BelongsTo
     {
         return $this->belongsTo(Post::class, "original_id", "id");
     }
@@ -138,7 +140,7 @@ class Post extends Model
     /**
      * The posts which are shares of/responses to this post
      */
-    public function shares() : HasMany
+    public function shares(): HasMany
     {
         return $this->hasMany(Post::class, "original_id", "id");
     }
@@ -146,7 +148,7 @@ class Post extends Model
     /**
      * The posts which are shares of/responses to the original post
      */
-    public function original_shares() : HasMany
+    public function original_shares(): HasMany
     {
         //If there's no original id, this is the original
         if ($this->original_id == null)
@@ -158,7 +160,7 @@ class Post extends Model
     /**
      * The post we are a share of/response to
      */
-    public function previous() : BelongsTo
+    public function previous(): BelongsTo
     {
         return $this->belongsTo(Post::class, "previous_id");
     }
@@ -166,7 +168,7 @@ class Post extends Model
     /**
      * The posts which are direct shares of/responses to this post
      */
-    public function direct_shares() : HasMany
+    public function direct_shares(): HasMany
     {
         return $this->hasMany(Post::class, "previous_id");
     }
@@ -174,7 +176,7 @@ class Post extends Model
     /**
      * The users that have liked this post
      */
-    public function likes() :BelongsToMany
+    public function likes(): BelongsToMany
     {
         return $this->belongsToMany(User::class, "likes");
     }
@@ -186,7 +188,7 @@ class Post extends Model
     /**
      * The tags on this post
      */
-    public function tags() :BelongsToMany
+    public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, "post_has_tags")->withPivot('indexed', 'created_at', 'updated_at');
     }
