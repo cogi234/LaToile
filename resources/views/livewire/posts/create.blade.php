@@ -9,7 +9,7 @@ use App\Models\Post;
 new class extends Component {
     public string $text = "";
 
-    public array $tags = [''];
+    public array $tags = ['', ''];
 
     #[Locked]
     public array $previousContent = [];
@@ -28,6 +28,7 @@ new class extends Component {
                     $newTags[] = $newTag;
                 }
             }
+            $newTags[] = '';
             $newTags[] = '';
             $this->tags = $newTags;
         }
