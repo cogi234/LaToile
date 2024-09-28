@@ -38,5 +38,12 @@ return [
         'autoOrientation' => true,
         'decodeAnimation' => true,
         'blendingColor' => 'ffffff',
-    ]
+    ],
+
+    /**
+     * What size are avatars compressed to?
+     */
+
+     'avatar_size' => 200,
+
 ];
