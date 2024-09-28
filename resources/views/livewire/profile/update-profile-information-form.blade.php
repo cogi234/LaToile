@@ -8,6 +8,8 @@ use Livewire\Volt\Component;
 use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\Locked;
+use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Str;
 
 new class extends Component
 {
@@ -65,11 +67,14 @@ new class extends Component
         $validated = $this->validate();
         
         $user->fill($validated);
-        
 
         if ($this->avatar != null) {
             // Si un fichier est téléchargé, sauvegarder l'image
-            $user->avatar = $this->avatar->store('profile-photo', 'public');
+            //$user->avatar = $this->avatar->store('profile-photo', 'public');
+            //Essayer de compresser l'image
+            $image = Image::read($this->avatar)->cover(200, 200, 'center')->toJpeg();
+            $user->avatar = 'profile-photo/' . Str::random(40) . '.jpg';
+            $image->save('storage/' . $user->avatar);
         }
 
         if ($user->isDirty('email')) {
