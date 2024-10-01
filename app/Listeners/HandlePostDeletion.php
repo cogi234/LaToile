@@ -3,8 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\PostDeleting;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Models\Post;
 use Illuminate\Support\Facades\Log;
 
 class HandlePostDeletion
@@ -57,18 +56,18 @@ class HandlePostDeletion
                     $newContent[] = $block;
                 }
             }
-            $other->previous_content = $newContent;
-            $other->save([ 'timestamps' => false, 'touch' => false ]);
+            Post::withoutTimestamps(fn () => $other->previous_content = $newContent);
+            Post::withoutTimestamps(fn () => $other->save([ 'timestamps' => false ]));
         }
         
         foreach($post->direct_shares as $share){
-            $share->previous_id = null; // Détache tous les partages directs
-            $share->save([ 'timestamps' => false, 'touch' => false ]);
+            Post::withoutTimestamps(fn () => $share->previous_id = null); // Détache tous les partages directs
+            Post::withoutTimestamps(fn () => $share->save([ 'timestamps' => false ]));
         }
 
         foreach($post->shares as $share){
-            $share->original_id = null; // Détache tous les partages distants
-            $share->save([ 'timestamps' => false, 'touch' => false ]);
+            Post::withoutTimestamps(fn () => $share->original_id = null); // Détache tous les partages distants
+            Post::withoutTimestamps(fn () => $share->save([ 'timestamps' => false ]));
         }
 
         $post->likes()->detach(); // Détache tous les likes
