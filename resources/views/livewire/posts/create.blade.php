@@ -110,7 +110,7 @@ new class extends Component {
         fixed
     @else
         hidden
-    @endif inset-0 min-h-max bg-gray-900 bg-opacity-50 overflow-y-scroll">
+    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll">
     <div class="relative top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
 
         <!-- Top command bar -->
