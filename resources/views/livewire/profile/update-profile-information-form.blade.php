@@ -128,14 +128,14 @@ new class extends Component
                 @if ($avatar != null && !is_string($avatar))
                     <img src="{{ $avatar->temporaryUrl() }}" alt="Photo de profil" height="200" width="200" title="{{ $avatar->temporaryUrl() }}">
                 @elseif ($avatarPath != null && $avatarPath != '')
-                    <img src="{{ $avatarPath }}" alt="Photo actuelle" height="200" width="200" title="photo actuelle">
+                    <img src="{{ $avatarPath }}" alt="Photo actuelle" height="200" width="200" title="Photo actuelle">
                 @else
                     <img src="images/no-avatar.png" alt="Photo par défaut" height="200" width="200" title="photo de base">
                 @endif
             </a>
         
             <div wire:loading wire:target="avatar" class="dark:text-gray-100">
-                Uploading...
+                Chargement...
             </div>
             
             @error('avatar')
@@ -144,20 +144,20 @@ new class extends Component
         </div>
         
         <div>
-            <x-input-label for="name" :value="__('Nom')" />
+            <x-input-label for="name" value="Nom" />
             <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
-            <x-input-label for="email" :value="__('Courriel')" />
+            <x-input-label for="email" value="Courriel" />
             <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full"
                 required autocomplete="email" placeholder="Courriel" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
             @if (auth()->user()->hasVerifiedEmail())
                 <div>
                     <p class="text-sm mt-2  text-green-600 dark:text-green-400">
-                        Votre adresse email est vérifiée.
+                        Votre adresse courriel est vérifiée.
                     </p>
                 </div>
             @endif
@@ -181,17 +181,17 @@ new class extends Component
             @endif
         </div>
         <div>
-            <x-input-label for="bio" :value="__('Bio')" />
+            <x-input-label for="bio" value="Bio" />
             <textarea wire:model="bio" id="bio" name="bio" type="text"
                 class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm mt-1 block w-full min-h-[140px]"
                 rows="5" placeholder="Bio"></textarea>
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button>Sauvegarder</x-primary-button>
 
             <x-action-message class="me-3" on="profile-updated">
-                {{ __('Saved.') }}
+                Sauvegardé.
             </x-action-message>
         </div>
     </form>
