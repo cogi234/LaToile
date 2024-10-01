@@ -23,15 +23,16 @@ new class extends Component
 ?>
 
 <div>
-    <div class="grid grid-rows-3 grid-flow-col bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full">
+    <div
+        class="grid grid-rows-3 grid-flow-col bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full">
         @foreach ($matchedTags as $tag)
-            <div class="m-4 h-10">
-                <a href="/tag/{{ $tag->id }}">
-                    <div class="hover:underline">
-                        #{{ $tag->name }}
-                    </div>
-                </a>
-            </div>
+        <div class="m-4 h-10">
+            <a href="/tag/{{ $tag->id }}">
+                <div class="hover:underline">
+                    #{{ $tag->name }}
+                </div>
+            </a>
+        </div>
         @endforeach
     </div>
 
@@ -43,7 +44,12 @@ new class extends Component
                     class="text-6xl text-center p-1 m-1 rounded-md dark:bg-gray-900 dark:text-gray-400">
                     #{{ $exactTag->name }}
                 </div>
-    
+                @auth
+                <div class="text-6xl text-center p-1 m-1 rounded-md dark:bg-gray-900 dark:text-gray-400">
+                    <livewire:tags.follow :tagId="$tag->id" :key="$tag->id" />
+                </div>
+                @endauth
+
                 <div id="all-content" class="content-section" style="display: block;">
                     <livewire:posts.view-specific-tag :tagId="$exactTag->id" />
                 </div>
