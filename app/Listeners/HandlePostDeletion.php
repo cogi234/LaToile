@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\PostDeleting;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 
 class HandlePostDeletion
 {
@@ -22,17 +23,18 @@ class HandlePostDeletion
     public function handle(PostDeleting $event): void
     {
         $post = $event->post;
-
+        
         //Delete this post in the previous content of other posts
-        $toHandle = $event->post->eager_direct_shares()->get();
+        $toHandle = $post->eager_direct_shares()->get();
 
         while($toHandle->count() > 0) {
             $other = $toHandle->shift();
-            $toHandle->merge($other->eager_direct_shares()->get());
+            $shares = $other->eager_direct_shares()->get();
+            foreach ($shares as $share) {
+                $toHandle->push($share);
+            }
             if ($other->previous_content == null)
                 continue;
-            
-            $updated_at  = $other->updated_at;
 
             $content = $other->previous_content;
             $newContent = [];
@@ -56,22 +58,17 @@ class HandlePostDeletion
                 }
             }
             $other->previous_content = $newContent;
-            $other->updated_at = $updated_at;
-            $other->save();
+            $other->save([ 'timestamps' => false, 'touch' => false ]);
         }
         
         foreach($post->direct_shares as $share){
-            $updated_at = $share->updated_at;
             $share->previous_id = null; // Détache tous les partages directs
-            $share->updated_at = $updated_at;
-            $share->save();
+            $share->save([ 'timestamps' => false, 'touch' => false ]);
         }
 
         foreach($post->shares as $share){
-            $updated_at = $share->updated_at;
             $share->original_id = null; // Détache tous les partages distants
-            $share->updated_at = $updated_at;
-            $share->save();
+            $share->save([ 'timestamps' => false, 'touch' => false ]);
         }
 
         $post->likes()->detach(); // Détache tous les likes
