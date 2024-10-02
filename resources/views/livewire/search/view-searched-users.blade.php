@@ -50,7 +50,9 @@ new class extends Component {
                             <p class="text-black dark:text-gray-100">Abonnements : {{ $matchedUser->followed_users()->count() }}</p>
                         </div>
                     </div>
-
+                    <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
+                        <-- insert dropdown menu -->
+                    </div>
                     <!-- Bouton Suivre/Désuivre -->
                     <div>
                         @if (auth()->user()->id !== $matchedUser->id)
