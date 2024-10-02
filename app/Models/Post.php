@@ -25,9 +25,8 @@ class Post extends Model
         'previous_content',
         'user_id',
         'post_id',
-        'post_content',
-        'original_post',
-        'previous'
+        'original_id',
+        'previous_id'
     ];
     /**
      * Some attributes get cast
