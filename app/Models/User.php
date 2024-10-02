@@ -4,7 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Events\UserDeleting;
-use App\Events\UserUpdating;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -135,5 +134,29 @@ class User extends Authenticatable
     public function blocked_tags() : BelongsToMany
     {
         return $this->belongsToMany(Tag::class, "blocked_tags");
+    }
+    
+    /**
+     * My reports
+     */
+    public function reports() : HasMany
+    {
+        return $this->hasMany(Report::class);
+    }
+    
+    /**
+     * My warnings
+     */
+    public function warnings() : HasMany
+    {
+        return $this->hasMany(Warning::class);
+    }
+    
+    /**
+     * My bans
+     */
+    public function bans() : HasMany
+    {
+        return $this->hasMany(Ban::class);
     }
 }
