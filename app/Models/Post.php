@@ -231,6 +231,15 @@ class Post extends Model
     {
         return $this->belongsToMany(Tag::class, "post_has_tags")->withPivot('indexed', 'created_at', 'updated_at');
     }
+
+    /**
+     * The tags on this post that are indexed
+     */
+    public function indexed_tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, "post_has_tags")->withPivot('indexed', 'created_at', 'updated_at')
+            ->wherePivot('indexed', true);
+    }
     
     /**
      * The reports for this post

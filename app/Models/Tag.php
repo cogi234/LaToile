@@ -27,6 +27,15 @@ class Tag extends Model
     }
 
     /**
+     * The posts that have this tag indexed
+     */
+    public function indexed_posts() : BelongsToMany
+    {
+        return $this->belongsToMany(Post::class, "post_has_tags")->withPivot('indexed', 'created_at', 'updated_at')
+            ->wherePivot('indexed', true);
+    }
+
+    /**
      * The users that have followed this tag
      */
     public function followers() : BelongsToMany
