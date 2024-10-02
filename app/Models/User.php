@@ -4,7 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Events\UserDeleting;
-use App\Events\UserUpdating;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -135,5 +134,77 @@ class User extends Authenticatable
     public function blocked_tags() : BelongsToMany
     {
         return $this->belongsToMany(Tag::class, "blocked_tags");
+    }
+    
+    /**
+     * My reports
+     */
+    public function reports() : HasMany
+    {
+        return $this->hasMany(Report::class);
+    }
+    
+    /**
+     * My warnings
+     */
+    public function warnings() : HasMany
+    {
+        return $this->hasMany(Warning::class);
+    }
+    
+    /**
+     * My bans
+     */
+    public function bans() : HasMany
+    {
+        return $this->hasMany(Ban::class);
+    }
+    
+    /**
+     * My sent private messages
+     */
+    public function sent_private_messages() : HasMany
+    {
+        return $this->hasMany(PrivateMessage::class, 'sender_id');
+    }
+    
+    /**
+     * My received private messages
+     */
+    public function received_private_messages() : HasMany
+    {
+        return $this->hasMany(PrivateMessage::class, 'receiver_id');
+    }
+    
+    /**
+     * All my private messages, received and sent
+     */
+    public function all_private_messages() : HasMany
+    {
+        return $this->sent_private_messages()->union($this->received_private_messages()->getQuery());
+    }
+    
+    /**
+     * My pending group invites
+     */
+    public function group_invites() : BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'group_memberships')->wherePivot('status', 'invite');
+    }
+    
+    /**
+     * My group memberships
+     */
+    public function group_memberships() : BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'group_memberships')->wherePivot('status', '!=', 'invite');
+    }
+    
+    /**
+     * My sent group messages
+     */
+    public function sent_group_messages() : HasMany
+    {
+        return $this->hasMany(GroupMessage::class);
     }
 }

@@ -153,6 +153,9 @@ class Post extends Model
 
     //Relationships
 
+    /**
+     * The user who published this post
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -227,5 +230,22 @@ class Post extends Model
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class, "post_has_tags")->withPivot('indexed', 'created_at', 'updated_at');
+    }
+
+    /**
+     * The tags on this post that are indexed
+     */
+    public function indexed_tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class, "post_has_tags")->withPivot('indexed', 'created_at', 'updated_at')
+            ->wherePivot('indexed', true);
+    }
+    
+    /**
+     * The reports for this post
+     */
+    public function reports() : HasMany
+    {
+        return $this->hasMany(Report::class);
     }
 }
