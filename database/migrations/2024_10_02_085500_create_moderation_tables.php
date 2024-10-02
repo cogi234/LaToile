@@ -35,6 +35,9 @@ return new class extends Migration
             $table->foreignId('report_id')->nullable();
             $table->timestamps();
         });
+        Schema::table('posts', function (Blueprint $table) {
+            $table->boolean("hidden")->default(false);
+        });
     }
 
     /**
@@ -42,6 +45,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->dropColumn(["hidden"]);
+        });
         Schema::dropIfExists('reports');
         Schema::dropIfExists('warnings');
         Schema::dropIfExists('bans');
