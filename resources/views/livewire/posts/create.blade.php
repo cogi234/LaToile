@@ -5,6 +5,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
 use App\Models\Post;
+use App\Models\Draft;
 
 new class extends Component {
     public string $text = "";
@@ -103,6 +104,27 @@ new class extends Component {
         $this->close();
     }
 
+    public function saveDraft() {        
+        //Create a content array from the text
+        $blocks = Post::parseTextToBlocks($this->text);
+
+        //We create a new draft
+        $draft = new Draft;
+        $draft->user_id = Auth::user()->id;
+        $draft->content = $blocks;
+        $draft->tags = $this->tags;
+
+        //If we are sharing a post, we add its id to the draft
+        if ($this->sharedPostId >= 0) {
+            $previousPost = Post::find($this->sharedPostId);
+            $draft->previous_id = $previousPost->id;
+        }
+
+        $draft->save();
+
+        $this->close();
+    }
+
 }; ?>
 
 <div id="post_editor" class="
@@ -147,7 +169,10 @@ new class extends Component {
                 @endforeach
             </div>
             @error('tags') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
-            <x-primary-button class="mt-2 mx-auto">Publier</x-primary-button>
+            <div>
+                <x-primary-button class="mt-2 mx-auto">Publier</x-primary-button>
+                <x-secondary-button class="mt-2 mx-auto" wire:click='saveDraft'>Sauvegarder un brouillon</x-secondary-button>
+            </div>
         </form>
     </div>
 
