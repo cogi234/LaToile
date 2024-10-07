@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Message;
+use App\Models\PrivateMessage;
 
 use Illuminate\Http\Request;
 
@@ -16,13 +16,13 @@ class MessageController extends Controller
             abort(403);
         }
 
-        $conversations = Message::where('sender_id', $currentId)
+        $conversations = PrivateMessage::where('sender_id', $currentId)
             ->orWhere('receiver_id', $currentId)
             ->get();
 
         $selectedConversation = [];
         if ($targetId) {
-            $selectedConversation = Message::where(function($query) use ($currentId, $targetId) {
+            $selectedConversation = PrivateMessage::where(function($query) use ($currentId, $targetId) {
                 $query->where('sender_id', $currentId)
                       ->where('receiver_id', $targetId);
             })->orWhere(function($query) use ($currentId, $targetId) {
@@ -31,7 +31,7 @@ class MessageController extends Controller
             })->get();
         }
 
-        return view('messageBoard', [
+        return view('messages.messageBoard', [
             'conversations' => $conversations,
             'selectedConversation' => $selectedConversation,
             'targetUserId' => $targetId
