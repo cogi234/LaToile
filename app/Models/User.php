@@ -113,6 +113,22 @@ class User extends Authenticatable
     }
 
     /**
+     * My drafts
+     */
+    public function drafts() : HasMany
+    {
+        return $this->hasMany(Draft::class);
+    }
+
+    /**
+     * My queued posts
+     */
+    public function queued_posts() : HasMany
+    {
+        return $this->hasMany(QueuedPost::class);
+    }
+
+    /**
      * The posts I have liked
      */
     public function likes() : BelongsToMany

@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean("can_get_messages_from_anyone")->default(true);
+        });
         Schema::create('private_messages', function (Blueprint $table) {
             $table->id();
             $table->text('message');
@@ -23,6 +26,7 @@ return new class extends Migration
         });
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
         });
         Schema::create('group_memberships', function (Blueprint $table) {
             $table->foreignId('user_id');
@@ -49,6 +53,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(["can_get_messages_from_anyone"]);
+        });
         Schema::dropIfExists('private_messages');
         Schema::dropIfExists('groups');
         Schema::dropIfExists('group_memberships');
