@@ -29,7 +29,7 @@
                         Éditer le profil
                     </x-primary-button>
                 @else
-                    <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out"">
+                    <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
                         <button onclick="toggleDropdown()" class="focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h.01M12 12h.01M18 12h.01" />
@@ -59,6 +59,7 @@
                                 </li>
                             </ul>
                         </div>
+                    </div>
                 @endif
             @endauth
         </div>
