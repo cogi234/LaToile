@@ -8,13 +8,22 @@ use App\Models\PrivateMessage;
 
 new class extends Component {
 
+    public $messageContent;
+
+    #[Validate(['messageContent' => 'required|string|max:255'])]
     public function send()
     {
-        
+        $this->validate();
+
         PrivateMessage::create([
-            'title' => $this->title,
-            'content' => $this->content,
+            'message' => $this->messageContent,
+            'read' => false,
+            'sender_id' => auth()->id(),
+            'receiver_id' => $this->targetUserId,
+            'created_at' => now(),
         ]);
+
+        $this->messageContent = '';
     }
 }; ?>
 
@@ -110,7 +119,7 @@ new class extends Component {
 
         <!-- Private Message Area -->
         @if($targetUser != null)
-            <div id="privateMessage" class="h-full overflow-y-auto">
+            <div id="privateMessage" class="h-full flex flex-col">
                 <div id="infoDiscussion" class="flex items-center pl-4 pt-2">
                     <div id="avatar">
                         <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
@@ -141,10 +150,10 @@ new class extends Component {
                 </div>
                 <!-- Barre de message -->
                 <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
-                    <form wire:submit="send" class="flex items-center">
+                    <form wire:submit.prevent="send" class="flex items-center">
                         @csrf
                         <!-- Champ de texte pour écrire le message -->
-                        <input type="text" name="message" placeholder="Écrire un message..."
+                        <input type="text" wire:model="messageContent" placeholder="Écrire un message..."
                             class="flex-1 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         
                         <!-- Bouton d'envoi avec une icône d'avion en papier -->
@@ -154,13 +163,17 @@ new class extends Component {
                             </svg>
                         </button>
                     </form>
-                </div>
+                </div>                
             </div>
         @endif
     </div>
 </x-app-layout>
 
 
-<script>
-
-</script>
+<style>
+    html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+</style>
