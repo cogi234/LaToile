@@ -7,8 +7,15 @@ use Livewire\Attributes\Locked;
 use App\Models\PrivateMessage;
 
 new class extends Component {
-    
 
+    public function send()
+    {
+        
+        PrivateMessage::create([
+            'title' => $this->title,
+            'content' => $this->content,
+        ]);
+    }
 }; ?>
 
 
@@ -134,7 +141,7 @@ new class extends Component {
                 </div>
                 <!-- Barre de message -->
                 <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
-                    <form action="{{ 'messages.send' }}" method="POST" class="flex items-center">
+                    <form wire:submit="send" class="flex items-center">
                         @csrf
                         <!-- Champ de texte pour écrire le message -->
                         <input type="text" name="message" placeholder="Écrire un message..."
