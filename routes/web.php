@@ -24,8 +24,8 @@ Route::view('profile', 'profile')
 Route::get('/post/{id}', [PostController::class, 'show']);
 Route::get('/user/{id}', [UserController::class, 'show']);
 Route::get('/tag/{id}', [TagController::class, 'show']);
-Route::get('/messages', [MessageController::class, 'showMessagesWithUser']);
-Route::get('/messages/{currentId}-{targetId}', [MessageController::class, 'showMessagesWithUser']);
+Route::get('/messages', [MessageController::class, 'show']);
+Route::get('/messages/{currentId}-{targetId}', [MessageController::class, 'show']);
 
 
 Route::get('/email/verify', function () {

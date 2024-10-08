@@ -8,15 +8,17 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    public function showMessagesWithUser($currentId = null, $targetId = null)
+    public function show($currentId = null, $targetId = null)
     {
-        $currentId = $currentId ?? Auth::id();
 
-        if (Auth::id() != $currentId) {
-            abort(403);
-        }
 
-        $conversations = PrivateMessage::where('sender_id', $currentId)
+        // $currentId = $currentId ?? Auth::id();
+
+        // if (Auth::id() != $currentId) {
+        //     abort(403);
+        // }
+
+        $privateMessages = PrivateMessage::where('sender_id', $currentId)
             ->orWhere('receiver_id', $currentId)
             ->get();
 
@@ -32,7 +34,7 @@ class MessageController extends Controller
         }
 
         return view('messages.messageBoard', [
-            'conversations' => $conversations,
+            'privateMessages' => $privateMessages,
             'selectedConversation' => $selectedConversation,
             'targetUserId' => $targetId
         ]);

@@ -1,20 +1,76 @@
 <x-app-layout>
-    @foreach ($conversations as $conversation)
-    <div class="conversation">
-        <!-- Check if this conversation involves the target user and highlight it -->
-        @if($conversation->receiver_id == $targetUserId || $conversation->sender_id == $targetUserId)
-            <div class="conversation selected">
-                <!-- Display the conversation between current and target users -->
-                @foreach ($selectedConversation as $message)
-                    <p><strong>{{ $message->sender->name }}:</strong> {{ $message->content }}</p>
+    <div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
+        <!-- Conversations List -->
+        <div id="conversations" class="border-r-2 h-full overflow-y-auto">
+            <!-- Header and Search Bar -->
+            <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
+                <div class="text-xl font-semibold dark:text-white">Messages</div>
+                <div id="option" class="text-gray-500 dark:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 4v16m8-8H4"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="p-4" x-data="{ query: '' }">
+                <div class="relative">
+                    <input type="text" name="query" id="searchBar" x-model="query"
+                        class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                        placeholder="Rechercher des Messages Directs">
+            
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+
+            <!-- List of Private Messages -->
+            <div>
+                @foreach ($privateMessages as $privateMessage)
+                    <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                        <a href="{{ url('messages/' . Auth::id() . '-' . $privateMessage->user_id) }}">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <!-- Display user avatar if available -->
+                                    <img class="h-10 w-10 rounded-full"
+                                        src="{{ $privateMessage->user->avatar_url ?? 'default-avatar.png' }}" alt="">
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $privateMessage->user->name }}
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-300">
+                                        {{ Str::limit($privateMessage->last_message, 40) }}
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 @endforeach
             </div>
-        @else
-            <div class="conversation">
-                <!-- Display a summary of other conversations -->
-                <p>Conversation with {{ $conversation->sender_id == $currentId ? $conversation->receiver->name : $conversation->sender->name }}</p>
-            </div>
-        @endif
+        </div>
+
+        <!-- Private Message Area -->
+        <div id="privateMessage" class="h-full overflow-y-auto">
+            @if ($selectedConversation)
+                @foreach ($selectedConversation as $message)
+                    <div class="p-4">
+                        <p><strong>{{ $message->sender->name }}:</strong> {{ $message->content }}</p>
+                    </div>
+                @endforeach
+            @else
+                <div class="flex items-center justify-center h-full">
+                    <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
+                </div>
+            @endif
+        </div>
     </div>
-@endforeach
 </x-app-layout>
