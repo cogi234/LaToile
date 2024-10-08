@@ -169,11 +169,8 @@ new class extends Component {
     </div>
 </x-app-layout>
 
-
 <style>
-    html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
+    main{
+        height:660px;
+    }
 </style>
