@@ -1,3 +1,18 @@
+<?php
+
+use Livewire\Volt\Component;
+use Livewire\Attributes\Validate;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Locked;
+use App\Models\PrivateMessage;
+
+new class extends Component {
+    
+
+}; ?>
+
+
+
 <x-app-layout>
     <div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
         <!-- Conversations List -->
@@ -87,38 +102,54 @@
         </div>
 
         <!-- Private Message Area -->
-        <div id="privateMessage" class="h-full overflow-y-auto">
-            <div id="infoDiscussion" class="flex items-center pl-4 pt-2">
-                <div id="avatar">
-                    <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
-                        src="{{ $targetUser->getAvatar() }}">
-                </div>
-        
-                <!-- Nom à droite, aligné en haut et centré horizontalement -->
-                <div id="Name">
-                    <p class="text-sm font-medium text-gray-900 dark:text-white">
-                        {{ $targetUser->name }}
-                    </p>
-                </div>
-            </div>
-            <div id="dicussion">
-                    
-            </div>
-            <div id="messageBar">
-                    
-            </div>
-            {{-- @if ($selectedConversation)
-                @foreach ($selectedConversation as $message)
-                    <div class="p-4">
-                        <p><strong>{{ $message->sender->name }}:</strong> {{ $message->content }}</p>
+        @if($targetUser != null)
+            <div id="privateMessage" class="h-full overflow-y-auto">
+                <div id="infoDiscussion" class="flex items-center pl-4 pt-2">
+                    <div id="avatar">
+                        <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
+                            src="{{ $targetUser->getAvatar() }}">
                     </div>
-                @endforeach
-            @else
-                <div class="flex items-center justify-center h-full">
-                    <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
+            
+                    <!-- Nom à droite, aligné en haut et centré horizontalement -->
+                    <div id="Name">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                            {{ $targetUser->name }}
+                        </p>
+                    </div>
                 </div>
-            @endif --}}
-        </div>
+                 <!-- Zone de discussion -->
+                <div id="discussion" class="flex-1 p-4 overflow-y-auto">
+                    {{-- Affiche ici les messages de la conversation sélectionnée --}}
+                    @if ($selectedConversation)
+                        @foreach ($selectedConversation as $message)
+                            <div class="p-2">
+                                <p><strong>{{ $message->sender->name }}:</strong> {{ $message->content }}</p>
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="flex items-center justify-center h-full">
+                            <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
+                        </div>
+                    @endif
+                </div>
+                <!-- Barre de message -->
+                <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
+                    <form action="{{ 'messages.send' }}" method="POST" class="flex items-center">
+                        @csrf
+                        <!-- Champ de texte pour écrire le message -->
+                        <input type="text" name="message" placeholder="Écrire un message..."
+                            class="flex-1 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                        
+                        <!-- Bouton d'envoi avec une icône d'avion en papier -->
+                        <button type="submit" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v6l16-8-16-8v6l10 2-10 2z" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        @endif
     </div>
 </x-app-layout>
 
