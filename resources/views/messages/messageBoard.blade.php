@@ -18,10 +18,11 @@ new class extends Component {
         PrivateMessage::create([
             'message' => $this->messageContent,
             'read' => false,
-            'sender_id' => auth()->user()->id(),
+            'sender_id' => auth()->id(),
             'receiver_id' => $this->targetUserId,
             'created_at' => now(),
         ]);
+
 
         $this->messageContent = '';
     }
@@ -171,6 +172,6 @@ new class extends Component {
 
 <style>
     main{
-        height:660px;
+        height: 100vh;
     }
-</style>
+</style> 
