@@ -6,4 +6,8 @@
             </p>
         @endif
     @endforeach
+
+    @if (count($content) == 0)
+        <i>Il n'y a pas de contenu.</i>
+    @endif
 </div>

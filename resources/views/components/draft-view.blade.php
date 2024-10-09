@@ -1,4 +1,5 @@
 <div id="draft-{{ $draft->id }}" 
+    onclick="showPostCreator(-1, {{$draft->id}})"
     {{ $attributes->merge(['class' => "cursor-pointer bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:dark:bg-gray-700 overflow-hidden shadow-sm
     rounded-lg mb-4 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0"]) }}>
     <div class="pl-auto flex flex-row items-start self-start space-x-2">

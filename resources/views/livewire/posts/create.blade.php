@@ -17,6 +17,8 @@ new class extends Component {
     #[Locked]
     public int $sharedPostId = -1;
     #[Locked]
+    public int $draftId = -1;
+    #[Locked]
     public bool $enabled = false;
 
 
@@ -37,10 +39,19 @@ new class extends Component {
     }
 
     #[On('open-post-creator')]
-    public function open(int $sharedId = -1) {
+    public function open(int $sharedId = -1, int $draftId = -1) {
+        $this->draftId =  $draftId;
         $this->sharedPostId = $sharedId;
         $this->enabled = true;
-        if ($sharedId >= 0) {
+        if ($draftId >= 0) {
+            $draft = Draft::find($draftId);
+            $this->text = implode('\n\n', array_map(fn($block) => $block['content'], $draft->content));
+            $this->tags = $draft->tags;
+            if ($draft->previous != null) {
+                $this->sharedPostId = $draft->previous_id;
+                $this->previousContent = $draft->previous->createPreviousContent();
+            }
+        } else if ($sharedId >= 0) {
             $previousPost = Post::find($sharedId);
 
             $this->previousContent = $previousPost->createPreviousContent();
@@ -99,6 +110,13 @@ new class extends Component {
         //We add the tags
         $post->addTags($this->tags);
 
+        //If we were using a draft, we delete it
+        if ($this->draftId >= 0) {
+            $draft = Draft::find($this->draftId);
+            $draft->delete();
+            $this->dispatch('reset-draft-views');
+        }
+
         $this->dispatch('reset-post-views');
 
         $this->close();
@@ -108,16 +126,22 @@ new class extends Component {
         //Create a content array from the text
         $blocks = Post::parseTextToBlocks($this->text);
 
-        //We create a new draft
-        $draft = new Draft;
-        $draft->user_id = Auth::user()->id;
-        $draft->content = $blocks;
-        $draft->tags = $this->tags;
+        //We create a new draft or modify the existing one
+        if ($this->draftId >= 0) {
+            $draft = Draft::find($this->draftId);
+            $draft->content = $blocks;
+            $draft->tags = $this->tags;
+        } else {
+            $draft = new Draft;
+            $draft->user_id = Auth::user()->id;
+            $draft->content = $blocks;
+            $draft->tags = $this->tags;
 
-        //If we are sharing a post, we add its id to the draft
-        if ($this->sharedPostId >= 0) {
-            $previousPost = Post::find($this->sharedPostId);
-            $draft->previous_id = $previousPost->id;
+            //If we are sharing a post, we add its id to the draft
+            if ($this->sharedPostId >= 0) {
+                $previousPost = Post::find($this->sharedPostId);
+                $draft->previous_id = $previousPost->id;
+            }
         }
 
         $draft->save();
@@ -162,7 +186,7 @@ new class extends Component {
                 @foreach ($tags as $tag)
                     <span class="m-1 text-gray-800 dark:text-gray-300">#
                     <input type="text" wire:model.blur='tags.{{ $loop->index }}'
-                        wire:key='tag_{{ $loop->index }}' maxlength="32" style="width: {{strlen($tag)}}ch"
+                        wire:key='tag_{{ $loop->index }}' maxlength="32" style="min-width: 5em; width: {{ strlen($tag) }}em"
                         class="inline-block ml-[-3px] py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
                         focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300"/>
                     </span>
@@ -171,16 +195,24 @@ new class extends Component {
             @error('tags') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
             <div>
                 <x-primary-button class="mt-2 mx-auto">Publier</x-primary-button>
-                <x-secondary-button class="mt-2 mx-auto" wire:click='saveDraft'>Sauvegarder un brouillon</x-secondary-button>
+                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='saveDraft'>Sauvegarder un brouillon</x-secondary-button>
             </div>
         </form>
     </div>
 
     <!-- Script with the function to show the post editor -->
     <script>
-        function showPostCreator(postId = -1) {
+        function showPostCreator(postId = -1, draftId = -1) {
             //Envoyer l'event pour activer le post editor
-            if (postId < 0) {
+            if (draftId >= 0) {
+                this.dispatchEvent(
+                    new CustomEvent('open-post-creator', {
+                        detail: {
+                            draftId: draftId
+                        }
+                    })
+                );
+            } else if (postId < 0) {
                 this.dispatchEvent(
                     new Event('open-post-creator')
                 );

@@ -1,11 +1,11 @@
 <x-app-layout>
-    <!-- Post forms -->
-    @auth
-    <x-post-forms />
-    @endauth
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Post forms -->
+            @auth
+            <x-post-forms />
+            @endauth
             <livewire:drafts.delete />
             {{-- Drafts --}}
             <div class="mt-6 max-w-5xl mx-auto px-3 sm:px-8">
