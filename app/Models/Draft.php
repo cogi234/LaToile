@@ -28,7 +28,8 @@ class Draft extends Model
     protected function casts(): array
     {
         return [
-            'content' => 'array'
+            'content' => 'array',
+            'tags' => 'array'
         ];
     }
 

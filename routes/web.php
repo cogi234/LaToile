@@ -13,12 +13,15 @@ Route::view('/', 'dashboard')
     ->name('dashboard');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
-
 //Route::get('/search/{query?}', [SearchController::class, 'search']);
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
+
+Route::view('drafts', 'drafts')
+    ->middleware(['auth'])
+    ->name('drafts');
 
 Route::get('/post/{id}', [PostController::class, 'show']);
 Route::get('/user/{id}', [UserController::class, 'show']);
