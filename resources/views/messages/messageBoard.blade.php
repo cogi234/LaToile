@@ -23,12 +23,9 @@ new class extends Component {
             'created_at' => now(),
         ]);
 
-
         $this->messageContent = '';
     }
 }; ?>
-
-
 
 <x-app-layout>
     <div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
@@ -151,7 +148,7 @@ new class extends Component {
                 </div>
                 <!-- Barre de message -->
                 <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
-                    <form wire:submit.prevent="send" class="flex items-center">
+                    <form wire:submit="send" class="flex items-center">
                         @csrf
                         <!-- Champ de texte pour écrire le message -->
                         <input type="text" wire:model="messageContent" placeholder="Écrire un message..."
