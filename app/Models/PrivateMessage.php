@@ -15,11 +15,7 @@ class PrivateMessage extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'message',
-        'sender_id',
-        'receiver_id',
-    ];
+    protected $fillable = ['message', 'read', 'sender_id', 'receiver_id', 'created_at'];
     
 
     //Relationships

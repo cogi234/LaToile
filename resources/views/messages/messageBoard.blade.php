@@ -18,7 +18,7 @@ new class extends Component {
         PrivateMessage::create([
             'message' => $this->messageContent,
             'read' => false,
-            'sender_id' => auth()->id(),
+            'sender_id' => auth()->user()->id(),
             'receiver_id' => $this->targetUserId,
             'created_at' => now(),
         ]);
