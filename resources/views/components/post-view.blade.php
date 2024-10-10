@@ -93,6 +93,7 @@
             <span class="mr-2 text-gray-600 dark:text-gray-400">Vous avez signalé ce post</span>
             @endif
             <!-- Signaler -->
+            @auth
             <button title="Signaler le post"
                 class="share-button flex items-center text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-500"
                 onclick="event.stopPropagation(); showReportModal({{$post->id}});">
@@ -102,6 +103,7 @@
                         d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                 </svg>
             </button>
+            @endauth
         </div>
     </div>
 </div>
