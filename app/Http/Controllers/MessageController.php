@@ -10,35 +10,32 @@ class MessageController extends Controller
 {
     public function show($currentId = null, $targetId = null)
     {
-        // $currentId = $currentId ?? Auth::id();
-
-        // if (Auth::id() != $currentId) {
-        //     abort(403);
-        // }
         $targetUser = null;
 
-        $privateMessages = PrivateMessage::where('sender_id', $currentId)
-            ->orWhere('receiver_id', $currentId)
-            ->get();
+        // $privateMessages = PrivateMessage::where('sender_id', $currentId)
+        //     ->orWhere('receiver_id', $currentId)
+        //     ->get();
 
-        $selectedConversation = [];
+        // $selectedConversation = [];
         if ($targetId) {
             $targetUser = User::find($targetId);
 
-            $selectedConversation = PrivateMessage::where(function($query) use ($currentId, $targetId) {
-                $query->where('sender_id', $currentId)
-                      ->where('receiver_id', $targetId);
-            })->orWhere(function($query) use ($currentId, $targetId) {
-                $query->where('sender_id', $targetId)
-                      ->where('receiver_id', $currentId);
-            })->get();
+            // $selectedConversation = PrivateMessage::where(function($query) use ($currentId, $targetId) {
+            //     $query->where('sender_id', $currentId)
+            //           ->where('receiver_id', $targetId);
+            // })->orWhere(function($query) use ($currentId, $targetId) {
+            //     $query->where('sender_id', $targetId)
+            //           ->where('receiver_id', $currentId);
+            // })->get();
         }
         
-        return view('messages.messageBoard', [
-            'privateMessages' => $privateMessages,
-            'selectedConversation' => $selectedConversation,
+        return view('messages.show', [
             'targetUserId' => $targetId,
+            'currentUserId' => $currentId,
             'targetUser' => $targetUser
         ]);
     }
+
+
+
 }
