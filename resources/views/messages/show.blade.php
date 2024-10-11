@@ -1,5 +1,5 @@
-<x-app-layout>
+<div>
     @auth
         <livewire:messages.messageBoard :targetUserId="$targetUserId" :currentUserId="$currentUserId" />
     @endauth
-</x-app-layout>
+</div>
