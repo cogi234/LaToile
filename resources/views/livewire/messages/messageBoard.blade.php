@@ -9,6 +9,32 @@ use Illuminate\Support\Facades\Auth;
 new class extends Component {
 
     public $messageContent = "";
+    public $privateMessages = [];
+    public $selectedConversation = [];
+    public $targetUser = null;
+    public int $targetUserId;
+    public int $currentUserId;
+
+    public function mount(int $targetUserId, int $currentUserId){
+        $this->targetUserId = $targetUserId;
+        $this->currentUserId = $currentUserId;
+
+        if($targetUserId !== null){
+            $this->targetUser = User::find($targetId);
+        }
+
+        $this->privateMessages = PrivateMessage::where('sender_id', $currentUserId)
+            ->orWhere('receiver_id', $currentUserId)
+            ->get();
+        $this->selectedConversation = PrivateMessage::where(function($query) use ($currentId, $targetId) {
+                $query->where('sender_id', $currentId)
+                      ->where('receiver_id', $targetId);
+            })->orWhere(function($query) use ($currentId, $targetId) {
+                $query->where('sender_id', $targetId)
+                      ->where('receiver_id', $currentId);
+            })->get();
+    }
+
 
     #[Validate(['messageContent' => 'required|string|max:255'])]
     public function send()

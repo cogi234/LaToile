@@ -10,29 +10,9 @@ class MessageController extends Controller
 {
     public function show($currentId = null, $targetId = null)
     {
-        $targetUser = null;
-
-        // $privateMessages = PrivateMessage::where('sender_id', $currentId)
-        //     ->orWhere('receiver_id', $currentId)
-        //     ->get();
-
-        // $selectedConversation = [];
-        if ($targetId) {
-            $targetUser = User::find($targetId);
-
-            // $selectedConversation = PrivateMessage::where(function($query) use ($currentId, $targetId) {
-            //     $query->where('sender_id', $currentId)
-            //           ->where('receiver_id', $targetId);
-            // })->orWhere(function($query) use ($currentId, $targetId) {
-            //     $query->where('sender_id', $targetId)
-            //           ->where('receiver_id', $currentId);
-            // })->get();
-        }
-        
         return view('messages.show', [
             'targetUserId' => $targetId,
             'currentUserId' => $currentId,
-            'targetUser' => $targetUser
         ]);
     }
 
