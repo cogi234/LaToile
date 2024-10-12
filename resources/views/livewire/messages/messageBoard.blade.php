@@ -64,7 +64,7 @@ new class extends Component {
         $this->validate();
 
         if (trim($this->messageContent) === '') {
-            // Ajouter un message d'erreur pour indiquer que le message ne peut pas être vide
+
             session()->flash('error', 'Le message ne peut pas être vide.');
             return;
         }
@@ -78,7 +78,7 @@ new class extends Component {
         ]);
 
         $this->messageContent = '';
-        // Reload the page after sending message
+
         $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
     }
 
