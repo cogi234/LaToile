@@ -15,6 +15,7 @@ new class extends Component {
     public ?int $targetUserId = null;
     public ?int $currentUserId = null;
     public $uniqueSenderIds = [];
+    public $editingMessageId = null;
 
     public function mount(?int $targetUserId, ?int $currentUserId)
     {
@@ -81,6 +82,30 @@ new class extends Component {
         $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
     }
 
+    public function startEditing($messageId)
+    {
+        $this->editingMessageId = $messageId;
+        $message = PrivateMessage::find($messageId);
+        $this->messageContent = $message->message;
+    }
+
+    public function saveEdit()
+    {
+        $this->validate();
+
+        $message = PrivateMessage::find($this->editingMessageId);
+        $message->update([
+            'message' => $this->messageContent,
+        ]);
+
+        $this->messageContent = '';
+        $this->editingMessageId = null;
+    }
+
+    public function deleteMessage($messageId)
+    {
+        PrivateMessage::find($messageId)->delete();
+    }
 };?>
 
 <x-app-layout>
@@ -192,7 +217,6 @@ new class extends Component {
                 </div>
                 <!-- Zone de discussion -->
                 <div id="discussion" class="flex-1 p-4 max-h-[calc(100vh-150px)] overflow-y-auto">
-                    {{-- Affiche ici les messages de la conversation sélectionnée --}}
                     @if ($selectedConversation)
                         @foreach ($selectedConversation as $message)
                             @php
@@ -200,8 +224,28 @@ new class extends Component {
                             @endphp
                             
                             <div class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
-                                <div class="max-w-xs w-auto p-3 rounded-lg {{ $isCurrentUserMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-900' }}">
+                                <!-- Message Container -->
+                                <div class="max-w-xs w-auto p-3 rounded-lg {{ $isCurrentUserMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-900' }}"
+                                    x-data="{ open: false }"
+                                    @click="open = !open"
+                                    @keydown.escape.window="open = false"
+                                    x-on:click.outside="open = false">
+
                                     <p>{{ $message->message }}</p>
+                                    
+                                    <!-- Menu for Edit/Delete -->
+                                    <div x-show="open" class="mt-2 bg-white shadow-lg rounded-lg text-sm z-50">
+                                        @if ($isCurrentUserMessage)
+                                            <!-- Edit Button -->
+                                            <button wire:click="startEditing({{ $message->id }})" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                                Modifier
+                                            </button>
+                                            <!-- Delete Button -->
+                                            <button wire:click="deleteMessage({{ $message->id }})" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
+                                                Supprimer
+                                            </button>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
@@ -211,6 +255,16 @@ new class extends Component {
                         </div>
                     @endif
                 </div>
+                <!-- Save Edit Form -->
+                @if ($editingMessageId)
+                    <div class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
+                        <form wire:submit.prevent="saveEdit" class="flex items-center">
+                            <input type="text" wire:model="messageContent" placeholder="Éditer votre message..." class="flex-1 px-4 py-2 rounded-full">
+                            <button type="submit" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600">Sauvegarder</button>
+                        </form>
+                    </div>
+                @endif
+                
                 <!-- Barre de message -->
                 <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
                     <form wire:submit.prevent="send" class="flex items-center">
@@ -235,7 +289,7 @@ new class extends Component {
     main{
         height: 100vh;
     }
-    
+
     #discussion::-webkit-scrollbar {
         width: 0;
         height: 0;
