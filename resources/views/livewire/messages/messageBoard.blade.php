@@ -21,9 +21,9 @@ new class extends Component {
         $this->targetUserId = $targetUserId;
         $this->currentUserId = $currentUserId;
         
-        if ($this->targetUserId !== null) {
+        if ($this->targetUserId !== null && $currentUserId !== null) {
 
-            if(($targetUserId == $currentUserId && $currentUserId !== null)){
+            if(($targetUserId == $currentUserId)){
                 $this->redirect('/messages/');
                 return;
             }
