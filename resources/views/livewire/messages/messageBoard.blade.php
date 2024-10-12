@@ -151,7 +151,7 @@ new class extends Component {
                                     @php
                                         $sender = \App\Models\User::find($uniqueSenderId);
                                     @endphp
-                                    <div x-show="query === '' || '{{ strtolower($sender->name) }}'.includes(query.toLowerCase())" class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                    <div x-show="query === '' || '{{ strtolower($sender->name) }}'.includes(query.toLowerCase())" class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer overflow-y-auto">
                                         <a href="{{ url('messages/' . Auth::id() . '-' . $uniqueSenderId) }}">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0">
@@ -191,7 +191,7 @@ new class extends Component {
                     </div>
                 </div>
                 <!-- Zone de discussion -->
-                <div id="discussion" class="flex-1 p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+                <div id="discussion" class="flex-1 p-4 max-h-[calc(100vh-150px)] overflow-y-auto">
                     {{-- Affiche ici les messages de la conversation sélectionnée --}}
                     @if ($selectedConversation)
                         @foreach ($selectedConversation as $message)
