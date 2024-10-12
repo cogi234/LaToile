@@ -54,9 +54,6 @@ new class extends Component {
             $query->where('sender_id', $this->targetUserId)
                 ->where('receiver_id', $this->currentUserId);
         })->get();
-
-        Log::info("Mes messages: ". json_encode($this->uniqueSenderIds));
-        Log::info("Current user: " . Auth::id());
     }
 
 
@@ -77,6 +74,7 @@ new class extends Component {
         // Reload the page after sending message
         $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
     }
+
 };?>
 
 <x-app-layout>
@@ -102,71 +100,73 @@ new class extends Component {
                     </p>
                 </div>
             @else
-                <!-- Search Bar -->
-                <div class="p-4" x-data="{ query: '' }">
-                    <div class="relative">
-                        <input type="text" name="query" id="searchBar" x-model="query"
-                            class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
-                            placeholder="Rechercher des Messages Directs">
-                
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
-                            </svg>
+                <div x-data="{ query: '' }">
+                    <!-- Search Bar -->
+                    <div class="p-4" >
+                        <div class="relative">
+                            <input type="text" name="query" id="searchBar" x-model="query"
+                                class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                                placeholder="Rechercher des Messages Directs">
+                    
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
+                                </svg>
+                            </div>
                         </div>
                     </div>
-                </div>
                 
-                <!-- List of Private Messages -->
-                @if($privateMessages->isEmpty() && $targetUserId !== null)
-                    <div>
-                        <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                            <div class="flex items-start">
-                                <!-- Avatar à gauche, centré horizontalement -->
-                                <div id="avatar">
-                                    <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
-                                        src="{{ $targetUser->getAvatar() }}">
+                    <!-- List of Private Messages -->
+                    @if($privateMessages->isEmpty() && $targetUserId !== null)
+                        <div>
+                            <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                <div class="flex items-start">
+                                    <!-- Avatar à gauche, centré horizontalement -->
+                                    <div id="avatar">
+                                        <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
+                                            src="{{ $targetUser->getAvatar() }}">
+                                    </div>
+                            
+                                    <!-- Nom à droite, aligné en haut et centré horizontalement -->
+                                    <div id="Name">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                            {{ $targetUser->name }}
+                                        </p>
+                                    </div>
                                 </div>
-                        
-                                <!-- Nom à droite, aligné en haut et centré horizontalement -->
-                                <div id="Name">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                        {{ $targetUser->name }}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>                        
-                    </div>
-                @else 
-                    <div>
-                        @if (count($uniqueSenderIds) > 0)
-                            @foreach ($uniqueSenderIds as $uniqueSenderId)
-                                @php
-                                    $sender = \App\Models\User::find($uniqueSenderId);
-                                @endphp
-                                <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                                    <a href="{{ url('messages/' . Auth::id() . '-' . $uniqueSenderId) }}">
-                                        <div class="flex items-center">
-                                            <div class="flex-shrink-0">
-                                                <!-- Afficher l'avatar de l'utilisateur s'il est disponible -->
-                                                <img class="h-10 w-10 rounded-full a"
-                                                    src="{{ $sender->avatar ?? 'default-avatar.png' }}" alt="Avatar de {{ $sender->name }}">
+                            </div>                        
+                        </div>
+                    @else 
+                        <div>
+                            @if (count($uniqueSenderIds) > 0)
+                                @foreach ($uniqueSenderIds as $uniqueSenderId)
+                                    @php
+                                        $sender = \App\Models\User::find($uniqueSenderId);
+                                    @endphp
+                                    <div x-show="query === '' || '{{ strtolower($sender->name) }}'.includes(query.toLowerCase())" class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                        <a href="{{ url('messages/' . Auth::id() . '-' . $uniqueSenderId) }}">
+                                            <div class="flex items-center">
+                                                <div class="flex-shrink-0">
+                                                    <!-- Afficher l'avatar de l'utilisateur s'il est disponible -->
+                                                    <img class="h-10 w-10 rounded-full a"
+                                                        src="{{ $sender->avatar ?? 'default-avatar.png' }}" alt="Avatar de {{ $sender->name }}">
+                                                </div>
+                                                <div class="ml-3">
+                                                    <!-- Afficher le nom de l'utilisateur -->
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                        {{ $sender->name }}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div class="ml-3">
-                                                <!-- Afficher le nom de l'utilisateur -->
-                                                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {{ $sender->name }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </div>
-                            @endforeach
-                        @endif
-                    </div>
-                @endif
+                                        </a>
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                    @endif
+                </div>
             @endif
         </div>
 
@@ -185,7 +185,7 @@ new class extends Component {
                     </div>
                 </div>
                 <!-- Zone de discussion -->
-                <div id="discussion" class="flex-1 p-4 overflow-y-auto">
+                <div id="discussion" class="flex-1 p-4 overflow-y-scoll">
                     {{-- Affiche ici les messages de la conversation sélectionnée --}}
                     @if ($selectedConversation)
                         @foreach ($selectedConversation as $message)
