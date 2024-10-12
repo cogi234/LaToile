@@ -191,7 +191,7 @@ new class extends Component {
                     </div>
                 </div>
                 <!-- Zone de discussion -->
-                <div id="discussion" class="flex-1 p-4  overflow-y-auto">
+                <div id="discussion" class="flex-1 p-4 max-h-[calc(100vh-200px)] overflow-y-auto">
                     {{-- Affiche ici les messages de la conversation sélectionnée --}}
                     @if ($selectedConversation)
                         @foreach ($selectedConversation as $message)
