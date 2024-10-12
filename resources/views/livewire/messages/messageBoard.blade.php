@@ -64,7 +64,7 @@ new class extends Component {
         $this->validate();
 
         if (trim($this->messageContent) === '') {
-
+            // Ajouter un message d'erreur pour indiquer que le message ne peut pas être vide
             session()->flash('error', 'Le message ne peut pas être vide.');
             return;
         }
@@ -222,20 +222,22 @@ new class extends Component {
                             @php
                                 $isCurrentUserMessage = $message->sender_id == $currentUserId;
                             @endphp
-                            
+                
                             <div class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
                                 <!-- Message Container -->
                                 <div class="max-w-xs w-auto p-3 rounded-lg {{ $isCurrentUserMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-900' }}"
-                                    x-data="{ open: false }"
-                                    @click="open = !open"
-                                    @keydown.escape.window="open = false"
-                                    x-on:click.outside="open = false">
-
+                                    @if ($isCurrentUserMessage)
+                                        x-data="{ open: false }"
+                                        @click="open = !open"
+                                        @keydown.escape.window="open = false"
+                                        x-on:click.outside="open = false"
+                                    @endif>
+                                    
                                     <p>{{ $message->message }}</p>
                                     
-                                    <!-- Menu for Edit/Delete -->
-                                    <div x-show="open" class="mt-2 bg-white shadow-lg rounded-lg text-sm z-50">
-                                        @if ($isCurrentUserMessage)
+                                    <!-- Menu for Edit/Delete (Only for current user's messages) -->
+                                    @if ($isCurrentUserMessage)
+                                        <div x-show="open" class="mt-2 bg-white shadow-lg rounded-lg text-sm z-50">
                                             <!-- Edit Button -->
                                             <button wire:click="startEditing({{ $message->id }})" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
                                                 Modifier
@@ -244,8 +246,8 @@ new class extends Component {
                                             <button wire:click="deleteMessage({{ $message->id }})" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
                                                 Supprimer
                                             </button>
-                                        @endif
-                                    </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
