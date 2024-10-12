@@ -235,4 +235,18 @@ new class extends Component {
     main{
         height: 100vh;
     }
+    
+    #discussion::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+    }
+
+    #discussion {
+        scrollbar-width: none;
+    }
+
+    #discussion {
+        -ms-overflow-style: none;
+        overflow-y: scroll;
+    }
 </style> 
