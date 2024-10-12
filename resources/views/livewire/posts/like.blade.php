@@ -45,6 +45,9 @@ new class extends Component {
             $this->likeCount++;
             $this->formattedLikeCount = $this->formatLikeCount($this->likeCount);
         }
+        else {
+            return redirect()->route('login');
+        }
     }
 
     public function unlike()
