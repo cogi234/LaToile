@@ -62,6 +62,12 @@ new class extends Component {
     {
         $this->validate();
 
+        if (trim($this->messageContent) === '') {
+            // Ajouter un message d'erreur pour indiquer que le message ne peut pas être vide
+            session()->flash('error', 'Le message ne peut pas être vide.');
+            return;
+        }
+
         PrivateMessage::create([
             'message' => $this->messageContent,
             'read' => false,
@@ -106,7 +112,7 @@ new class extends Component {
                         <div class="relative">
                             <input type="text" name="query" id="searchBar" x-model="query"
                                 class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
-                                placeholder="Rechercher des Messages Directs">
+                                placeholder="Rechercher des Messages Directs"/>
                     
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
@@ -126,7 +132,7 @@ new class extends Component {
                                     <!-- Avatar à gauche, centré horizontalement -->
                                     <div id="avatar">
                                         <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
-                                            src="{{ $targetUser->getAvatar() }}">
+                                            src="{{ $targetUser->getAvatar() }}"/>
                                     </div>
                             
                                     <!-- Nom à droite, aligné en haut et centré horizontalement -->
@@ -151,7 +157,7 @@ new class extends Component {
                                                 <div class="flex-shrink-0">
                                                     <!-- Afficher l'avatar de l'utilisateur s'il est disponible -->
                                                     <img class="h-10 w-10 rounded-full a"
-                                                        src="{{ $sender->avatar ?? 'default-avatar.png' }}" alt="Avatar de {{ $sender->name }}">
+                                                        src="{{ $sender->avatar }}" alt="Avatar de {{ $sender->name }}"/>
                                                 </div>
                                                 <div class="ml-3">
                                                     <!-- Afficher le nom de l'utilisateur -->
@@ -176,7 +182,7 @@ new class extends Component {
                 <div id="infoDiscussion" class="flex items-center pl-4 pt-2">
                     <div id="avatar">
                         <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
-                            src="{{ $targetUser->getAvatar() }}">
+                            src="{{ $targetUser->getAvatar() }}"/>
                     </div>
                     <div id="Name">
                         <p class="text-sm font-medium text-gray-900 dark:text-white">
@@ -185,7 +191,7 @@ new class extends Component {
                     </div>
                 </div>
                 <!-- Zone de discussion -->
-                <div id="discussion" class="flex-1 p-4 overflow-y-scoll">
+                <div id="discussion" class="flex-1 p-4  overflow-y-auto">
                     {{-- Affiche ici les messages de la conversation sélectionnée --}}
                     @if ($selectedConversation)
                         @foreach ($selectedConversation as $message)
@@ -210,7 +216,7 @@ new class extends Component {
                     <form wire:submit.prevent="send" class="flex items-center">
                         <!-- Champ de texte pour écrire le message -->
                         <input type="text" wire:model="messageContent" placeholder="Écrire un message..."
-                            class="flex-1 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            class="flex-1 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"/>
                         
                         <!-- Bouton d'envoi avec une icône d'avion en papier -->
                         <button type="submit" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 focus:outline-none">
