@@ -12,16 +12,22 @@ new class extends Component {
     public $privateMessages = [];
     public $selectedConversation = [];
     public $targetUser = null;
-    public int $targetUserId = 0;
-    public int $currentUserId = 0;
+    public ?int $targetUserId = null;
+    public ?int $currentUserId = null;
     public $uniqueSenderIds = [];
 
-    public function mount(int $targetUserId, int $currentUserId)
+    public function mount(?int $targetUserId, ?int $currentUserId)
     {
         $this->targetUserId = $targetUserId;
         $this->currentUserId = $currentUserId;
-
+        
         if ($this->targetUserId !== null) {
+
+            if(($targetUserId == $currentUserId && $currentUserId !== null)){
+                $this->redirect('/messages/');
+                return;
+            }
+
             $this->targetUser = User::find($this->targetUserId);
             if (!$this->targetUser) {   
                 session()->flash('error', 'Utilisateur non trouvé');
@@ -29,11 +35,17 @@ new class extends Component {
             }
         }
 
-        $this->privateMessages = PrivateMessage::where('sender_id', $this->currentUserId)
-            ->orWhere('receiver_id', $this->currentUserId)
+        $this->privateMessages = PrivateMessage::where('sender_id', Auth::id())
+            ->orWhere('receiver_id', Auth::id())
             ->get();
 
-        $this->uniqueSenderIds = $this->privateMessages->pluck('receiver_id')->unique()->values()->toArray();
+        $this->uniqueSenderIds = $this->privateMessages->pluck('receiver_id')
+            ->unique()
+            ->reject(function ($id) {
+                return $id == Auth::id();
+            })
+            ->values()
+            ->toArray();
 
         $this->selectedConversation = PrivateMessage::where(function($query) {
             $query->where('sender_id', $this->currentUserId)
@@ -43,8 +55,8 @@ new class extends Component {
                 ->where('receiver_id', $this->currentUserId);
         })->get();
 
-        Log::info("Mes messages :" . $this->privateMessages);
-        Log::info("Unique senderIds: " . json_encode($this->uniqueSenderIds));
+        Log::info("Mes messages: ". json_encode($this->uniqueSenderIds));
+        Log::info("Current user: " . Auth::id());
     }
 
 
@@ -108,7 +120,7 @@ new class extends Component {
                 </div>
                 
                 <!-- List of Private Messages -->
-                @if($privateMessages->isEmpty() && $targetUserId != null)
+                @if($privateMessages->isEmpty() && $targetUserId !== null)
                     <div>
                         <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                             <div class="flex items-start">
@@ -129,42 +141,43 @@ new class extends Component {
                     </div>
                 @else 
                     <div>
-                        {{-- @foreach ($privateMessages as $privateMessage)
-                            <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                                <a href="{{ url('messages/' . Auth::id() . '-' . $privateMessage->user_id) }}">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0">
-                                            <!-- Display user avatar if available -->
-                                            <img class="h-10 w-10 rounded-full"
-                                                src="{{ $privateMessage->user->avatar_url ?? 'default-avatar.png' }}" alt="">
+                        @if (count($uniqueSenderIds) > 0)
+                            @foreach ($uniqueSenderIds as $uniqueSenderId)
+                                @php
+                                    $sender = \App\Models\User::find($uniqueSenderId);
+                                @endphp
+                                <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+                                    <a href="{{ url('messages/' . Auth::id() . '-' . $uniqueSenderId) }}">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0">
+                                                <!-- Afficher l'avatar de l'utilisateur s'il est disponible -->
+                                                <img class="h-10 w-10 rounded-full a"
+                                                    src="{{ $sender->avatar ?? 'default-avatar.png' }}" alt="Avatar de {{ $sender->name }}">
+                                            </div>
+                                            <div class="ml-3">
+                                                <!-- Afficher le nom de l'utilisateur -->
+                                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                    {{ $sender->name }}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                {{ $privateMessage->user->name }}
-                                            </p>
-                                            <p class="text-sm text-gray-500 dark:text-gray-300">
-                                                {{ Str::limit($privateMessage->last_message, 40) }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                        @endforeach --}}
+                                    </a>
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 @endif
             @endif
         </div>
 
         <!-- Private Message Area -->
-        @if($targetUser != null)
+        @if($targetUser !== null)
             <div id="privateMessage" class="h-full flex flex-col">
                 <div id="infoDiscussion" class="flex items-center pl-4 pt-2">
                     <div id="avatar">
                         <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
                             src="{{ $targetUser->getAvatar() }}">
                     </div>
-            
-                    <!-- Nom à droite, aligné en haut et centré horizontalement -->
                     <div id="Name">
                         <p class="text-sm font-medium text-gray-900 dark:text-white">
                             {{ $targetUser->name }}
@@ -175,11 +188,17 @@ new class extends Component {
                 <div id="discussion" class="flex-1 p-4 overflow-y-auto">
                     {{-- Affiche ici les messages de la conversation sélectionnée --}}
                     @if ($selectedConversation)
-                        {{-- @foreach ($selectedConversation as $message)
-                            <div class="p-2">
-                                <p><strong>{{ $message->sender->name }}:</strong> {{ $message->content }}</p>
+                        @foreach ($selectedConversation as $message)
+                            @php
+                                $isCurrentUserMessage = $message->sender_id == $currentUserId;
+                            @endphp
+                            
+                            <div class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
+                                <div class="max-w-xs w-auto p-3 rounded-lg {{ $isCurrentUserMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-900' }}">
+                                    <p>{{ $message->message }}</p>
+                                </div>
                             </div>
-                        @endforeach --}}
+                        @endforeach
                     @else
                         <div class="flex items-center justify-center h-full">
                             <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
