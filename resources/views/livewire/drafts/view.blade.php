@@ -1,48 +1,49 @@
 <?php
 
 use Livewire\Volt\Component;
-use App\Models\Post;
+use App\Models\Draft;
 use Livewire\Attributes\On; 
+use Livewire\Attributes\Locked;
+use Illuminate\Support\Facades\Auth;
 
 new class extends Component {
-    public $posts;
+    public $drafts;
     public $moreAvailable = true;
 
     public function mount()
     {
-        $this->posts = Post::orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+        $this->drafts = Draft::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->drafts->count() == 10;
     }
 
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = Post::where('id', '<', $this->posts->last()->id)->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+            $newDrafts = Post::where('user_id', Auth::user()->id)->where('id', '<', $this->drafts->last()->id)->orderby('id', 'desc')->take(10)->get();
 
-            // Merge the new posts with the existing ones
-            $this->posts = $this->posts->concat($newPosts);
+            // Merge the new drafts with the existing ones
+            $this->drafts = $this->drafts->concat($newDrafts);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newPosts->count() == 10;
+            $this->moreAvailable = $newDrafts->count() == 10;
         }
     }
-    
-    #[On('reset-post-views')]
-    public function resetPosts()
+
+    #[On('reset-draft-views')]
+    public function resetDrafts()
     {
-        $this->posts = Post::orderby('id', 'desc')->take(10)->with('user')->get();
+        $this->drafts = Draft::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->drafts->count() == 10;
     }
 }; ?>
 
-<!-- Show more button -->
 <div>
-    @foreach ($posts as $post)
-        <x-post-view :post="$post" wire:key='post_{{ $post->id }}' />
+    @foreach ($drafts as $draft)
+        <x-draft-view :draft="$draft" wire:key='draft_{{ $draft->id }}' />
     @endforeach
 
     @if ($moreAvailable)
@@ -51,9 +52,9 @@ new class extends Component {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
               
-            Charger plus de posts
+            Charger plus de brouillons
         </x-primary-button>
     @else
-        <div class="dark:text-gray-300 text-center">Il n'y a plus de post à voir, revenez plus tard.</div>
+        <div class="dark:text-gray-300 text-center">Il n'y a plus de brouillons à voir.</div>
     @endif
 </div>

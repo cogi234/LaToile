@@ -29,6 +29,7 @@ class QueuedPost extends Model
     protected function casts(): array
     {
         return [
+            'content' => 'array',
             'content' => 'array'
         ];
     }

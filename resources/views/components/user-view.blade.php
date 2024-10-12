@@ -1,6 +1,6 @@
 <div class="max-w-5xl mx-auto px-3 sm:px-8 mt-10 2xl:mt-0">
     <div
-        class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full">
+        class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
         <div class="flex sm:items-center items-start sm:flex-row flex-col sm:pt-0 pt-4">
             <!-- Image de profil -->
             <div class="flex flex-row">

@@ -6,8 +6,8 @@
         :key="'user' . $post->id" 
         :user="$post->user" 
         :post="$post"
-        displayEditButton="true"
-        displayDeleteButton="true"
+        displayEditButton="{{ true }}"
+        displayDeleteButton="{{ true }}"
         main="true"/>
 
     @if ($post->previous_content != null)
@@ -24,7 +24,7 @@
         :user="$post->user" 
         :post="$post"
         displayEditButton="{{ false }}"
-        displayDeleteButton="{{ false }}" />
+        displayDeleteButton="{{ false }}"/>
         @endif
     </div>
     <x-post-content :postId="$post->id" :content="$post->content" />
@@ -49,7 +49,7 @@
             <livewire:posts.like id="{{ $post->id }}" :key="'like_' . $post->id" />
 
             <!-- Commentaire -->
-            <button title="Commenter"
+            <button title="Voir les commentaires"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-400 dark:hover:text-blue-500 mr-4"
                 onclick="showPostCreator({{$post->id}}); event.stopPropagation()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -88,15 +88,48 @@
                 presse-papier !</div>
         </div>
         <div class="post-actions mt-4 flex items-center">
+            <!-- À faire plus tard -->
+            @if (1 == 0)
+            <span class="mr-2 text-gray-600 dark:text-gray-400">Vous avez signalé ce post</span>
+            @endif
             <!-- Signaler -->
+            @auth
             <button title="Signaler le post"
-                class="share-button flex items-center text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-500">
+                class="share-button flex items-center text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-500"
+                onclick="event.stopPropagation(); showReportModal({{$post->id}});">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                 </svg>
             </button>
+            @endauth
         </div>
     </div>
 </div>
+
+<script>
+    function copyToClipboard(postId) {
+        // Génère l'URL du post
+        var copyText = location.origin + "/post/" + postId;
+
+        // Vérifiez si l'API clipboard est disponible
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(copyText).then(function() {
+
+                // Afficher le message de succès
+                const message = document.getElementById('clipboardMessage' + postId);
+                message.classList.remove('hidden');
+                message.classList.add('block');
+
+                // Masquer le message après 2 secondes
+                setTimeout(function() {
+                    message.classList.remove('block');
+                    message.classList.add('hidden');
+                }, 2000);
+            }).catch(function(error) {
+                console.error('Erreur lors de la copie :', error);
+            });
+        }
+    }
+</script>

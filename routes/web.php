@@ -19,6 +19,10 @@ Route::view('profile', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 
+Route::view('drafts', 'drafts')
+    ->middleware(['auth'])
+    ->name('drafts');
+
 Route::get('/post/{id}', [PostController::class, 'show']);
 Route::get('/user/{id}', [UserController::class, 'show']);
 Route::get('/tag/{id}', [TagController::class, 'show']);
