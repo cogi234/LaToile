@@ -1,49 +1,49 @@
 <?php
 
 use Livewire\Volt\Component;
-use App\Models\Draft;
+use App\Models\QueuedPost;
 use Livewire\Attributes\On; 
 use Livewire\Attributes\Locked;
 use Illuminate\Support\Facades\Auth;
 
 new class extends Component {
-    public $drafts;
+    public $queuedPosts;
     public $moreAvailable = true;
 
     public function mount()
     {
-        $this->drafts = Draft::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
+        $this->queuedPosts = QueuedPost::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->drafts->count() == 10;
+        $this->moreAvailable = $this->queuedPosts->count() == 10;
     }
 
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newDrafts = Draft::where('user_id', Auth::user()->id)->where('id', '<', $this->drafts->last()->id)->orderby('id', 'desc')->take(10)->get();
+            $newQueuedPosts = QueuedPost::where('user_id', Auth::user()->id)->where('id', '<', $this->queuedPosts->last()->id)->orderby('id', 'desc')->take(10)->get();
 
-            // Merge the new drafts with the existing ones
-            $this->drafts = $this->drafts->concat($newDrafts);
+            // Merge the new queuedPosts with the existing ones
+            $this->queuedPosts = $this->queuedPosts->concat($newqueuedPosts);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newDrafts->count() == 10;
+            $this->moreAvailable = $newQueuedPosts->count() == 10;
         }
     }
 
-    #[On('reset-draft-views')]
-    public function resetDrafts()
+    #[On('reset-queue-views')]
+    public function resetqueuedPosts()
     {
-        $this->drafts = Draft::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
+        $this->queuedPosts = QueuedPost::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->drafts->count() == 10;
+        $this->moreAvailable = $this->queuedPosts->count() == 10;
     }
 }; ?>
 
 <div>
-    @foreach ($drafts as $draft)
-        <x-draft-view :draft="$draft" wire:key='draft_{{ $draft->id }}' />
+    @foreach ($queuedPosts as $queue)
+        <x-queue-view :queue="$queue" wire:key='queue_{{ $queue->id }}' />
     @endforeach
 
     @if ($moreAvailable)
@@ -55,6 +55,6 @@ new class extends Component {
             Charger plus de brouillons
         </x-primary-button>
     @else
-        <div class="dark:text-gray-300 text-center">Il n'y a plus de brouillons à voir.</div>
+        <div class="dark:text-gray-300 text-center">Il n'y a plus de posts planifiés à voir.</div>
     @endif
 </div>

@@ -23,6 +23,10 @@ Route::view('drafts', 'drafts')
     ->middleware(['auth'])
     ->name('drafts');
 
+Route::view('queue', 'queued-posts')
+    ->middleware(['auth'])
+    ->name('queue');
+
 Route::get('/post/{id}', [PostController::class, 'show']);
 Route::get('/user/{id}', [UserController::class, 'show']);
 Route::get('/tag/{id}', [TagController::class, 'show']);
