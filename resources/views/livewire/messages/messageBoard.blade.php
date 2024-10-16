@@ -15,6 +15,7 @@ new class extends Component {
     public ?int $targetUserId = null;
     public ?int $currentUserId = null;
     public $uniqueSenderIds = [];
+    public $editingMessageId = null;
 
     public function mount(?int $targetUserId, ?int $currentUserId)
     {
@@ -60,13 +61,11 @@ new class extends Component {
     #[Validate(['messageContent' => 'required|string|max:255'])]
     public function send()
     {
-        $this->validate();
-
         if (trim($this->messageContent) === '') {
-            // Ajouter un message d'erreur pour indiquer que le message ne peut pas être vide
-            session()->flash('error', 'Le message ne peut pas être vide.');
-            return;
+            $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
         }
+
+        $this->validate();
 
         PrivateMessage::create([
             'message' => $this->messageContent,
@@ -77,17 +76,44 @@ new class extends Component {
         ]);
 
         $this->messageContent = '';
-        // Reload the page after sending message
+
         $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
     }
 
+    public function startEditing($messageId)
+    {
+        $this->editingMessageId = $messageId;
+        $message = PrivateMessage::find($messageId);
+        $this->messageContent = $message->message;
+    }
+
+    public function cancelEditing()
+    {
+        $this->editingMessageId = null;
+        $this->messageContent = '';
+    }
+    
+    public function saveEdit($messageId, $newContent)
+    {
+        $message = PrivateMessage::find($messageId);
+        if ($message && $message->sender_id == $this->currentUserId) {
+            $message->update([
+                'message' => $newContent,
+            ]);
+        }
+        $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
+    }
+
+    public function deleteMessage($messageId)
+    {
+        PrivateMessage::find($messageId)->delete();
+        $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
+    }
 };?>
 
 <x-app-layout>
     <div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
-        <!-- Conversations List -->
         <div id="conversations" class="border-r-2 h-full overflow-y-auto">
-            <!-- Header and Search Bar -->
             <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
                 <div class="text-xl font-semibold dark:text-white">Messages</div>
                 <div id="option" class="text-gray-500 dark:text-gray-300">
@@ -99,7 +125,6 @@ new class extends Component {
                 </div>
             </div>
             @if($privateMessages->isEmpty() && $targetUserId == null)
-                <!-- Message when no private messages are available -->
                 <div class="p-4">
                     <p class="text-gray-500 dark:text-gray-300">
                         Bienvenu à votre messagerie. Écrivez entre vous et les autres sur LaToile
@@ -129,13 +154,10 @@ new class extends Component {
                         <div>
                             <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                                 <div class="flex items-start">
-                                    <!-- Avatar à gauche, centré horizontalement -->
                                     <div id="avatar">
                                         <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
                                             src="{{ $targetUser->getAvatar() }}"/>
                                     </div>
-                            
-                                    <!-- Nom à droite, aligné en haut et centré horizontalement -->
                                     <div id="Name">
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
                                             {{ $targetUser->name }}
@@ -155,12 +177,10 @@ new class extends Component {
                                         <a href="{{ url('messages/' . Auth::id() . '-' . $uniqueSenderId) }}">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0">
-                                                    <!-- Afficher l'avatar de l'utilisateur s'il est disponible -->
                                                     <img class="h-10 w-10 rounded-full a"
-                                                        src="{{ $sender->avatar }}" alt="Avatar de {{ $sender->name }}"/>
+                                                        src="{{ $sender->getAvatar() }}" alt="Avatar de {{ $sender->name }}"/>
                                                 </div>
                                                 <div class="ml-3">
-                                                    <!-- Afficher le nom de l'utilisateur -->
                                                     <p class="text-sm font-medium text-gray-900 dark:text-white">
                                                         {{ $sender->name }}
                                                     </p>
@@ -192,17 +212,54 @@ new class extends Component {
                 </div>
                 <!-- Zone de discussion -->
                 <div id="discussion" class="flex-1 p-4 max-h-[calc(100vh-150px)] overflow-y-auto">
-                    {{-- Affiche ici les messages de la conversation sélectionnée --}}
                     @if ($selectedConversation)
                         @foreach ($selectedConversation as $message)
                             @php
                                 $isCurrentUserMessage = $message->sender_id == $currentUserId;
+                                $currentTimeZone = 'America/Toronto';
+                                $timeFormat = 'Y-m-d H:i';
                             @endphp
-                            
-                            <div class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
-                                <div class="max-w-xs w-auto p-3 rounded-lg {{ $isCurrentUserMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-900' }}">
-                                    <p>{{ $message->message }}</p>
-                                </div>
+  
+                            <div wire:key='{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
+                                <!-- Message Container -->
+                                @if($isCurrentUserMessage)
+                                    <div 
+                                        title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                        id="message_{{ $message->id }}" 
+                                        class="max-w-xs w-auto p-3 rounded-lg bg-blue-500 text-white" 
+                                        x-data="{ editing: false, messageContent: `{{ $message->message }}` }"
+                                        @click="editing = true"
+                                        @keydown.escape.window="editing = false"
+                                        @click.outside="editing = false">
+
+                                        <p x-show="!editing">{{ $message->message }}</p>
+                                        
+                                        <!-- Edit Box -->
+                                        <template x-if="editing">
+                                            <div class="mt-2">
+                                                <input type="text" 
+                                                    x-model="messageContent" 
+                                                    class="w-full border rounded p-2 text-gray-900"
+                                                    @keydown.enter="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)">
+                                                <div class="flex justify-end space-x-2 mt-2">
+                                                    <!-- Save Button -->
+                                                    <button type="button"
+                                                        @click="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)"
+                                                        class="px-3 py-1 bg-green-500 text-white rounded">Enregistrer</button>
+                                                    <!-- Cancel Button -->
+                                                    <button type="button"
+                                                        @click="if (confirm(`Êtes-vous sûr de vouloir supprimer ce message?`)) { $wire.deleteMessage({{ $message->id }}) }"
+                                                        class="px-3 py-1 bg-red-500 text-white rounded">Supprimer</button>
+
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                @else
+                                    <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}" class="max-w-xs w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                                        <p>{{ $message->message }}</p>
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     @else
@@ -211,6 +268,7 @@ new class extends Component {
                         </div>
                     @endif
                 </div>
+                
                 <!-- Barre de message -->
                 <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
                     <form wire:submit.prevent="send" class="flex items-center">
@@ -229,24 +287,24 @@ new class extends Component {
             </div>
         @endif
     </div>
+    <style>
+        main{
+            height: 100vh;
+        }
+    
+        #discussion::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+    
+        #discussion {
+            scrollbar-width: none;
+        }
+    
+        #discussion {
+            -ms-overflow-style: none;
+            overflow-y: scroll;
+        }
+    </style>
 </x-app-layout>
 
-<style>
-    main{
-        height: 100vh;
-    }
-    
-    #discussion::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-    }
-
-    #discussion {
-        scrollbar-width: none;
-    }
-
-    #discussion {
-        -ms-overflow-style: none;
-        overflow-y: scroll;
-    }
-</style> 
