@@ -13,7 +13,9 @@ new class extends Component {
     public function mount($query)
     {
         $this->query = $query;
-        $this->matchedUsers = User::where('name', 'like', '%' . $this->query . '%')->get();
+        $this->matchedUsers = User::where('name', 'like', '%' . $this->query . '%')
+        ->where('id', '!=', auth()->id())
+        ->get();
     }
 
     public function loadMore()
@@ -50,12 +52,42 @@ new class extends Component {
                             <p class="text-black dark:text-gray-100">Abonnements : {{ $matchedUser->followed_users()->count() }}</p>
                         </div>
                     </div>
-
+                    <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
+                        <button onclick="toggleDropdown()" class="focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h.01M12 12h.01M18 12h.01" />
+                            </svg>
+                        </button>
+                        <div id="dropdownMenu" class="hidden absolute top-32 right-72 bg-gray-700 dark:bg-gray-900 rounded-md shadow-lg z-50 max-h-48 overflow-auto">
+                            <ul class="py-1 text-sm min-h-fit text-gray-200">
+                                <li>
+                                    <a href="#" class="flex px-4 py-2 hover:bg-gray-600 items-center">
+                                        <span class="mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+                                            </svg>                                              
+                                        </span>
+                                        <span>Suivre {{ $matchedUser->name }}</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="flex px-4 py-2 hover:bg-gray-600 items-center">
+                                        <span class="mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                            </svg>                                                                                            
+                                        </span>
+                                        <span>Envoyer un message</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     <!-- Bouton Suivre/Désuivre -->
-                    <div>
+                    {{-- <div>
                         @if (auth()->user()->id !== $matchedUser->id)
                             <livewire:user.follow id="{{ $matchedUser->id }}" />
                         @endif
+                    </div> --}}
                     </div>
                 </div>
 
@@ -87,3 +119,37 @@ new class extends Component {
         </x-primary-button>
     @endif
 </div>
+
+{{-- <style>
+    .tabs {
+        display: flex;
+        justify-content: space-around;
+        background-color: #2d3748;
+        padding: 20px;
+    }
+
+    #dropdownMenu::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    #dropdownMenu::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+    }
+</style>
+
+<script>
+    function toggleDropdown() {
+        var menu = document.getElementById("dropdownMenu");
+        menu.classList.toggle("hidden");
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.closest('button')) {
+            var dropdown = document.getElementById("dropdownMenu");
+            if (!dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        }
+    }
+</script> --}}

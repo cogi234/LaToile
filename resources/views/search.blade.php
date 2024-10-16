@@ -109,9 +109,33 @@
         .content-section.active {
             display: block;
         }
+
+        #dropdownMenu::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #dropdownMenu::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
     </style>
 
     <script>
+        function toggleDropdown() {
+        var menu = document.getElementById("dropdownMenu");
+        menu.classList.toggle("hidden");
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.closest('button')) {
+            var dropdown = document.getElementById("dropdownMenu");
+            if (!dropdown.classList.contains('hidden')) {
+                dropdown.classList.add('hidden');
+            }
+        }
+    }
+
+
         window.onload = function(){
             document.getElementById('searchBar').value = "{{$query}}";
         };
