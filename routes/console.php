@@ -4,6 +4,7 @@ use App\Models\Post;
 use App\Models\QueuedPost;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
@@ -11,8 +12,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::call(function () {
-    Log::info("Processing queued posts...");
-    $queuedPosts = QueuedPost::where('scheduled_time', '<=', now())->get();
+    $queuedPosts = QueuedPost::whereDate('scheduled_time', '<=', now())->get();
     foreach ($queuedPosts as $queue) {
         //If the shared post id is positive, we are sharing a post. Otherwise, we are creating a new post
         if ($queue->previous != null) {
@@ -41,4 +41,6 @@ Schedule::call(function () {
 
         $queue->delete();
     }
-})->everyFiveMinutes();
+
+    return "test";
+})->everyMinute();

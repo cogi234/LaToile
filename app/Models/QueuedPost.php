@@ -30,7 +30,8 @@ class QueuedPost extends Model
     {
         return [
             'content' => 'array',
-            'tags' => 'array'
+            'tags' => 'array',
+            'scheduled_time' => 'datetime'
         ];
     }
 
