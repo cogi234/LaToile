@@ -3,14 +3,15 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Post forms -->
             <x-post-forms />
-            <livewire:drafts.delete />
-            {{-- Drafts --}}
+            <livewire:queued-posts.delete />
+
+            {{-- Queued posts --}}
             <div class="mt-6 max-w-5xl mx-auto px-3 sm:px-8">
                 <div class="tabs p-6 text-gray-100 dark:text-gray-100 rounded-lg mb-5 font-bold">
-                    Tous les brouillons
+                    Tous les posts planifiés
                 </div>
                 <div class="block">
-                    <livewire:drafts.view />
+                    <livewire:queued-posts.view />
                 </div>
             </div>
         </div>
