@@ -216,13 +216,15 @@ new class extends Component {
                         @foreach ($selectedConversation as $message)
                             @php
                                 $isCurrentUserMessage = $message->sender_id == $currentUserId;
+                                $currentTimeZone = 'America/Toronto';
+                                $timeFormat = 'Y-m-d H:i';
                             @endphp
   
                             <div wire:key='{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
                                 <!-- Message Container -->
                                 @if($isCurrentUserMessage)
                                     <div 
-                                        title="{{ $message->updated_at }}" 
+                                        title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
                                         id="message_{{ $message->id }}" 
                                         class="max-w-xs w-auto p-3 rounded-lg bg-blue-500 text-white" 
                                         x-data="{ editing: false, messageContent: `{{ $message->message }}` }"
@@ -254,7 +256,7 @@ new class extends Component {
                                         </template>
                                     </div>
                                 @else
-                                    <div title="{{ $message->updated_at }}" class="max-w-xs w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                                    <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}" class="max-w-xs w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
                                         <p>{{ $message->message }}</p>
                                     </div>
                                 @endif
