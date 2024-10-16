@@ -246,7 +246,7 @@ new class extends Component {
                                                     <button type="button"
                                                     @click="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)"
                                                     class="px-3 py-1 bg-green-500 text-white rounded flex items-center">
-                                                        <i class="fas fa-pencil-alt mr-2"></i> Enregistrer
+                                                        <i class="fas fa-save mr-2"></i> Enregistrer
                                                     </button>
 
                                                     <!-- Delete Button -->
