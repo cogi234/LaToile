@@ -1,16 +1,20 @@
 <?php
 
+use Illuminate\Support\Carbon;
 use Livewire\Volt\Component;
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
 use App\Models\Post;
 use App\Models\Draft;
+use App\Models\QueuedPost;
 
 new class extends Component {
     public string $text = "";
 
     public array $tags = ['', ''];
+
+    public ?Carbon $queueTime = null;
 
     #[Locked]
     public array $previousContent = [];
@@ -20,6 +24,8 @@ new class extends Component {
     public int $draftId = -1;
     #[Locked]
     public bool $enabled = false;
+    #[Locked]
+    public bool $enabledQueueDialog = false;
 
 
     public function updated($property) {
@@ -60,7 +66,7 @@ new class extends Component {
 
     #[On('close-post-creator')]
     public function close(){
-        $this->reset('text', 'tags', 'previousContent', 'sharedPostId', 'enabled');
+        $this->reset('text', 'tags', 'previousContent', 'sharedPostId', 'enabled', 'enabledQueueDialog');
     }
     
     public function store() {
@@ -149,6 +155,40 @@ new class extends Component {
         $this->close();
     }
 
+    public function openQueueDialog() {
+        $this->enabledQueueDialog = true;
+    }
+    public function closeQueueDialog() {
+        $this->enabledQueueDialog = false;
+    }
+
+    public function queuePost() {
+        if ($this->queueTime == null || $this->queueTime <= now()) {
+            $this->addError('time', 'Il faut choisir un temps de publication qui est dans le futur!');
+            return;
+        }
+
+        //Create a content array from the text
+        $blocks = Post::parseTextToBlocks($this->text);
+
+        //We create a new queued post
+        $queuedPost = new QueuedPost;
+        $queuedPost->user_id = Auth::user()->id;
+        $queuedPost->content = $blocks;
+        $queuedPost->tags = $this->tags;
+        $queuedPost->scheduled_time = $this->queueTime;
+
+        //If we are sharing a post, we add its id to the queued post
+        if ($this->sharedPostId >= 0) {
+            $previousPost = Post::find($this->sharedPostId);
+            $queuedPost->previous_id = $previousPost->id;
+        }
+
+        $queuedPost->save();
+
+        $this->close();
+    }
+
 }; ?>
 
 <div id="post_editor" class="
@@ -196,9 +236,54 @@ new class extends Component {
             <div>
                 <x-primary-button class="mt-2 mx-auto">Publier</x-primary-button>
                 <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='saveDraft'>Sauvegarder un brouillon</x-secondary-button>
+                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='openQueueDialog'>Planifier la publication</x-secondary-button>
             </div>
         </form>
     </div>
+    
+    <!-- Queue popup dialog -->
+    <div class="{{ $enabledQueueDialog ? 'flex' : 'hidden' }} fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 items-center justify-center overflow-y-scroll">
+        <div class="md:w-6/12 top-1/4 w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+            <div class="flex flex-row-reverse pb-2">
+                <!-- Close button -->
+                <button wire:click='closeQueueDialog' title="Fermez le panneau"
+                    class="ml-2 flex items-center text-gray-600 dark:text-gray-400 hover:text-red-400 dark:hover:text-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="inline">
+                <p class="text-xl text-center flex flex-row pb-2 text-black dark:text-white">
+                    Choisissez quand le post sera publié
+                </p>
+                
+                <input class="p-2 rounded-md" wire:model='queueTime'
+                    id="date-time-picker" type="datetime" placeholder="Sélectionne le temps..."/>
+                @error('time') <div class="text-red-600 font-bold mt-2">{{ $message }}</div> @enderror
+
+                <div class="flex justify-center mt-4">
+                    <button type="button" wire:click='queuePost'
+                        class="px-4 py-2 mx-2 bg-gray-800 hover:bg-red-600 dark:hover:bg-red-800 dark:bg-gray-200 rounded text-white dark:text-black transition ease-in-out duration-150">
+                        Planifier le post
+                    </button>
+                    <button type="button" wire:click='closeQueueDialog'
+                        class="px-4 py-2 mx-2 bg-gray-300 dark:bg-gray-100/50 hover:bg-gray-400 rounded transition ease-in-out duration-150">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @script
+    <script>
+        flatpickr('#date-time-picker', {
+            enableTime: true
+        });
+    </script>
+    @endscript
 
     <!-- Script with the function to show the post editor -->
     <script>

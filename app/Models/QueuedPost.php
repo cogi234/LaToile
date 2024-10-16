@@ -10,7 +10,6 @@ class QueuedPost extends Model
 {
     use HasFactory;
 
-
     /**
      * The attributes that are mass assignable.
      *
@@ -18,6 +17,7 @@ class QueuedPost extends Model
      */
     protected $fillable = [
         'content',
+        'tags',
         'scheduled_time',
         'user_id',
         'post_id',
@@ -30,7 +30,7 @@ class QueuedPost extends Model
     {
         return [
             'content' => 'array',
-            'content' => 'array'
+            'tags' => 'array'
         ];
     }
 
