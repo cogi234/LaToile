@@ -92,7 +92,6 @@ new class extends Component {
         
         //Create a content array from the text
         $blocks = Post::parseTextToBlocks($this->text);
-
         //If the shared post id is positive, we are sharing a post. Otherwise, we are creating a new post
         if ($this->sharedPostId >= 0) {
             $previousPost = Post::find($this->sharedPostId);

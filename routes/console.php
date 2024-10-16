@@ -2,15 +2,10 @@
 
 use App\Models\Post;
 use App\Models\QueuedPost;
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
-
+//Check scheduled posts every minute
 Schedule::call(function () {
     $queuedPosts = QueuedPost::whereDate('scheduled_time', '<=', now())->get();
     foreach ($queuedPosts as $queue) {
@@ -37,7 +32,7 @@ Schedule::call(function () {
         $post->save();
 
         //We add the tags
-        $post->addTags($this->tags);
+        $post->addTags($queue->tags);
 
         $queue->delete();
     }
