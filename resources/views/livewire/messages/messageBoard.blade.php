@@ -220,38 +220,44 @@ new class extends Component {
   
                             <div wire:key='{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
                                 <!-- Message Container -->
-                                <div 
-                                    title="{{ $message->updated_at }}" 
-                                    id="message_{{ $message->id }}" 
-                                    class="max-w-xs w-auto p-3 rounded-lg {{ $isCurrentUserMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-900' }}" 
-                                    x-data="{ editing: false, messageContent: `{{ $message->message }}` }"
-                                    @click="editing = true"
-                                    @keydown.escape.window="editing = false"
-                                    @click.outside="editing = false">
+                                @if($isCurrentUserMessage)
+                                    <div 
+                                        title="{{ $message->updated_at }}" 
+                                        id="message_{{ $message->id }}" 
+                                        class="max-w-xs w-auto p-3 rounded-lg bg-blue-500 text-white" 
+                                        x-data="{ editing: false, messageContent: `{{ $message->message }}` }"
+                                        @click="editing = true"
+                                        @keydown.escape.window="editing = false"
+                                        @click.outside="editing = false">
 
-                                    <p x-show="!editing">{{ $message->message }}</p>
-                                    
-                                    <!-- Edit Box -->
-                                    <template x-if="editing">
-                                        <div class="mt-2">
-                                            <input type="text" 
-                                                x-model="messageContent" 
-                                                class="w-full border rounded p-2 text-gray-900"
-                                                @keydown.enter="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)">
-                                            <div class="flex justify-end space-x-2 mt-2">
-                                                <!-- Save Button -->
-                                                <button type="button"
-                                                        @click="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)"
-                                                        class="px-3 py-1 bg-green-500 text-white rounded">Enregistrer</button>
-                                                <!-- Cancel Button -->
-                                                <button type="button"
-                                                        @click="$wire.deleteMessage({{ $message->id }})"
-                                                        @confirm="Are you sure you want to delete this post?"
-                                                        class="px-3 py-1 bg-red-500 text-white rounded">Supprimer</button>
+                                        <p x-show="!editing">{{ $message->message }}</p>
+                                        
+                                        <!-- Edit Box -->
+                                        <template x-if="editing">
+                                            <div class="mt-2">
+                                                <input type="text" 
+                                                    x-model="messageContent" 
+                                                    class="w-full border rounded p-2 text-gray-900"
+                                                    @keydown.enter="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)">
+                                                <div class="flex justify-end space-x-2 mt-2">
+                                                    <!-- Save Button -->
+                                                    <button type="button"
+                                                            @click="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)"
+                                                            class="px-3 py-1 bg-green-500 text-white rounded">Enregistrer</button>
+                                                    <!-- Cancel Button -->
+                                                    <button type="button"
+                                                            @click="$wire.deleteMessage({{ $message->id }})"
+                                                            wire:confirm="Are you sure you want to delete this post?"
+                                                            class="px-3 py-1 bg-red-500 text-white rounded">Supprimer</button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </template>
-                                </div>
+                                        </template>
+                                    </div>
+                                @else
+                                    <div title="{{ $message->updated_at }}" class="max-w-xs w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                                        <p>{{ $message->message }}</p>
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     @else
@@ -298,14 +304,5 @@ new class extends Component {
             overflow-y: scroll;
         }
     </style>
-    @script
-        <script>
-            function createEditBox(messageId){
-                let messageContainer = document.getElementById("message_".messageId);
-
-            }
-            
-        </script>
-    @endscript
 </x-app-layout>
 
