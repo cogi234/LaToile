@@ -116,7 +116,7 @@ new class extends Component {
         <div id="conversations" class="border-r-2 h-full overflow-y-auto">
             <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
                 <div class="text-xl font-semibold dark:text-white">Messages</div>
-                <div id="option" class="text-gray-500 dark:text-gray-300">
+                <div id="option" class="text-gray-500 dark:text-gray-300" title="Créer un groupe de discussion">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -173,7 +173,8 @@ new class extends Component {
                                     @php
                                         $sender = \App\Models\User::find($uniqueSenderId);
                                     @endphp
-                                    <div x-show="query === '' || '{{ strtolower($sender->name) }}'.includes(query.toLowerCase())" class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer overflow-y-auto">
+                                    <div x-show="query === '' || '{{ strtolower($sender->name) }}'.includes(query.toLowerCase())" class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer overflow-y-auto 
+                                        @if($uniqueSenderId == $targetUserId) bg-gray-100 dark:bg-gray-700 @endif">
                                         <a href="{{ url('messages/' . Auth::id() . '-' . $uniqueSenderId) }}">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0">
@@ -289,6 +290,12 @@ new class extends Component {
                     </form>
                 </div>                
             </div>
+        @else
+        <div class="p-4">
+            <p class="text-gray-500 dark:text-gray-300">
+                Sélectionner un usager pour voir vos conversations
+            </p>
+        </div>
         @endif
     </div>
     <style>
