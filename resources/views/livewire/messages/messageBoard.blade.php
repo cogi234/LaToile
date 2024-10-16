@@ -242,13 +242,13 @@ new class extends Component {
                                                 <div class="flex justify-end space-x-2 mt-2">
                                                     <!-- Save Button -->
                                                     <button type="button"
-                                                            @click="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)"
-                                                            class="px-3 py-1 bg-green-500 text-white rounded">Enregistrer</button>
+                                                        @click="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)"
+                                                        class="px-3 py-1 bg-green-500 text-white rounded">Enregistrer</button>
                                                     <!-- Cancel Button -->
                                                     <button type="button"
-                                                            @click="$wire.deleteMessage({{ $message->id }})"
-                                                            wire:confirm="Are you sure you want to delete this post?"
-                                                            class="px-3 py-1 bg-red-500 text-white rounded">Supprimer</button>
+                                                        @click="if (confirm(`Êtes-vous sûr de vouloir supprimer ce message?`)) { $wire.deleteMessage({{ $message->id }}) }"
+                                                        class="px-3 py-1 bg-red-500 text-white rounded">Supprimer</button>
+
                                                 </div>
                                             </div>
                                         </template>
