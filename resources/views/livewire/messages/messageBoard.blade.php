@@ -61,13 +61,11 @@ new class extends Component {
     #[Validate(['messageContent' => 'required|string|max:255'])]
     public function send()
     {
-        $this->validate();
-
         if (trim($this->messageContent) === '') {
-            // Ajouter un message d'erreur pour indiquer que le message ne peut pas être vide
-            session()->flash('error', 'Le message ne peut pas être vide.');
-            return;
+            $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
         }
+
+        $this->validate();
 
         PrivateMessage::create([
             'message' => $this->messageContent,
@@ -89,30 +87,33 @@ new class extends Component {
         $this->messageContent = $message->message;
     }
 
-    public function saveEdit()
+    public function cancelEditing()
     {
-        $this->validate();
-
-        $message = PrivateMessage::find($this->editingMessageId);
-        $message->update([
-            'message' => $this->messageContent,
-        ]);
-
-        $this->messageContent = '';
         $this->editingMessageId = null;
+        $this->messageContent = '';
+    }
+    
+    public function saveEdit($messageId, $newContent)
+    {
+        $message = PrivateMessage::find($messageId);
+        if ($message && $message->sender_id == $this->currentUserId) {
+            $message->update([
+                'message' => $newContent,
+            ]);
+        }
+        $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
     }
 
     public function deleteMessage($messageId)
     {
         PrivateMessage::find($messageId)->delete();
+        $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
     }
 };?>
 
 <x-app-layout>
     <div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
-        <!-- Conversations List -->
         <div id="conversations" class="border-r-2 h-full overflow-y-auto">
-            <!-- Header and Search Bar -->
             <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
                 <div class="text-xl font-semibold dark:text-white">Messages</div>
                 <div id="option" class="text-gray-500 dark:text-gray-300">
@@ -124,7 +125,6 @@ new class extends Component {
                 </div>
             </div>
             @if($privateMessages->isEmpty() && $targetUserId == null)
-                <!-- Message when no private messages are available -->
                 <div class="p-4">
                     <p class="text-gray-500 dark:text-gray-300">
                         Bienvenu à votre messagerie. Écrivez entre vous et les autres sur LaToile
@@ -154,13 +154,10 @@ new class extends Component {
                         <div>
                             <div class="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
                                 <div class="flex items-start">
-                                    <!-- Avatar à gauche, centré horizontalement -->
                                     <div id="avatar">
                                         <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
                                             src="{{ $targetUser->getAvatar() }}"/>
                                     </div>
-                            
-                                    <!-- Nom à droite, aligné en haut et centré horizontalement -->
                                     <div id="Name">
                                         <p class="text-sm font-medium text-gray-900 dark:text-white">
                                             {{ $targetUser->name }}
@@ -180,12 +177,10 @@ new class extends Component {
                                         <a href="{{ url('messages/' . Auth::id() . '-' . $uniqueSenderId) }}">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0">
-                                                    <!-- Afficher l'avatar de l'utilisateur s'il est disponible -->
                                                     <img class="h-10 w-10 rounded-full a"
-                                                        src="{{ $sender->avatar }}" alt="Avatar de {{ $sender->name }}"/>
+                                                        src="{{ $sender->getAvatar() }}" alt="Avatar de {{ $sender->name }}"/>
                                                 </div>
                                                 <div class="ml-3">
-                                                    <!-- Afficher le nom de l'utilisateur -->
                                                     <p class="text-sm font-medium text-gray-900 dark:text-white">
                                                         {{ $sender->name }}
                                                     </p>
@@ -222,32 +217,40 @@ new class extends Component {
                             @php
                                 $isCurrentUserMessage = $message->sender_id == $currentUserId;
                             @endphp
-                
-                            <div class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
+  
+                            <div wire:key='{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
                                 <!-- Message Container -->
-                                <div class="max-w-xs w-auto p-3 rounded-lg {{ $isCurrentUserMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-900' }}"
-                                    @if ($isCurrentUserMessage)
-                                        x-data="{ open: false }"
-                                        @click="open = !open"
-                                        @keydown.escape.window="open = false"
-                                        x-on:click.outside="open = false"
-                                    @endif>
+                                <div 
+                                    title="{{ $message->updated_at }}" 
+                                    id="message_{{ $message->id }}" 
+                                    class="max-w-xs w-auto p-3 rounded-lg {{ $isCurrentUserMessage ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-900' }}" 
+                                    x-data="{ editing: false, messageContent: `{{ $message->message }}` }"
+                                    @click="editing = true"
+                                    @keydown.escape.window="editing = false"
+                                    @click.outside="editing = false">
+
+                                    <p x-show="!editing">{{ $message->message }}</p>
                                     
-                                    <p>{{ $message->message }}</p>
-                                    
-                                    <!-- Menu for Edit/Delete (Only for current user's messages) -->
-                                    @if ($isCurrentUserMessage)
-                                        <div x-show="open" class="mt-2 bg-white shadow-lg rounded-lg text-sm z-50">
-                                            <!-- Edit Button -->
-                                            <button wire:click="startEditing({{ $message->id }})" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
-                                                Modifier
-                                            </button>
-                                            <!-- Delete Button -->
-                                            <button wire:click="deleteMessage({{ $message->id }})" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">
-                                                Supprimer
-                                            </button>
+                                    <!-- Edit Box -->
+                                    <template x-if="editing">
+                                        <div class="mt-2">
+                                            <input type="text" 
+                                                x-model="messageContent" 
+                                                class="w-full border rounded p-2 text-gray-900"
+                                                @keydown.enter="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)">
+                                            <div class="flex justify-end space-x-2 mt-2">
+                                                <!-- Save Button -->
+                                                <button type="button"
+                                                        @click="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)"
+                                                        class="px-3 py-1 bg-green-500 text-white rounded">Enregistrer</button>
+                                                <!-- Cancel Button -->
+                                                <button type="button"
+                                                        @click="$wire.deleteMessage({{ $message->id }})"
+                                                        @confirm="Are you sure you want to delete this post?"
+                                                        class="px-3 py-1 bg-red-500 text-white rounded">Supprimer</button>
+                                            </div>
                                         </div>
-                                    @endif
+                                    </template>
                                 </div>
                             </div>
                         @endforeach
@@ -257,15 +260,6 @@ new class extends Component {
                         </div>
                     @endif
                 </div>
-                <!-- Save Edit Form -->
-                @if ($editingMessageId)
-                    <div class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
-                        <form wire:submit.prevent="saveEdit" class="flex items-center">
-                            <input type="text" wire:model="messageContent" placeholder="Éditer votre message..." class="flex-1 px-4 py-2 rounded-full">
-                            <button type="submit" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600">Sauvegarder</button>
-                        </form>
-                    </div>
-                @endif
                 
                 <!-- Barre de message -->
                 <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
@@ -285,24 +279,33 @@ new class extends Component {
             </div>
         @endif
     </div>
+    <style>
+        main{
+            height: 100vh;
+        }
+    
+        #discussion::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
+    
+        #discussion {
+            scrollbar-width: none;
+        }
+    
+        #discussion {
+            -ms-overflow-style: none;
+            overflow-y: scroll;
+        }
+    </style>
+    @script
+        <script>
+            function createEditBox(messageId){
+                let messageContainer = document.getElementById("message_".messageId);
+
+            }
+            
+        </script>
+    @endscript
 </x-app-layout>
 
-<style>
-    main{
-        height: 100vh;
-    }
-
-    #discussion::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-    }
-
-    #discussion {
-        scrollbar-width: none;
-    }
-
-    #discussion {
-        -ms-overflow-style: none;
-        overflow-y: scroll;
-    }
-</style> 
