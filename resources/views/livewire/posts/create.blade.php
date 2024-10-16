@@ -163,6 +163,14 @@ new class extends Component {
     }
 
     public function queuePost() {
+        $this->resetValidation();
+        $textLength = strlen($this->text);
+        if ($textLength == 0) {
+            //If we are not sharing a post, we need some text to post
+            $this->addError('text', 'Il est impossible de publier un post vide!');
+            closeQueueDialog();
+            return;
+        }
         if ($this->queueTime == null || $this->queueTime <= now()) {
             $this->addError('time', 'Il faut choisir un temps de publication qui est dans le futur!');
             return;

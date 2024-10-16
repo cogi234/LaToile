@@ -1,3 +1,7 @@
+@php
+    setlocale(LC_TIME, 'fr');
+@endphp
+
 <div {{ $attributes->merge(['class' =>"post-header flex items-center"]) }}>
     <!-- Image de profil -->
     <a class="no-underline" href="/user/{{$user->id}}" onclick="event.stopPropagation()">
