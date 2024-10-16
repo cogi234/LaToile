@@ -70,7 +70,8 @@ class HandlePostDeletion
             Post::withoutTimestamps(fn () => $share->save([ 'timestamps' => false ]));
         }
 
-        $post->likes()->detach(); // Détache tous les likes
+        $post->likes()->delete(); // Détache tous les likes
         $post->tags()->detach(); // Détache tous les tags
+        $post->reports()->delete(); //delete tout les reports associer
     }
 }
