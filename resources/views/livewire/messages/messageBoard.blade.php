@@ -242,15 +242,19 @@ new class extends Component {
                                                     class="w-full border rounded p-2 text-gray-900"
                                                     @keydown.enter="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)">
                                                 <div class="flex justify-end space-x-2 mt-2">
-                                                    <!-- Save Button -->
+                                                    <!-- Save (Edit) Button -->
                                                     <button type="button"
-                                                        @click="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)"
-                                                        class="px-3 py-1 bg-green-500 text-white rounded">Enregistrer</button>
-                                                    <!-- Cancel Button -->
-                                                    <button type="button"
-                                                        @click="if (confirm(`Êtes-vous sûr de vouloir supprimer ce message?`)) { $wire.deleteMessage({{ $message->id }}) }"
-                                                        class="px-3 py-1 bg-red-500 text-white rounded">Supprimer</button>
+                                                    @click="editing = false; $wire.saveEdit({{ $message->id }}, messageContent)"
+                                                    class="px-3 py-1 bg-green-500 text-white rounded flex items-center">
+                                                        <i class="fas fa-save mr-2"></i> Enregistrer
+                                                    </button>
 
+                                                    <!-- Delete Button -->
+                                                    <button type="button"
+                                                    @click="if (confirm('Êtes-vous sûr de vouloir supprimer ce message?')) { $wire.deleteMessage({{ $message->id }}) }"
+                                                    class="px-3 py-1 bg-red-500 text-white rounded flex items-center">
+                                                        <i class="fas fa-trash mr-2"></i> Supprimer
+                                                    </button>
                                                 </div>
                                             </div>
                                         </template>
@@ -306,5 +310,6 @@ new class extends Component {
             overflow-y: scroll;
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </x-app-layout>
 
