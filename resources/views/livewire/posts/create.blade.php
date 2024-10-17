@@ -204,14 +204,16 @@ new class extends Component {
     @else
         hidden
     @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll">
-    <div class="relative top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+    <div
+        class="relative top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
 
         <!-- Top command bar -->
         <div class="flex flex-row-reverse pb-2">
             <!-- Close button -->
             <button wire:click='close' title="Fermez le panneau"
-                 class="ml-2 flex items-center text-gray-600 dark:text-gray-400 hover:text-red-400 dark:hover:text-red-500">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-6">
+                class="ml-2 flex items-center text-gray-600 dark:text-gray-400 hover:text-red-400 dark:hover:text-red-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                    stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                 </svg>
             </button>
@@ -221,36 +223,36 @@ new class extends Component {
         <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" class="ml-4" />
 
         <form wire:submit='store'>
-            <textarea
-                wire:model="text"
-                placeholder="Partagez vos pensées"
-                class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
-                    rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-20"
-            ></textarea>
+            <textarea wire:model="text" placeholder="Partagez vos pensées" class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                    rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-20"></textarea>
             @error('text') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
             <div class="mt-2">
                 <p class="text-black dark:text-white">Tags:</p>
                 @foreach ($tags as $tag)
-                    <span class="m-1 text-gray-800 dark:text-gray-300">#
-                    <input type="text" wire:model.blur='tags.{{ $loop->index }}'
-                        wire:key='tag_{{ $loop->index }}' maxlength="32" style="min-width: 5em; width: {{ strlen($tag) }}em"
+                <span class="m-1 text-gray-800 dark:text-gray-300">#
+                    <input type="text" wire:model.blur='tags.{{ $loop->index }}' wire:key='tag_{{ $loop->index }}'
+                        maxlength="32" style="min-width: 5em; width: {{ strlen($tag) }}em"
                         class="inline-block ml-[-3px] py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
-                        focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300"/>
-                    </span>
+                        focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300" />
+                </span>
                 @endforeach
             </div>
             @error('tags') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
             <div>
                 <x-primary-button class="mt-2 mx-auto">Publier</x-primary-button>
-                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='saveDraft'>Sauvegarder un brouillon</x-secondary-button>
-                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='openQueueDialog'>Planifier la publication</x-secondary-button>
+                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='saveDraft'>Sauvegarder un brouillon
+                </x-secondary-button>
+                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='openQueueDialog'>Planifier la publication
+                </x-secondary-button>
             </div>
         </form>
     </div>
-    
+
     <!-- Queue popup dialog -->
-    <div class="{{ $enabledQueueDialog ? 'flex' : 'hidden' }} fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 items-center justify-center overflow-y-scroll">
-        <div class="md:w-6/12 top-1/4 w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+    <div
+        class="{{ $enabledQueueDialog ? 'flex' : 'hidden' }} fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 items-center justify-center overflow-y-scroll">
+        <div
+            class="md:w-6/12 top-1/4 w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
             <div class="flex flex-row-reverse pb-2">
                 <!-- Close button -->
                 <button wire:click='closeQueueDialog' title="Fermez le panneau"
@@ -265,14 +267,21 @@ new class extends Component {
                 <p class="text-xl text-center flex flex-row pb-2 text-black dark:text-white">
                     Choisissez quand le post sera publié
                 </p>
-                
-                <input class="p-2 rounded-md" wire:model='queueTime'
-                    id="date-time-picker" type="datetime" placeholder="Sélectionne le temps..."/>
+
+                <input class="p-2 rounded-md cursor-pointer dark:bg-gray-100/90 bg-gray-200 dark:bg-gray-300" wire:model='queueTime'
+                    id="date-time-picker" type="datetime" placeholder="Planifier une date... "
+                />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor"
+                    class="absolute left-[36.5%] top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-500 pointer-events-none">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
                 @error('time') <div class="text-red-600 font-bold mt-2">{{ $message }}</div> @enderror
 
                 <div class="flex justify-center mt-4">
                     <button type="button" wire:click='queuePost'
-                        class="px-4 py-2 mx-2 bg-gray-800 hover:bg-red-600 dark:hover:bg-red-800 dark:bg-gray-200 rounded text-white dark:text-black transition ease-in-out duration-150">
+                        class="px-4 py-2 mx-2 bg-gray-800 dark:bg-gray-200 hover:bg-gray-700 dark:hover:bg-white rounded text-white dark:text-black transition ease-in-out duration-150">
                         Planifier le post
                     </button>
                     <button type="button" wire:click='closeQueueDialog'

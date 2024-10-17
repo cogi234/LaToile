@@ -9,7 +9,7 @@
         }
         @endphp
         @if ($block['type'] == 'text')
-            <p class="p-2 ">
+            <p class="p-2 w-fit cursor-text" onclick="event.stopPropagation()">
                 {{ $block['content'] }}
             </p>
         @elseif ($block['type'] == 'user')

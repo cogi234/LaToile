@@ -68,7 +68,7 @@ new class extends Component {
                     Annuler
                 </button>
                 <button type="button" wire:click='deleteDraft'
-                    class="px-4 py-2 bg-gray-800 hover:bg-red-600 dark:hover:bg-red-800 dark:bg-gray-200 rounded text-white dark:text-black transition ease-in-out duration-150">
+                    class="px-4 py-2 bg-gray-800 hover:bg-red-600 dark:hover:bg-red-500 dark:bg-gray-200 rounded text-white dark:text-black transition ease-in-out duration-150">
                     Supprimer définitivement
                 </button>
             </div>
