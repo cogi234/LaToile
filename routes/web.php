@@ -11,7 +11,15 @@ use Illuminate\Http\Request;
 
 
 Route::view('/', 'dashboard')
+    ->middleware(['banned'])
     ->name('dashboard');
+
+Route::get('/home', function () {
+    return redirect()->route('dashboard');
+})->name('home');
+
+Route::view('banned', 'banned')
+    ->name('banned');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
@@ -32,13 +40,16 @@ Route::view('queue', 'queued-posts')
     ->name('queue');
 
 Route::get('/post/{id}', [PostController::class, 'show']);
+    ->middleware(['banned']);
 Route::get('/user/{id}', [UserController::class, 'show']);
+    ->middleware(['banned']);
 Route::get('/tag/{id}', [TagController::class, 'show']);
+    ->middleware(['banned']);
 
 Route::get('/messages', [MessageController::class, 'show'])
-    ->middleware(['auth']);
+    ->middleware(['auth', 'banned']);
 Route::get('/messages/{targetId}', [MessageController::class, 'show'])
-    ->middleware(['auth']);
+    ->middleware(['auth', 'bannes']);
 
 
 Route::get('/email/verify', function () {

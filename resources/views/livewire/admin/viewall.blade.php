@@ -11,7 +11,7 @@ new class extends Component {
     public function mount()
     {
         // Get posts reported and not handled, selecting reporter and owner data
-        $this->posts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason')
+        $this->posts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason', 'reports.id as reports_id')
             ->join('reports', 'posts.id', '=', 'reports.post_id')
             ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
             ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
@@ -66,6 +66,7 @@ new class extends Component {
 };
 
 ?>
+
 <div>
     @foreach ($posts as $post)
         <x-post-view-admin :post="$post" wire:key='post_{{ $post->id }}' />

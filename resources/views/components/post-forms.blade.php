@@ -22,4 +22,5 @@
     <livewire:posts.delete />
     <livewire:posts.edit />
     <livewire:posts.report />
+    <livewire:admin.bans />
 </div>
