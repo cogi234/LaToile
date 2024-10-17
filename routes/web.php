@@ -39,17 +39,17 @@ Route::view('queue', 'queued-posts')
     ->middleware(['auth'])
     ->name('queue');
 
-Route::get('/post/{id}', [PostController::class, 'show']);
+Route::get('/post/{id}', [PostController::class, 'show'])
     ->middleware(['banned']);
-Route::get('/user/{id}', [UserController::class, 'show']);
+Route::get('/user/{id}', [UserController::class, 'show'])
     ->middleware(['banned']);
-Route::get('/tag/{id}', [TagController::class, 'show']);
+Route::get('/tag/{id}', [TagController::class, 'show'])
     ->middleware(['banned']);
 
 Route::get('/messages', [MessageController::class, 'show'])
     ->middleware(['auth', 'banned']);
 Route::get('/messages/{targetId}', [MessageController::class, 'show'])
-    ->middleware(['auth', 'bannes']);
+    ->middleware(['auth', 'banned']);
 
 
 Route::get('/email/verify', function () {
