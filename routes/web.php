@@ -11,7 +11,15 @@ use Illuminate\Http\Request;
 
 
 Route::view('/', 'dashboard')
+    ->middleware(['banned'])
     ->name('dashboard');
+
+Route::get('/home', function () {
+    return redirect()->route('dashboard');
+})->name('home');
+
+Route::view('banned', 'banned')
+    ->name('banned');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
@@ -31,12 +39,16 @@ Route::view('queue', 'queued-posts')
     ->middleware(['auth'])
     ->name('queue');
 
-Route::get('/post/{id}', [PostController::class, 'show']);
-Route::get('/user/{id}', [UserController::class, 'show']);
-Route::get('/tag/{id}', [TagController::class, 'show']);
-Route::get('/messages', [MessageController::class, 'show']);
-Route::get('/messages/{currentId}-{targetId}', [MessageController::class, 'show']);
-
+Route::get('/post/{id}', [PostController::class, 'show'])
+    ->middleware(['banned']);
+Route::get('/user/{id}', [UserController::class, 'show'])
+    ->middleware(['banned']);
+Route::get('/tag/{id}', [TagController::class, 'show'])
+    ->middleware(['banned']);
+Route::get('/messages', [MessageController::class, 'show'])
+    ->middleware(['banned']);
+Route::get('/messages/{currentId}-{targetId}', [MessageController::class, 'show'])
+    ->middleware(['banned']);
 
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
