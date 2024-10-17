@@ -26,7 +26,8 @@ class Post extends Model
         'user_id',
         'post_id',
         'original_id',
-        'previous_id'
+        'previous_id',
+        'hidden'
     ];
     /**
      * Some attributes get cast
@@ -221,6 +222,11 @@ class Post extends Model
     public function likeCount(): int
     {
         return $this->likes()->count();
+    }
+
+    public function getHidden()
+    {
+        return $this->hidden;
     }
 
     /**

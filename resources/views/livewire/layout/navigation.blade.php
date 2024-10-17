@@ -39,7 +39,8 @@ new class extends Component
 
             <!-- Search Bar -->
             <div class="items-center content-center mx-6 w-48 md:w-72 " x-data="{ query: '' }">
-                <form id="searchForm" action="{{ route('search') }}" method="GET" class="relative w-full flex flex-row dark:!text-gray-100">
+                <form id="searchForm" action="{{ route('search') }}" method="GET"
+                    class="relative w-full flex flex-row dark:!text-gray-100">
                     <input type="text" name="query" id="searchBar" x-model="query"
                         class="block w-full pl-10 pr-4 py-2 bg-gray-100/60 text-gray-900 rounded-full focus:outline-none focus:bg-white focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm dark:placeholder:text-white/65 dark:!bg-slate-400/50 dark:!text-gray-100"
                         placeholder="Rechercher...">
@@ -90,40 +91,50 @@ new class extends Component
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link href="{{ url('user/' . auth()->user()->id) }}" class="flex flex-row items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
+                        <x-dropdown-link href="{{ url('user/' . auth()->user()->id) }}"
+                            class="flex flex-row items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6 mr-2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                             </svg>
                             Profil
                         </x-dropdown-link>
 
+                        @if(auth()->user()->moderator === 1)
                         <x-dropdown-link href="{{ route('adminPage') }}" class="flex flex-row items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
-                              </svg>
-                               admin
-                            </x-dropdown-link>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
+                            </svg>
+                            admin
+                        </x-dropdown-link>
+                        @endif
+
                         <x-dropdown-link href="{{ url('messages/') }}" class="flex flex-row items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6 mr-2">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                             </svg>
                             Messages
                         </x-dropdown-link>
-    
+
                         <x-dropdown-link href="{{ route('drafts') }}" class="flex flex-row items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                             </svg>
                             Brouillons
                         </x-dropdown-link>
-    
+
                         <x-dropdown-link href="{{ route('queue') }}" class="flex flex-row items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
                             Posts planifiés
                         </x-dropdown-link>
@@ -185,7 +196,8 @@ new class extends Component
             </a>
 
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link href="{{ url('user/' . auth()->user()->id) }}" wire:navigate class="flex flex-row items-center">
+                <x-responsive-nav-link href="{{ url('user/' . auth()->user()->id) }}" wire:navigate
+                    class="flex flex-row items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6 mr-2">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -193,7 +205,7 @@ new class extends Component
                     </svg>
                     Profil
                 </x-responsive-nav-link>
-                
+
                 <x-responsive-nav-link href="{{ url('messages/') }}" wire:navigate class="flex flex-row items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6 mr-2">
@@ -202,7 +214,7 @@ new class extends Component
                     </svg>
                     Messages
                 </x-responsive-nav-link>
-                
+
                 <x-responsive-nav-link href="{{ route('drafts') }}" wire:navigate class="flex flex-row items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6 mr-2">
@@ -211,10 +223,12 @@ new class extends Component
                     </svg>
                     Brouillons
                 </x-responsive-nav-link>
-                
+
                 <x-responsive-nav-link href="{{ route('queue') }}" wire:navigate class="flex flex-row items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>
                     Posts planifiés
                 </x-responsive-nav-link>
@@ -236,7 +250,7 @@ new class extends Component
 </nav>
 
 <script>
-   document.getElementById('searchForm').addEventListener('submit', function(event) {
+    document.getElementById('searchForm').addEventListener('submit', function(event) {
         const searchBar = document.getElementById('searchBar');
         if (searchBar.value.trim() === '') {
             event.preventDefault();
@@ -249,11 +263,13 @@ new class extends Component
 
 {{-- Fonctionnalité pour bouton de retour --}}
 {{-- @unless (request()->routeIs('dashboard') || url()->previous() === url()->full() || url()->previous() === url('/'))
-                <div class="flex items-center justify-end">
-                    <a href="{{ url()->previous() }}" class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition duration-300 ease-in-out mr-4">
-                        <svg class="w-6 h-6 text-gray-800 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </a>
-                </div>
-            @endunless --}}
+<div class="flex items-center justify-end">
+    <a href="{{ url()->previous() }}"
+        class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 transition duration-300 ease-in-out mr-4">
+        <svg class="w-6 h-6 text-gray-800 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+    </a>
+</div>
+@endunless --}}
