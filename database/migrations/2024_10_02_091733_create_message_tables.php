@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('private_messages', function (Blueprint $table) {
             $table->id();
             $table->text('message');
-            $table->boolean('read');
+            $table->boolean('read')->default(false);
             $table->foreignId('sender_id');
             $table->foreign("sender_id")->references("id")->on("users");
             $table->foreignId('receiver_id');
