@@ -7,11 +7,10 @@ use Illuminate\Http\Request;
 
 class MessageController extends Controller
 {
-    public function show($currentId = null, $targetId = null)
+    public function show($targetId = null)
     {
         return view('messages.show', [
-            'targetUserId' => $targetId,
-            'currentUserId' => $currentId,
+            'targetUserId' => $targetId
         ]);
     }
 
