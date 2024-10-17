@@ -20,7 +20,7 @@ Route::view('profile', 'profile')
     ->name('profile');
 
 Route::view('adminPage', 'adminPage')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'admin'])
     ->name('adminPage');
 
 Route::view('drafts', 'drafts')
