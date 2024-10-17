@@ -6,7 +6,7 @@
     <!-- Image de profil -->
     <a class="no-underline" href="/user/{{$user->id}}" onclick="event.stopPropagation()">
         <img src="{{ $user->getAvatar() }}" alt="Profile Image"
-            class="w-12 h-12 rounded-full mr-4 shadow-lg">
+            class="w-12 h-12 rounded-full mr-4 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
     </a>
 
     <!-- Nom et date -->
@@ -14,7 +14,7 @@
         <div class="text-gray-900 dark:text-gray-200 flex flex-row">
             <div class="flex flex-row items-center">
                 <a href="/user/{{$user->id}}" onclick="event.stopPropagation()"
-                    class="mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
+                    class="mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 hover:underline dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
                     {{ $user->name }}
                 </a>
                 @if($user->moderator)
@@ -78,7 +78,7 @@
             </svg>
         </button>
         @endif
-        @if ($displayDeleteButton && auth()->user()->id == $user->id || auth()->user()->moderator)
+        @if ($displayDeleteButton && auth()->user()->id == $user->id || $displayDeleteButton && auth()->user()->moderator)
         <!-- Supprimer -->
         <button title="Supprimer le post" onclick="event.stopPropagation(); showPostDeletePopup({{$post->id}});"
             class="like-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-500">
