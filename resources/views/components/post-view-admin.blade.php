@@ -6,19 +6,19 @@
 
     <!-- admin table -->
     <div class="ml-4 text-gray-900 dark:text-gray-100">
-        <!-- reporter par qui? -->
+        <!-- Personne qui a créer le report -->
         <div class="flex flex-row items-center">
             <a href="/user/{{$post->reporter_id}}" onclick="event.stopPropagation()"
                 class="flex flex-row mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
                 <span class="font-bold mr-4">Reporté par : </span> 
-                <img src="{{ $post->user->getAvatar() }}" alt="Profile Image"
+                <img src="{{ \App\Models\User::find($post->reporter_id)->getAvatar() }}" alt="Profile Image"
                     class="w-8 h-8 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
                 <span class="mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 hover:underline dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
                     {{ $post->reporter_name }}
                 </span>
             </a>
         </div>
-        <!-- reporter qui -->
+        <!-- Personne reporté -->
         <div class="flex flex-row items-center">
             <a href="/user/{{$post->owner_id}}" onclick="event.stopPropagation()"
                 class="flex flex-row mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-gray-400 mb-2 transition duration-150 ease-in-out">
@@ -30,7 +30,7 @@
                 </span>
             </a>
         </div>
-        <div class="flex flex-row items-center mb-4">
+        <div class="flex flex-row items-center mb-4 cursor-text" onclick="event.stopPropagation()">
             <strong class="mr-1">Raison du report : </strong> {{ $post->reports_reason }}
         </div>
         <div class="flex flex-row items-center">
@@ -54,7 +54,7 @@
             </button>
             <button title="Supprimer le post"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 mr-4"
-                onclick="event.stopPropagation()">
+                onclick="event.stopPropagation(); showPostDeletePopup({{$post->id}})">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
