@@ -58,9 +58,7 @@ new class extends Component {
         for ($i = 0; $i < sizeof($blocks); $i++) {
             $blocks[$i]['post_id'] = $post->id;
         }
-        $post->content = $blocks;
-        $post->save();
-        
+
         //Save the content
         $post->content = $blocks;
         $post->save();

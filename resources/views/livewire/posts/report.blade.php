@@ -52,7 +52,6 @@ new class extends Component {
         ]);
 
         $this->close();
-
         $this->dispatch('reset-reports');
     }
 };
