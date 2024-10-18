@@ -6,6 +6,7 @@ use Livewire\Attributes\Locked;
 use App\Models\User;
 use App\Models\Ban;
 use App\Models\Report;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 
 new class extends Component {
@@ -17,13 +18,16 @@ new class extends Component {
     public int $userId = -1;
 
     #[Locked]
-    public ?int $reportId = null;
+    public ?int $reportId = -1;
+
+    #[Locked]
+    public ?int $postId = -1;
 
     #[Locked]
     public bool $enabled = false;
 
     #[On('open-banUser-modal')]
-    public function open(int $userId, int $reportId)
+    public function open(int $userId, int $reportId, int $postId)
     {
         // Ne pas ouvrir le modal pour un utilisateur inexistant
         $user = User::find($userId);
@@ -31,6 +35,7 @@ new class extends Component {
 
         $this->userId = $userId;
         $this->reportId = $reportId;
+        $this->postId = $postId;
         $this->enabled = true;
         $this->resetValidation();
     }
@@ -75,11 +80,18 @@ new class extends Component {
         ]);
 
         // Mettre à jour le rapport pour indiquer qu'il a été traité
-        DB::table('reports')
-            ->where('id', $this->reportId)
-            ->update(['handled' => 1]);
+        $report = Report::find($this->reportId);
+        if ($report) {
+            $report->handled = 1;
+            $report->save();
+        }
 
-        // À FAIRE : CACHER LE POST DE L'UTILISATEUR BANNIS
+        // Mettre à jour le post pour indiquer qu'il ne doit plus être visible
+        $post = Post::find($this->postId);
+        if ($post) {
+            $post->hidden = 1;
+            $post->save();
+        }
 
         $this->close();
 
@@ -141,12 +153,13 @@ new class extends Component {
 
 <!-- Script pour ouvrir le formulaire de bannissement -->
 <script>
-    function showBanUserModal(userId = -1, reportId = -1) {
+    function showBanUserModal(userId = -1, reportId = -1, postId = -1) {
             this.dispatchEvent(
                 new CustomEvent('open-banUser-modal', {
                     detail: {
                         userId: userId,
-                        reportId : reportId
+                        reportId : reportId,
+                        postId : postId
                     }
                 })
             );
