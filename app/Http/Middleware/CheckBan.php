@@ -21,14 +21,14 @@ class CheckBan
             // Récupérez l'utilisateur connecté
             $user = Auth::user();
 
-            // Vérifiez s'il est banni
-            $isBanned = Ban::where('user_id', $user->id)
-                ->where('end_time', '>', now()) // Voir si bannissement est toujours actif
-                ->exists();
+            // Vérifiez s'il a un bannissement actif
+            $ban = Ban::where('user_id', $user->id)->first();
 
-            if ($isBanned) {
-                // Déconnectez l'utilisateur et redirigé vers une page de ban
+            // Si un bannissement existe, vérifiez sa date de fin
+            if ($ban && $ban->end_time > now()) {
                 return redirect()->route('banned');
+            } else if ($ban) {
+                $ban->delete(); // Supprimez le bannissement de la base de données
             }
         }
         return $next($request);
