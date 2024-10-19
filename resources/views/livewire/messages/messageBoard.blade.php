@@ -19,8 +19,6 @@ new class extends Component {
     public $uniqueSenderIds = [];
     public $editingMessageId = null;
     public $uniqueSenderIdsFromSenders = [];
-    // public $senders = [];
-    // public $recipients = [];
 
     public function mount(?int $targetUserId, ?int $currentUserId)
     {
