@@ -19,7 +19,9 @@ new class extends Component {
     public $uniqueSenderIds = [];
     public $editingMessageId = null;
     public $uniqueSenderIdsFromSenders = [];
-
+    public $searchQuery = '';
+    public $searchResults = [];
+    
     public function mount(?int $targetUserId, ?int $currentUserId)
     {
         $this->targetUserId = $targetUserId;
@@ -85,10 +87,6 @@ new class extends Component {
     #[Validate(['messageContent' => 'required|string|max:255'])]
     public function send()
     {
-        if (trim($this->messageContent) === '') {
-            $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
-        }
-
         $this->validate();
 
         PrivateMessage::create([
@@ -101,8 +99,9 @@ new class extends Component {
 
         $this->messageContent = '';
 
-        $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
+        $this->selectedConversation = $this->getConversation($this->currentUserId, $this->targetUserId);
     }
+
 
     public function startEditing($messageId)
     {
@@ -134,8 +133,15 @@ new class extends Component {
     public function deleteMessage($messageId)
     {
         PrivateMessage::find($messageId)->delete();
-        $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
+        
+        $this->selectedConversation = $this->getConversation($this->currentUserId, $this->targetUserId);
+
         session()->flash('success', 'Message supprimé avec succès');
+    }
+
+    public function updatedSearchQuery()
+    {
+        $this->searchResults = User::where('name', 'like', '%' . $this->searchQuery . '%')->get();
     }
 
     public function getSenders()
@@ -168,14 +174,13 @@ new class extends Component {
         <div id="conversations" class="border-r-2 h-full overflow-y-auto">
             <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
                 <div class="text-xl font-semibold dark:text-white">Messages</div>
-                <div id="option" class="text-gray-500 dark:text-gray-300" title="Créer un groupe de discussion">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 4v16m8-8H4"></path>
+                <button id="addMessages" wire:click="openGroupModal" class="btn btn-primary relative text-gray-500 dark:text-gray-300" title="Créer un groupe de discussion">
+                    <svg @click="open = !open" class="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
-                </div>
+                </button>
             </div>
+                  
             @if($privateMessages->isEmpty() && $targetUserId == null)
                 <div class="p-4">
                     <p class="text-gray-500 dark:text-gray-300">
