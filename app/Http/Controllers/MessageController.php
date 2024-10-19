@@ -14,7 +14,7 @@ class MessageController extends Controller
             'currentUserId' => $currentId,
         ]);
     }
-
+    
 
 
 }

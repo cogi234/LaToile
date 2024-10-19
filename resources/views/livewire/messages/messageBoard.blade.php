@@ -217,19 +217,27 @@ new class extends Component {
                                 @foreach ($uniqueSenderIds as $uniqueSenderId)
                                     @php
                                         $sender = User::find($uniqueSenderId);
+                                        $unreadMessages = \App\Models\PrivateMessage::where('sender_id', $uniqueSenderId)
+                                            ->where('receiver_id', Auth::id())
+                                            ->where('read', 0)
+                                            ->count();
                                     @endphp
-                                    <div x-show="query === '' || '{{ strtolower($sender->name) }}'.includes(query.toLowerCase())" class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer overflow-y-auto 
+                                    <div x-show="query === '' || '{{ strtolower($sender->name) }}'.includes(query.toLowerCase())"
+                                        class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer overflow-y-auto 
                                         @if($uniqueSenderId == $targetUserId) bg-gray-100 dark:bg-gray-700 @endif">
                                         <a href="{{ url('messages/' . Auth::id() . '-' . $uniqueSenderId) }}">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0">
-                                                    <img class="h-10 w-10 rounded-full a"
-                                                        src="{{ $sender->getAvatar() }}" alt="Avatar de {{ $sender->name }}"/>
+                                                    <img class="h-10 w-10 rounded-full"
+                                                        src="{{ $sender->getAvatar() }}" alt="Avatar de {{ $sender->name }}" />
                                                 </div>
                                                 <div class="ml-3">
                                                     <p class="text-sm font-medium text-gray-900 dark:text-white">
                                                         {{ $sender->name }}
                                                     </p>
+                                                    @if($unreadMessages > 0)
+                                                        <span class="text-xs text-red-500">Nouveau message</span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </a>
