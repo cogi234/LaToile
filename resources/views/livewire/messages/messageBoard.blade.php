@@ -37,6 +37,11 @@ new class extends Component {
                 session()->flash('error', 'Utilisateur non trouvé');
                 return;
             }
+
+            PrivateMessage::where('sender_id', $this->targetUserId)
+                ->where('receiver_id', $this->currentUserId)
+                ->where('read', 0) // Only update unread messages
+                ->update(['read' => 1]);
         }
         
         $this->privateMessages = PrivateMessage::where(function($query) {
@@ -61,6 +66,8 @@ new class extends Component {
         $this->uniqueSenderIds = array_unique(array_merge($this->uniqueSenderIds, $this->uniqueSenderIdsFromSenders));
 
         $this->selectedConversation = $this->getConversation($this->currentUserId, $this->targetUserId);
+
+        
     }
 
     private function getConversation($senderId, $receiverId)
