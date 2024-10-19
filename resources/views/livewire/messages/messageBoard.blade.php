@@ -5,8 +5,10 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use App\Models\PrivateMessage;
 use App\Models\User;
+use Livewire\WithPagination;
 
 new class extends Component {
+    use WithPagination;
 
     public $messageContent = "";
     public $privateMessages = [];
@@ -16,6 +18,9 @@ new class extends Component {
     public ?int $currentUserId = null;
     public $uniqueSenderIds = [];
     public $editingMessageId = null;
+    public $uniqueSenderIdsFromSenders = [];
+    // public $senders = [];
+    // public $recipients = [];
 
     public function mount(?int $targetUserId, ?int $currentUserId)
     {
@@ -35,10 +40,11 @@ new class extends Component {
                 return;
             }
         }
-
-        $this->privateMessages = PrivateMessage::where('sender_id', Auth::id())
-            ->orWhere('receiver_id', Auth::id())
-            ->get();
+        
+        $this->privateMessages = PrivateMessage::where(function($query) {
+            $query->where('sender_id', Auth::id())
+                ->orWhere('receiver_id', Auth::id());
+        })->orderBy('created_at', 'desc')->get();
 
         $this->uniqueSenderIds = $this->privateMessages->pluck('receiver_id')
             ->unique()
@@ -48,12 +54,25 @@ new class extends Component {
             ->values()
             ->toArray();
 
-        $this->selectedConversation = PrivateMessage::where(function($query) {
-            $query->where('sender_id', $this->currentUserId)
-                ->where('receiver_id', $this->targetUserId);
-        })->orWhere(function($query) {
-            $query->where('sender_id', $this->targetUserId)
-                ->where('receiver_id', $this->currentUserId);
+        $this->uniqueSenderIdsFromSenders = $this->privateMessages->where('receiver_id', Auth::id())
+            ->pluck('sender_id')
+            ->unique()
+            ->values()
+            ->toArray();
+
+        $this->uniqueSenderIds = array_unique(array_merge($this->uniqueSenderIds, $this->uniqueSenderIdsFromSenders));
+
+        $this->selectedConversation = $this->getConversation($this->currentUserId, $this->targetUserId);
+    }
+
+    private function getConversation($senderId, $receiverId)
+    {
+        return PrivateMessage::where(function($query) use ($senderId, $receiverId) {
+            $query->where('sender_id', $senderId)
+                ->where('receiver_id', $receiverId);
+        })->orWhere(function($query) use ($senderId, $receiverId) {
+            $query->where('sender_id', $receiverId)
+                ->where('receiver_id', $senderId);
         })->get();
     }
 
@@ -95,20 +114,50 @@ new class extends Component {
     
     public function saveEdit($messageId, $newContent)
     {
+        if (trim($newContent) === '') {
+            return;
+        }
+
         $message = PrivateMessage::find($messageId);
         if ($message && $message->sender_id == $this->currentUserId) {
             $message->update([
                 'message' => $newContent,
             ]);
         }
-        $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
     }
 
     public function deleteMessage($messageId)
     {
         PrivateMessage::find($messageId)->delete();
         $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
+        session()->flash('success', 'Message supprimé avec succès');
     }
+
+    public function getSenders()
+    {
+        $senders = Cache::remember('senders_' . Auth::id(), 60, function() {
+            return User::whereIn('id', $this->uniqueSenderIds)->get();
+        });
+
+        return $senders;
+    }
+
+    public function render(): mixed
+    {
+        $senders = $this->getSenders();
+
+        $privateMessages = PrivateMessage::where('sender_id', Auth::id())
+        ->orWhere('receiver_id', Auth::id())
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+
+        return view('livewire.messages.messageBoard', [
+            'senders' => $senders,
+            'privateMessages' => $privateMessages,
+        ]);
+    }
+
+
 };?>
 
 <x-app-layout>
@@ -171,7 +220,7 @@ new class extends Component {
                             @if (count($uniqueSenderIds) > 0)
                                 @foreach ($uniqueSenderIds as $uniqueSenderId)
                                     @php
-                                        $sender = \App\Models\User::find($uniqueSenderId);
+                                        $sender = User::find($uniqueSenderId);
                                     @endphp
                                     <div x-show="query === '' || '{{ strtolower($sender->name) }}'.includes(query.toLowerCase())" class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer overflow-y-auto 
                                         @if($uniqueSenderId == $targetUserId) bg-gray-100 dark:bg-gray-700 @endif">
@@ -282,7 +331,7 @@ new class extends Component {
                             class="flex-1 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"/>
                         
                         <!-- Bouton d'envoi avec une icône d'avion en papier -->
-                        <button type="submit" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 focus:outline-none">
+                        <button type="submit" aria-label="Envoyer un message" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 focus:outline-none">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v6l16-8-16-8v6l10 2-10 2z" />
                             </svg>
