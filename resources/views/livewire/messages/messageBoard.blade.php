@@ -156,8 +156,6 @@ new class extends Component {
             'privateMessages' => $privateMessages,
         ]);
     }
-
-
 };?>
 
 <x-app-layout>
