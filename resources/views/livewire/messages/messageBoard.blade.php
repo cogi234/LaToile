@@ -21,7 +21,7 @@ new class extends Component {
     public $uniqueSenderIdsFromSenders = [];
     public $searchQuery = '';
     public $searchResults = [];
-    
+
     public function mount(?int $targetUserId, ?int $currentUserId)
     {
         $this->targetUserId = $targetUserId;
@@ -68,8 +68,6 @@ new class extends Component {
         $this->uniqueSenderIds = array_unique(array_merge($this->uniqueSenderIds, $this->uniqueSenderIdsFromSenders));
 
         $this->selectedConversation = $this->getConversation($this->currentUserId, $this->targetUserId);
-
-        
     }
 
     private function getConversation($senderId, $receiverId)
@@ -174,13 +172,13 @@ new class extends Component {
         <div id="conversations" class="border-r-2 h-full overflow-y-auto">
             <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
                 <div class="text-xl font-semibold dark:text-white">Messages</div>
-                <button id="addMessages" wire:click="openGroupModal" class="btn btn-primary relative text-gray-500 dark:text-gray-300" title="Créer un groupe de discussion">
+                <button id="addMessages" onclick="" class="btn btn-primary relative text-gray-500 dark:text-gray-300" title="Créer un groupe de discussion">
                     <svg @click="open = !open" class="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
                 </button>
             </div>
-                  
+            <livewire:messages.group-message />  
             @if($privateMessages->isEmpty() && $targetUserId == null)
                 <div class="p-4">
                     <p class="text-gray-500 dark:text-gray-300">
