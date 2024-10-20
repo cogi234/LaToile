@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Events\UserCreated;
 use App\Events\UserDeleting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -58,6 +59,7 @@ class User extends Authenticatable
      */
     protected $dispatchesEvents = [
         'deleting' => UserDeleting::class,
+        'created' => UserCreated::class
     ];
 
     //Random functions
