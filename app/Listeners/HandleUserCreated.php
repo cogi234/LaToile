@@ -3,7 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\UserCreated;
-use App\Notifications\DatabaseNotification;
+use App\Notifications\BasicNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
@@ -22,6 +22,6 @@ class HandleUserCreated
      */
     public function handle(UserCreated $event): void
     {
-        $event->user->notify(new DatabaseNotification('Bienvenue au réseau La Toile!'));
+        $event->user->notify(new BasicNotification('Bienvenue au réseau La Toile!'));
     }
 }
