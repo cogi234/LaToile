@@ -33,6 +33,7 @@ return new class extends Migration
             $table->timestamp('end_time');
             $table->foreignId('user_id');
             $table->foreignId('report_id')->nullable();
+            $table->boolean('permanent')->default(false);
             $table->timestamps();
         });
         Schema::table('posts', function (Blueprint $table) {
