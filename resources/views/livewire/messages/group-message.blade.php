@@ -14,18 +14,38 @@ new class extends Component {
     public function open() {
        
         $this->enabled = true;
-        
     }
-
+    #[On('close-message-creator')]
+    public function close(){
+        $this->reset('enabled');
+    }
 }
 
 ?>
 
 <div id="new_message_form" class="
-
-">
-
+    @if ($enabled)
+        fixed
+    @else
+        hidden
+    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll">
+    <div class="flex flex-row-reverse pb-2">
+        <!-- Close button -->
+        <button wire:click='close' title="Fermez le panneau"
+             class="ml-2 flex items-center text-gray-600 dark:text-gray-400 hover:text-red-400 dark:hover:text-red-500">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Publier un post</span>
+    </div>
+    <script>
+        function showMessageCreator() {
+            new CustomEvent('open-message-creator')
+        }
+    </script>
 </div>
+
 {{-- <div>
     <!-- Modal pour la création de groupe -->
     <div x-data="{ open: @entangle('showModal') }">
