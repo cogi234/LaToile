@@ -24,7 +24,6 @@ new class extends Component {
         $this->reset('enabled', 'search', 'users', 'selectedUsers');
     }
 
-    // Mise à jour des utilisateurs en fonction de la recherche
     public function updatedSearch() {
         if (trim($this->search) === '') {
             $this->users = [];
@@ -36,13 +35,21 @@ new class extends Component {
         }
     }
 
-    // Sélection d'un utilisateur pour la conversation ou groupe
     public function selectUser($userId) {
         if (!in_array($userId, $this->selectedUsers)) {
             $this->selectedUsers[] = $userId;
         }
 
         $this->users = $this->users->filter(fn($user) => $user->id !== $userId);
+    }
+
+    public function deselectUser($userId) {
+        $this->selectedUsers = array_values(array_filter($this->selectedUsers, fn($id) => $id !== $userId));
+
+        $user = User::find($userId);
+        if ($user) {
+            $this->users[] = $user;
+        }
     }
 
     // Fonction pour créer un groupe
@@ -79,11 +86,19 @@ new class extends Component {
 
             <!-- Affichage des utilisateurs correspondants à la recherche uniquement si la recherche n'est pas vide -->
             @if (count($users) > 0)
-                <ul>
+                <ul class="overflow-y-auto h-52">
                     @foreach ($users as $user)
                         <li wire:click="selectUser({{ $user->id }})"
-                            class="p-2 cursor-pointer text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
-                            {{ $user->name }}
+                            class="flex p-2 cursor-pointer text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
+                            <div id="avatar">
+                                <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
+                                    src="{{ $user->getAvatar() }}"/>
+                            </div>
+                            <div id="Name">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $user->name }}
+                                </p>
+                            </div>
                         </li>
                     @endforeach
                 </ul>
@@ -92,20 +107,37 @@ new class extends Component {
         <!-- Utilisateurs sélectionnés -->
         <div class="mt-4">
             <span class="text-sm text-gray-500 dark:text-gray-400">Utilisateurs sélectionnés :</span>
-            <ul>
+            <div class="flex flex-wrap">
                 @foreach ($selectedUsers as $userId)
                     @php
                         $user = \App\Models\User::find($userId);
                     @endphp
-                    <li class="text-black dark:text-white">{{ $user->name }}</li>
+                    <span wire:click="deselectUser({{ $userId }})" class="flex items-center cursor-pointer text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded m-1 outline outline-1">
+                        {{ $user->name }}
+                        <span class="ml-2 text-red-500 hover:text-red-700 transition-colors duration-200">
+                            <!-- Icône SVG pour le désélectionnement -->
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 inline-block">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </span>
+                    </span>
                 @endforeach
-            </ul>
+            </div>
+            
         </div>
-
-        <!-- Bouton pour créer un groupe -->
-        <button wire:click="createGroup" class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-            Créer un groupe
-        </button>
+        <div class="flex gap-3">
+            @if(count($selectedUsers) == 1 && isset($selectedUsers[0]))
+            <a href="{{ url('messages/' . Auth::id() . '-' . $selectedUsers[0]) }}">
+                <button  class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    Commencer une discussion
+                </button>
+            </a>
+            @endif
+            <!-- Bouton pour créer un groupe -->
+            <button wire:click="createGroup" class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                Créer un groupe
+            </button>
+        </div>
     </div>
     <script>
         function showMessageCreator() {
