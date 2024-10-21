@@ -4,23 +4,23 @@ use Livewire\Volt\Component;
 use App\Notifications\BasicNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\DatabaseNotification;
-use Livewire\Attributes\Locked; 
+use Livewire\Attributes\Locked;
+use Livewire\Attributes\On;
 
 new class extends Component {
     #[Locked]
-    public $notifications;
+    public $notifications = [];
 
-    public function mount()
-    {
-        $this->loadNotifications();
-    }
+    public function mount() { }
 
+    #[On('open-notifications-display')]
     public function loadNotifications() {
         $this->notifications = Auth::user()->unreadNotifications()->take(10)->get();
     }
 
     public function markRead(string $id) {
         DatabaseNotification::find($id)->markAsRead();
+        $this->dispatch('change-notification-read'); 
     }
 
 }; ?>
@@ -44,4 +44,13 @@ new class extends Component {
         href="{{ route('notifications') }}">
         Voir toutes les notifications...
     </a>
+    
+    <script>
+        function loadPostDisplay() {
+            //Envoyer l'event pour loader les notifications
+            this.dispatchEvent(
+                new Event('open-notifications-display')
+            );
+        }
+    </script>
 </div>

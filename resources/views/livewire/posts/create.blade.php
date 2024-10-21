@@ -302,6 +302,7 @@ new class extends Component {
     @endscript
 
     <!-- Script with the function to show the post editor -->
+    @script
     <script>
         function showPostCreator(postId = -1, draftId = -1) {
             //Envoyer l'event pour activer le post editor
@@ -328,4 +329,5 @@ new class extends Component {
             }
         }
     </script>
+    @endscript
 </div>
