@@ -1,6 +1,4 @@
 @auth
-@if (auth()->user()->moderator)
-
 <div id="post-{{ $post->id }}" onclick="window.location.href = '/post/{{ $post->id }}'" {{ $attributes->merge(['class'
     => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:bg-gray-700 overflow-hidden shadow-sm
     rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0"]) }}>
@@ -105,9 +103,4 @@
     </div>
     @endif
 </div>
-@else
-<script>
-    window.location.href = '/'; 
-</script>
-@endif
 @endauth

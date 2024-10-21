@@ -84,6 +84,7 @@ new class extends Component {
                 <option title="Exemples : menaces, encouragement à la violence..." value="Menace ou incitation à la violence">Menace ou incitation à la violence</option>
                 <option title="Exemples : faux profils, usurpation d'identité..." value="Usurpation d'identité">Usurpation d'identité</option>
                 <option title="Exemples : escroqueries, fausses promesses, informations trompeuses..." value="Anarque, fraude ou fausses informations">Anarque, fraude ou fausses informations</option>
+                <option title="Exemples : contenu répétitif, trop long inutilement..." value="Spam">Spam</option>
                 <option title="Exemples : tags offensants ou inapproprié" value="Tag(s) inapproprié(s)">Tag(s) inapproprié(s)</option>            
             </select>
 

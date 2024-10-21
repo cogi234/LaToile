@@ -8,11 +8,16 @@
                     class="w-20 h-20 rounded-full mr-4 shadow-lg">
 
                 {{-- Nom et Abonnés / Abonnement --}}
-                <div>
+                <div class="mr-2">
                     <h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $user->name }}</h2>
                     <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
                     <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p>
                 </div>
+                @auth
+                @if (auth()->user()->id !== $user->id)
+                <livewire:user.follow id="{{ $user->id }}" />
+                @endif
+                @endauth
             </div>
 
             {{-- Éditer profil --}}
@@ -30,31 +35,31 @@
                     </x-primary-button>
                 @else
                     <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
-                        <button onclick="toggleDropdown()" class="focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h.01M12 12h.01M18 12h.01" />
-                            </svg>
+                        <button onclick="toggleDropdown()" title="Plus d'actions..." class="focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7 text-gray-800">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>                                                        
                         </button>
                         <div id="dropdownMenu" class="hidden absolute top-32 right-72 bg-gray-700 dark:bg-gray-900 rounded-md shadow-lg z-50 max-h-48 overflow-auto">
                             <ul class="py-1 text-sm min-h-fit text-gray-200">
                                 <li>
-                                    <a href="" class="flex px-4 py-2 hover:bg-gray-600 items-center">
-                                        <span class="mr-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
-                                            </svg>                                              
-                                        </span>
-                                        <span>Suivre {{ $user->name }}</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ url('messages/' . $user->id) }}" class="flex px-4 py-2 hover:bg-gray-600 items-center">
+                                    <a href="{{ url('messages/' . $user->id) }}" title="Envoyer un message à {{$user->name}} ?" class="flex px-4 py-2 hover:bg-gray-600 items-center">
                                         <span class="mr-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
                                             </svg>                                                                                                                                                                                  
                                         </span>
                                         <span>Envoyer un message</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="" title="Bloquer {{$user->name}} ?" class="flex px-4 py-2 hover:bg-gray-600 items-center">
+                                        <span class="mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>                                                                                                                                                                                                                              
+                                        </span>
+                                        <span>Bloquer l'utilisateur</span>
                                     </a>
                                 </li>
                             </ul>
