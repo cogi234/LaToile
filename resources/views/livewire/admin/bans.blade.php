@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Models\Ban;
 use App\Models\Report;
 use App\Models\Post;
-use Illuminate\Support\Facades\Auth;
 
 new class extends Component {
 
@@ -30,9 +29,10 @@ new class extends Component {
     #[On('open-banUser-modal')]
     public function open(int $userId, int $reportId, int $postId)
     {
-        // Ne pas ouvrir le modal pour un utilisateur inexistant
+        // Ne pas ouvrir le modal pour un utilisateur ou un post inexistant
         $user = User::find($userId);
-        if ($user == null) return;
+        $post = Post::find($postId);
+        if ($user == null || $post == null) return;
 
         $this->userId = $userId;
         $this->reportId = $reportId;
@@ -59,7 +59,7 @@ new class extends Component {
 
         // Vérifier si l'utilisateur est un administrateur
         $userToBan = User::find($this->userId);
-        if ($userToBan && $userToBan->moderator) { // Remplacez 'role' et 'admin' par les valeurs appropriées
+        if ($userToBan && $userToBan->moderator) {
             $this->addError('user', 'Vous ne pouvez pas bannir un administrateur.');
             return;
         }
@@ -82,7 +82,6 @@ new class extends Component {
             'end_time' => $this->banEndTime,
             'user_id' => $this->userId,
             'report_id' => $this->reportId,
-            'permanent' => $this->permanent
         ]);
 
         // Mettre à jour le rapport pour indiquer qu'il a été traité
@@ -92,13 +91,12 @@ new class extends Component {
             $report->save();
         }
 
-        // Mettre à jour le post pour indiquer qu'il ne doit plus être visible
+        // Mettre à jour le post pour qu'il ne doit plus être visible
         $post = Post::find($this->postId);
         if ($post) {
             $post->hidden = 1;
             $post->save();
         }
-
 
         $this->close();
 
@@ -110,7 +108,7 @@ new class extends Component {
 <div
     class="{{ $enabled ? 'flex' : 'hidden' }} fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 items-center justify-center overflow-y-scroll">
     <div
-        class="md:w-6/12 top-1/4 w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+        class="sm:w-6/12 top-1/4 w-full p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
         <div class="flex flex-row-reverse pb-2">
             <!-- Bouton de fermeture -->
             <button wire:click='close' title="Fermer le panneau"
