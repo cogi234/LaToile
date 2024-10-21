@@ -29,7 +29,8 @@ class PostFactory extends Factory
                 ]
             ],
             'user_id' => User::inRandomOrder()->first(),
-            'created_at' => now()
+            'created_at' => now(),
+            'updated_at' => now()
         ];
     }
 }
