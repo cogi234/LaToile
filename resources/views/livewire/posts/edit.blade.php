@@ -50,6 +50,10 @@ new class extends Component {
             $this->addError('text', 'Il est impossible de publier un post avec moins de 5 caractères!');
             return;
         }
+        if ($textLength > 8000) {
+            $this->addError('text', 'Il est impossible de publier un post avec plus de 8000 caractères!');
+            return;
+        }
         
         //Create a content array from the text
         $blocks = Post::parseTextToBlocks($this->text);
@@ -85,7 +89,7 @@ new class extends Component {
 
 <div class="{{ $enabled ? 'flex' : 'hidden' }} fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 items-center justify-center overflow-y-scroll">
     <div
-        class="md:w-6/12 top-1/4 w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+        class="sm:w-6/12 top-1/4 w-full p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
         <div class="flex flex-row-reverse pb-2">
             <!-- Close button -->
             <button wire:click='close' title="Fermez le panneau"

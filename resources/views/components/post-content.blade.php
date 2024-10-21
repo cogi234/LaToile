@@ -9,7 +9,7 @@
         }
         @endphp
         @if ($block['type'] == 'text')
-            <p class="p-2 w-fit cursor-text" onclick="event.stopPropagation()">
+            <p class="p-2 w-fit max-w-[100%] break-words cursor-text" onclick="event.stopPropagation()">
                 {{ $block['content'] }}
             </p>
         @elseif ($block['type'] == 'user')

@@ -56,9 +56,9 @@ new class extends Component
 
                     <!-- Search Button (Caché jusqu'à ce que le contenu soit écrit) -->
                     <button title="Rechercher" type="submit" x-show="query.length > 0"
-                        class="m-1 tabs text-white text-sm w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out"
+                        class="m-1 tabs hover:bg-gray-900 hover:border-1 hover:border-gray-300 text-white text-sm w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out"
                         style="display: none;" x-cloak>
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        <svg class="w-5 h-5 hover:w-7 hover:h-7 hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>

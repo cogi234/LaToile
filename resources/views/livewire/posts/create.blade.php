@@ -83,6 +83,10 @@ new class extends Component {
             $this->addError('text', 'Il est impossible de publier un post avec moins de 5 caractères!');
             return;
         }
+        if ($textLength > 8000) {
+            $this->addError('text', 'Il est impossible de publier un post avec plus de 8000 caractères!');
+            return;
+        }
         foreach ($this->tags as $tag) {
             if (!is_string($tag)){
                 $this->addError('tags', 'Un des tag n\'est pas du texte!');
@@ -170,6 +174,11 @@ new class extends Component {
             closeQueueDialog();
             return;
         }
+        if ($textLength > 8000) {
+            $this->addError('text', 'Il est impossible de publier un post avec plus de 8000 caractères!');
+            closeQueueDialog();
+            return;
+        }
         if ($this->queueTime == null || $this->queueTime <= now()) {
             $this->addError('time', 'Il faut choisir un temps de publication qui est dans le futur!');
             return;
@@ -218,7 +227,7 @@ new class extends Component {
                 </svg>
             </button>
         </div>
-        <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Publier un post</span>
+        <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Créer un post</span>
         <!-- Previous content -->
         <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" class="ml-4" />
 
@@ -238,11 +247,26 @@ new class extends Component {
                 @endforeach
             </div>
             @error('tags') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
-            <div>
-                <x-primary-button class="mt-2 mx-auto">Publier</x-primary-button>
-                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='saveDraft'>Sauvegarder un brouillon
+            <div class="mt-2">
+                <x-primary-button class="mt-2 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                    </svg>                      
+                    Publier
+                </x-primary-button>
+                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='saveDraft'>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke-width="1.5" stroke="currentColor" class="size-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    </svg>
+                    Sauvegarder un brouillon
                 </x-secondary-button>
-                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='openQueueDialog'>Planifier la publication
+                <x-secondary-button class="mt-2 mx-auto ml-2" wire:click='openQueueDialog'>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    Planifier la publication
                 </x-secondary-button>
             </div>
         </form>
