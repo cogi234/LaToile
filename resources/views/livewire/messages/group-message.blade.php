@@ -5,6 +5,7 @@ use Livewire\Volt\Component;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
 use App\Models\User;
+use App\Models\Group;
 
 new class extends Component {
     public string $search = '';
@@ -56,8 +57,19 @@ new class extends Component {
     }
 
     public function createGroup() {
-        
+        if (!empty($this->groupName)) {
+            Group::create([
+                'name' => $this->groupName
+            ]);
+            
+            $this->groupName = '';
+
+            session()->flash('message', 'Le groupe a été créé avec succès.');
+        } else {
+            session()->flash('error', 'Le nom du groupe ne peut pas être vide.');
+        }
     }
+
 
     public function goToPage($pageNum) {
         if (empty($this->selectedUsers)) {
