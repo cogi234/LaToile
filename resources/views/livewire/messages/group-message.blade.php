@@ -57,11 +57,11 @@ new class extends Component {
     }
 
     public function createGroup() {
-        if (!empty($this->groupName)) {
+        if (!empty($this->groupName) && !empty($this->selectedUsers)) {
             Group::create([
                 'name' => $this->groupName
             ]);
-            
+
             $this->groupName = '';
 
             session()->flash('message', 'Le groupe a été créé avec succès.');
