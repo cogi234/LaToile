@@ -139,7 +139,7 @@ new class extends Component {
 
     public function updatedSearchQuery()
     {
-        $this->searchResults = User::where('name', 'like', '%' . $this->searchQuery . '%')->get();
+        $this->searchResults = User::where('name', 'like', $this->searchQuery . '%')->get();
     }
 
     public function getSenders()
@@ -168,11 +168,11 @@ new class extends Component {
 };?>
 
 <x-app-layout>
-    <div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
+    <div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800 z-10">
         <div id="conversations" class="border-r-2 h-full overflow-y-auto">
             <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
                 <div class="text-xl font-semibold dark:text-white">Messages</div>
-                <button type="button" id="addMessages" onclick="showMessageCreator()" class="btn btn-primary relative text-gray-500 dark:text-gray-300" title="Créer un groupe de discussion">
+                <button type="button" id="addMessages" onclick="showMessageCreator()" class="btn btn-primary text-gray-500 dark:text-gray-300" title="Créer un groupe de discussion">
                     <svg class="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -193,8 +193,8 @@ new class extends Component {
                             <input type="text" name="query" id="searchBar" x-model="query"
                                 class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
                                 placeholder="Rechercher des Messages Directs"/>
-                    
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        
+                            <div class="pointer-events-none flex items-center absolute inset-y-0 left-3">
                                 <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -202,6 +202,7 @@ new class extends Component {
                                 </svg>
                             </div>
                         </div>
+                        
                     </div>
                 
                     <!-- List of Private Messages -->
