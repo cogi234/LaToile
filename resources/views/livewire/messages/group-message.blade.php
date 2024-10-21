@@ -101,11 +101,11 @@ new class extends Component {
         </div>
 
         <!-- Affichage de l'erreur -->
-        @if($errorMessage)
+        {{-- @if($errorMessage)
             <div class="bg-red-500 text-white p-2 rounded mb-4" id="errorBox">
                 {{ $errorMessage }}
             </div>
-        @endif
+        @endif --}}
 
         @if($pageNum === 1)
             <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Nouveau Message</span>
