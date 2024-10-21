@@ -98,6 +98,7 @@ new class extends Component {
         $this->messageContent = '';
 
         $this->selectedConversation = $this->getConversation($this->currentUserId, $this->targetUserId);
+        $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
     }
 
 
@@ -125,6 +126,7 @@ new class extends Component {
             $message->update([
                 'message' => $newContent,
             ]);
+            $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
         }
     }
 
@@ -133,7 +135,7 @@ new class extends Component {
         PrivateMessage::find($messageId)->delete();
         
         $this->selectedConversation = $this->getConversation($this->currentUserId, $this->targetUserId);
-
+        $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
         session()->flash('success', 'Message supprimé avec succès');
     }
 
