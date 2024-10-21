@@ -25,7 +25,7 @@ class CheckBan
             $ban = Ban::where('user_id', $user->id)->first();
 
             // Si un bannissement existe, vérifiez sa date de fin
-            if ($ban && $ban->end_time > now()) {
+            if ($ban && !$ban->end_time || $ban && $ban->end_time > now()) {
                 return redirect()->route('banned');
             } else if ($ban) {
                 $ban->delete(); // Supprimez le bannissement de la base de données

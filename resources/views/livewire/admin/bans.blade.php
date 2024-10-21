@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Auth;
 new class extends Component {
 
     public string $reason = '';     // La raison du rapport
-    public string $banEndTime = ''; // La date de fin du bannissement
+    public ?string $banEndTime = null; // La date de fin du bannissement
+    public bool $permanent = false;
 
     #[Locked]
     public int $userId = -1;
@@ -43,12 +44,16 @@ new class extends Component {
     #[On('close-banUser-modal')]
     public function close()
     {
-        $this->reset('userId', 'reportId', 'enabled', 'banEndTime','reason');
+        $this->reset('userId', 'reportId', 'enabled', 'banEndTime', 'permanent','reason');
     }
 
     public function banUser()
     {
-        if (!$this->enabled) return;
+        if (!$this->enabled)
+            return;
+
+        if (!$this->banEndTime)
+            $this->banEndTime = null;
 
         $this->resetValidation();
 
@@ -66,7 +71,7 @@ new class extends Component {
             $this->addError('reason', 'Votre raison doit contenir plus de 5 caractères.');
             return;
         }
-        if ($this->banEndTime == null || $this->banEndTime <= now()) {
+        if (!$this->permanent && $this->banEndTime == null || !$this->permanent && $this->banEndTime <= now()) {
             $this->addError('banEndTime', 'Vous devez sélectionner une date qui est dans le futur.');
             return;
         }
@@ -76,7 +81,8 @@ new class extends Component {
             'reason' => strip_tags($this->reason),
             'end_time' => $this->banEndTime,
             'user_id' => $this->userId,
-            'report_id' => $this->reportId
+            'report_id' => $this->reportId,
+            'permanent' => $this->permanent
         ]);
 
         // Mettre à jour le rapport pour indiquer qu'il a été traité
@@ -92,6 +98,7 @@ new class extends Component {
             $post->hidden = 1;
             $post->save();
         }
+
 
         $this->close();
 
@@ -124,17 +131,24 @@ new class extends Component {
                 minlength="5" required></textarea>
             @error('reason') <div class="text-red-600 font-bold mt-2">{{ $message }}</div> @enderror
 
-            @error('reason') <div class="text-red-600 font-bold mt-2">{{ $message }}</div> @enderror
+            <!-- Bannissement permanent -->
+            <div class="mt-4">
+                <label for="isPermanent" class="inline-flex items-center">
+                    <input wire:model="permanent" type="checkbox" id="isPermanent" class="form-checkbox" onclick="toggleBanEndTime()">
+                    <span class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                        Bannissement permanent
+                    </span>
+                </label>
+            </div>
 
             <!-- Sélection de la date de fin du bannissement -->
-            <div class="mt-4">
+            <div class="mt-4" id="banEndTimeField">
                 <label for="banEndTime" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
                     Date de fin du bannissement
                 </label>
-                <input wire:model="banEndTime" type="date"
+                <input wire:model="banEndTime" type="date" id="banEndTime"
                     class="p-2 rounded-md cursor-pointer dark:bg-gray-100/90 bg-gray-200 dark:bg-gray-300" required />
                 @error('banEndTime') <div class="text-red-600 font-bold mt-2">{{ $message }}</div> @enderror
-                @error('user') <div class="text-red-600 font-bold mt-2">{{ $message }}</div> @enderror
             </div>
 
             <div class="flex justify-end mt-4">
@@ -154,14 +168,28 @@ new class extends Component {
 <!-- Script pour ouvrir le formulaire de bannissement -->
 <script>
     function showBanUserModal(userId = -1, reportId = -1, postId = -1) {
-            this.dispatchEvent(
-                new CustomEvent('open-banUser-modal', {
-                    detail: {
-                        userId: userId,
-                        reportId : reportId,
-                        postId : postId
-                    }
-                })
-            );
+        this.dispatchEvent(
+            new CustomEvent('open-banUser-modal', {
+                detail: {
+                    userId: userId,
+                    reportId : reportId,
+                    postId : postId
+                }
+            })
+        );
+    }
+    function toggleBanEndTime() {
+        var isPermanent = document.getElementById('isPermanent').checked;
+        var banEndTimeField = document.getElementById('banEndTimeField');
+        var banEndTimeInput = document.getElementById('banEndTime');
+
+        if (isPermanent) {
+            banEndTimeField.style.display = 'none'; // Ne plus affiché le calendrier
+            banEndTimeInput.required = false;       // N'est plus requis dans le form
+            banEndTimeInput.value = '';             // Réinitialiser la valeur si le champ est masqué
+        } else {
+            banEndTimeField.style.display = 'block';
+            banEndTimeInput.required = true;
         }
+    }
 </script>
