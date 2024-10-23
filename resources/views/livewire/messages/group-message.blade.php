@@ -162,7 +162,7 @@ new class extends Component {
 
             <div class="flex gap-3">
                 @if(count($selectedUsers) == 1 && isset($selectedUsers[0]))
-                <a href="{{ url('messages/' . Auth::id() . '-' . $selectedUsers[0]) }}" class="w-full">
+                <a href="{{ url('messages/' . $selectedUsers[0]) }}" class="w-full">
                     <button class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
                         Commencer une discussion
                     </button>
