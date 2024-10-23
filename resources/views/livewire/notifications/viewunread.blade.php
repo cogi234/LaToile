@@ -18,10 +18,13 @@ new class extends Component {
     #[On('open-notifications-display')]
     public function loadNotifications() {
         $this->notifications = Auth::user()->unreadNotifications()->take(10)->get();
+        $this->markRead($this->notifications);
     }
 
-    public function markRead(string $id) {
-        DatabaseNotification::find($id)->markAsRead();
+    public function markRead($notifs) {
+        foreach ($notifs as $notif) {
+            $notif->markAsRead();
+        }
         $this->dispatch('change-notification-read'); 
     }
 
@@ -36,7 +39,7 @@ new class extends Component {
     @endphp
     <a class="block w-full px-4 py-2 leading-5 transition duration-150 ease-in-out rounded-lg text-sm
         text-gray-700 hover:bg-gray-200 focus:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:bg-gray-800"
-        href="{{ $url }}" wire:mouseenter='markRead("{{ $notification->id }}")' title="{{ $notification->data['message'] }}">
+        href="{{ $url }}" title="{{ $notification->data['message'] }}">
         <div class="text-xs text-right dark:text-gray-400 mb-1">{{$formattedTime}}</div>
         <div>{{ $message }}</div>
     </a>
