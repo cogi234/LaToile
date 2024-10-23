@@ -81,7 +81,7 @@ new class extends Component
                     </x-slot>
 
                     <x-slot name="content">
-                        <livewire:notifications.viewall>
+                        <livewire:notifications.viewunread>
                     </x-slot>
                 </x-dropdown>
 

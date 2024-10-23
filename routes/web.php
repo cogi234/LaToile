@@ -37,7 +37,9 @@ Route::middleware(['banned'])->group(function () {
     Route::get('/tag/{id}', [TagController::class, 'show']);
 
     //Search
-    Route::get('/search', [SearchController::class, 'search'])->name('search');
+    Route::get('/search', [SearchController::class, 'search'])
+        ->middleware(['auth'])
+        ->name('search');
 
     //Messages
     Route::get('/messages', [MessageController::class, 'show'])
@@ -46,9 +48,7 @@ Route::middleware(['banned'])->group(function () {
         ->middleware(['auth']);
 
     //Notifications
-    Route::get('/notifications', function () {
-        return redirect()->route('dashboard');
-    })->name('notifications');
+    Route::view('/notifications', 'notifications')->name('notifications');
 
     //Admin
     Route::view('adminPage', 'adminPage')
