@@ -44,8 +44,9 @@ new class extends Component {
             $this->selectedUsers[] = $userId;
         }
 
-        $this->users = $this->users->filter(fn($user) => $user->id !== $userId);
+        $this->users = collect($this->users)->filter(fn($user) => $user->id !== $userId);
     }
+
 
     public function deselectUser($userId) {
         $this->selectedUsers = array_values(array_filter($this->selectedUsers, fn($id) => $id !== $userId));

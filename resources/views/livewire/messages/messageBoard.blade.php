@@ -213,7 +213,7 @@ new class extends Component {
             </button>
         </div>
         <!-- Messsagerie de groupe -->
-        <livewire:messages.group-message />
+        <livewire:messages.group-message-form />
 
 
         @if($privateMessages->isEmpty() && $targetUserId == null)
