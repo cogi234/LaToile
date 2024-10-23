@@ -58,20 +58,22 @@ new class extends Component {
 
     public function createGroup() {
         if (!empty($this->groupName) && !empty($this->selectedUsers)) {
-            Group::create([
+            $group = Group::create([
                 'name' => $this->groupName
             ]);
+            User::find(Auth::id())->group_memberships()->attach($group, ['status' => 'creator']);
+            foreach ($this->selectedUsers as $selectedUser) {
+                User::find($selectedUser)->group_invites()->attach($group, ['status' => 'invite']);
+            }
 
-            
             $this->groupName = '';
 
             session()->flash('message', 'Le groupe a été créé avec succès.');
-            $this->redirect('/messages/' . $this->currentUserId . '-' . $this->targetUserId);
+            $this->redirect('/messages/');
         } else {
             session()->flash('error', 'Le nom du groupe ne peut pas être vide.');
         }
     }
-
 
     public function goToPage($pageNum) {
         if (empty($this->selectedUsers)) {
