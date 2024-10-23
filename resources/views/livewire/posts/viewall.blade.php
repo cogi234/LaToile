@@ -3,14 +3,22 @@
 use Livewire\Volt\Component;
 use App\Models\Post;
 use Livewire\Attributes\On; 
+use Livewire\Attributes\Locked;
 
 new class extends Component {
+    #[Locked]
     public $posts;
+    #[Locked]
     public $moreAvailable = true;
 
     public function mount()
     {
-        $this->posts = Post::orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+        // Ajoutez une condition pour vérifier si moderator est 0 ou 1
+        $this->posts = Post::where('hidden', false)
+            ->orderby('id', 'desc')
+            ->take(10)
+            ->with(['user', 'tags'])
+            ->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
@@ -19,7 +27,12 @@ new class extends Component {
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = Post::where('id', '<', $this->posts->last()->id)->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+            $newPosts = Post::where('id', '<', $this->posts->last()->id)
+                ->where('hidden', false)
+                ->orderby('id', 'desc')
+                ->take(10)
+                ->with(['user', 'tags'])
+                ->get();
 
             // Merge the new posts with the existing ones
             $this->posts = $this->posts->concat($newPosts);
@@ -32,12 +45,18 @@ new class extends Component {
     #[On('reset-post-views')]
     public function resetPosts()
     {
-        $this->posts = Post::orderby('id', 'desc')->take(10)->with('user')->get();
+        // Ajoutez la condition de même manière ici
+        $this->posts = Post::where('hidden', false)
+            ->orderby('id', 'desc')
+            ->take(10)
+            ->with('user')
+            ->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
     }
-}; ?>
+};
+?>
 
 <!-- Show more button -->
 <div>

@@ -30,7 +30,7 @@ return new class extends Migration
         Schema::create('bans', function (Blueprint $table) {
             $table->id();
             $table->text('reason');
-            $table->timestamp('end_time');
+            $table->timestamp('end_time')->nullable();
             $table->foreignId('user_id');
             $table->foreignId('report_id')->nullable();
             $table->timestamps();

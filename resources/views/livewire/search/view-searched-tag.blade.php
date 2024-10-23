@@ -24,7 +24,7 @@ new class extends Component
 
 <div>
     <div
-        class="grid grid-rows-3 grid-flow-col bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full">
+        class="grid grid-rows-3 grid-flow-col bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
         @foreach ($matchedTags as $tag)
         <div class="m-4 h-10">
             <a href="/tag/{{ $tag->id }}">

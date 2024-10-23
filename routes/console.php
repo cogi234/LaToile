@@ -26,9 +26,7 @@ Schedule::call(function () {
             }
             $post->content = $content;
         }
-
-        $post->created_at = $queue->scheduled_time;
-        $post->updated_at = $queue->scheduled_time;
+        
         $post->save();
 
         //We add the tags
