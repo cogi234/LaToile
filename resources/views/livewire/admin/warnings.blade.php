@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Report;
 use App\Models\Post;
 use App\Models\Warning;
+use App\Notifications\WarningUser;
 
 new class extends Component {
 
@@ -80,6 +81,9 @@ new class extends Component {
             $post->hidden = 1;
             $post->save();
         }
+
+        // Envoyer une notificaiton à l'utilisateur
+        User::find($this->userId)->notify(new WarningUser($this->message));
 
         $this->close();
 
