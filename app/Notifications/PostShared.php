@@ -19,10 +19,10 @@ class PostShared extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(User $sharer, Post $post)
+    public function __construct(User $sharer, Post $share)
     {
         $this->message = $sharer->name . " a partagé ton post!";
-        $this->url = '/post/' . $post->id;
+        $this->url = '/post/' . $share->id;
     }
 
     /**

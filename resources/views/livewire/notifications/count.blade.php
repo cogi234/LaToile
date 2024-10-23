@@ -19,7 +19,7 @@ new class extends Component {
 }; ?>
 
 <div class="w-10 h-10 rounded-full shadow-lg" wire:poll='loadNotificationsCount'
-    style="background-image:url('.{{auth()->user()->getAvatar()}}'); background-position: center; background-size: cover;">
+    style="background-image:url('{{auth()->user()->getAvatar()}}'); background-position: center; background-size: cover;">
 
     @if ($count >= 99)
     <span class="relative bg-blue-400 text-black text-xs font-extrabold p-0.5 rounded-full top-7 border border-blue-500">99+</span>
