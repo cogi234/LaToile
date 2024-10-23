@@ -14,6 +14,7 @@ new class extends Component {
     public $moreAvailable = true;
 
     public function mount() {
+        setlocale(LC_TIME, 'fr');
         $this->notifications = Auth::user()->notifications()
             ->orderby('id', 'desc')
             ->take(10)
@@ -58,16 +59,18 @@ new class extends Component {
     @foreach ($notifications as $notification)
     @php
         $message = $notification->data['short_message'] ?? $notification->data['message'];
+        $formattedTime = strftime('%d %B %Y à %H:%M', strtotime($notification->created_at));
         $url = $notification->data['url'];
         if ($notification->data['url'] != null)
             $href = `href='{$url}'`;
         else
             $href = "";
     @endphp
-    <a class="w-full px-4 py-2 text-start text-sm leading-5 m-2 focus:outline-none transition duration-150 ease-in-out flex flex-row items-center rounded-lg
+    <a class="block w-full px-4 py-2 pb-4 leading-5 my-2 transition duration-150 ease-in-out rounded-lg
         text-gray-700 hover:bg-gray-200 focus:bg-gray-200 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:bg-gray-800"
         {{ $href }}>
-        {{ $notification->data['message'] }}
+        <div class="text-sm text-right dark:text-gray-400 mb-1">{{$formattedTime}}</div>
+        <div>{{ $notification->data['message'] }}</div>
     </a>
     <hr class="mx-1 border-gray-900 border-2 rounded">
     @endforeach

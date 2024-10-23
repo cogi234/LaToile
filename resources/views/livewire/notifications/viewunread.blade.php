@@ -11,7 +11,9 @@ new class extends Component {
     #[Locked]
     public $notifications = [];
 
-    public function mount() { }
+    public function mount() {
+        setlocale(LC_TIME, 'fr');
+    }
 
     #[On('open-notifications-display')]
     public function loadNotifications() {
@@ -25,21 +27,23 @@ new class extends Component {
 
 }; ?>
 
-<div>
+<div class="p-1">
     @foreach ($notifications as $notification)
     @php
         $message = $notification->data['short_message'] ?? $notification->data['message'];
+        $formattedTime = strftime('%d %B %Y à %H:%M', strtotime($notification->created_at));
         $url = $notification->data['url'] ?? route('notifications');
     @endphp
-    <a class="w-full px-4 py-2 text-start text-sm leading-5 focus:outline-none transition duration-150 ease-in-out flex flex-row items-center
+    <a class="block w-full px-4 py-2 leading-5 transition duration-150 ease-in-out rounded-lg text-sm
         text-gray-700 hover:bg-gray-200 focus:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:bg-gray-800"
         href="{{ $url }}" wire:mouseenter='markRead("{{ $notification->id }}")' title="{{ $notification->data['message'] }}">
-        {{ $message }}
+        <div class="text-xs text-right dark:text-gray-400 mb-1">{{$formattedTime}}</div>
+        <div>{{ $message }}</div>
     </a>
     <hr class="mx-1 border-gray-900 border-2 rounded">
     @endforeach
 
-    <a class="w-full px-4 py-2 text-start text-sm leading-5 focus:outline-none transition duration-150 ease-in-out flex flex-row items-center
+    <a class="block w-full px-4 py-2 leading-5 transition duration-150 ease-in-out rounded-lg text-sm
         text-gray-700 hover:bg-gray-200 focus:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:bg-gray-800"
         href="{{ route('notifications') }}">
         Voir toutes les notifications...
