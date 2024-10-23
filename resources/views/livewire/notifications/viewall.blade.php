@@ -58,12 +58,16 @@ new class extends Component {
     @foreach ($notifications as $notification)
     @php
         $message = $notification->data['short_message'] ?? $notification->data['message'];
-        $url = $notification->data['url'] ?? route('notifications');
+        $url = $notification->data['url'];
+        if ($notification->data['url'] != null)
+            $href = `href='{$url}'`;
+        else
+            $href = "";
     @endphp
-    <a class="w-full px-4 py-2 text-start text-sm leading-5 my-1 focus:outline-none transition duration-150 ease-in-out flex flex-row items-center rounded-lg
+    <a class="w-full px-4 py-2 text-start text-sm leading-5 m-2 focus:outline-none transition duration-150 ease-in-out flex flex-row items-center rounded-lg
         text-gray-700 hover:bg-gray-200 focus:bg-gray-200 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:bg-gray-800"
-        href="{{ $url }}" title="{{ $notification->data['message'] }}">
-        {{ $message }}
+        {{ $href }}>
+        {{ $notification->data['message'] }}
     </a>
     <hr class="mx-1 border-gray-900 border-2 rounded">
     @endforeach
