@@ -2,10 +2,15 @@
 
 use Livewire\Volt\Component;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\On; 
+use Livewire\Attributes\On;
+use Livewire\Attributes\Locked;
+use App\Notifications\UserFollowed;
+use App\Models\User;
 
 new class extends Component {
+    #[Locked]
     public int $id;
+    #[Locked]
     public bool $followed;
 
     public function mount(int $id)
@@ -37,6 +42,9 @@ new class extends Component {
         if (!$this->followed)
             Auth::user()->followed_users()->attach($this->id);
         $this->followed = true;
+
+        //Send a notification to the followed user
+        User::find($this->id)->notify(new UserFollowed(Auth::user()));
         
         $this->dispatch('user-follow-change', id: $this->id);
     }
