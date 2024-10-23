@@ -10,9 +10,9 @@ class BasicNotification extends Notification
 {
     use Queueable;
 
-    protected ?string $short_message;
+    protected ?string $short_message = null;
     protected string $message;
-    protected ?string $url;
+    protected ?string $url = null;
 
     /**
      * Create a new notification instance.

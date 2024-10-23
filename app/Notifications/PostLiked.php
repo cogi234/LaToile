@@ -2,12 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class UserFollowed extends Notification
+class PostLiked extends Notification
 {
     use Queueable;
     
@@ -18,10 +19,10 @@ class UserFollowed extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(User $follower)
+    public function __construct(User $liker, Post $post)
     {
-        $this->message = $follower->name . ' a commencé à te suivre!';
-        $this->url = '/user/' . $follower->id;
+        $this->message = $liker->name . " a aimé ton post!";
+        $this->url = '/post/' . $post->id;
     }
 
     /**
