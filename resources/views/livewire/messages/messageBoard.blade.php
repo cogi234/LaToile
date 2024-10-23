@@ -36,7 +36,7 @@ new class extends Component {
             }
 
             PrivateMessage::where('sender_id', $this->targetUserId)
-                ->where('receiver_id', $this->currentUserId)
+                ->where('receiver_id', Auth::id())
                 ->where('read', 0) // Only update unread messages
                 ->update(['read' => 1]);
         }
@@ -137,9 +137,10 @@ new class extends Component {
     
     public function saveEdit()
     {
-        if (trim($newContent) === '') {
+        if (trim($this->editMessageContent) === '') {
             return;
         }
+        
         $message = PrivateMessage::find($this->editingMessageId);
         if ($message && $message->sender_id == Auth::id()) {
             $message->message = $this->editMessageContent;
