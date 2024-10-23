@@ -64,6 +64,7 @@ new class extends Component {
         $this->targetUserId = $targetUserId;
         $this->targetUser = $targetUser;
         $this->updateSelectedConversation();
+        $this->dispatch('updateSelectedConversation');
     }
 
     public function updateConversations() {
@@ -98,6 +99,7 @@ new class extends Component {
             $query->where('sender_id', $this->targetUserId)
                 ->where('receiver_id', Auth::id());
         })->get();
+
     }
 
     #[Validate(['messageContent' => 'required|string|max:255'])]
@@ -140,7 +142,7 @@ new class extends Component {
         if (trim($this->editMessageContent) === '') {
             return;
         }
-        
+
         $message = PrivateMessage::find($this->editingMessageId);
         if ($message && $message->sender_id == Auth::id()) {
             $message->message = $this->editMessageContent;
@@ -194,8 +196,14 @@ new class extends Component {
 <div wire:click='stopEditing' class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
     <div class="border-r-2 h-full overflow-y-auto">
         <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
-            <div class="text-xl font-semibold dark:text-white">
-                Conversations
+            <div class="flex flex-row gap-3 text-xl font-semibold dark:text-white">
+                <button>
+                    <span class="">Conversations</span>
+                </button>
+                <span>/</span>
+                <button>
+                    <span>Groupes</span>
+                </button>
             </div>
             <button type="button" id="addMessages" onclick="showMessageCreator()" 
                 class="btn btn-primary text-gray-500 dark:text-gray-300" title="Créer un groupe de discussion">
@@ -206,6 +214,8 @@ new class extends Component {
         </div>
         <!-- Messsagerie de groupe -->
         <livewire:messages.group-message />
+
+
         @if($privateMessages->isEmpty() && $targetUserId == null)
         <div class="p-4">
             <p class="text-gray-500 dark:text-gray-300">
@@ -266,7 +276,7 @@ new class extends Component {
     <!-- Private Message Area -->
     @if ($targetUser !== null)
 
-    <div class="h-full flex flex-col">
+    <div id="message_area" class="h-full flex flex-col overflow-y-scroll">
         <!-- Infos de la discussion -->
         <div class="flex items-center pl-4 pt-2">
             <img class="w-12 h-12 rounded-full shadow-lg" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
@@ -275,7 +285,7 @@ new class extends Component {
             </div>
         </div>
         <!-- Zone de discussion -->
-        <div id="discussion" class="flex-1 p-4 overflow-y-auto">
+        <div id="discussion" class="flex-1 p-4">
             @if ($selectedConversation)
                 @foreach ($selectedConversation as $message)
                     @php
@@ -387,4 +397,18 @@ new class extends Component {
             overflow-y: scroll;
         }
     </style>
+
+    @script
+    <script>
+        $wire.on('updateSelectedConversation', () => {
+            setTimeout(() => {
+                let element = document.querySelector("#message_area");
+                if (element && element.children[1].children.length > 2){
+                    element.children[1].children[element.children[1].children.length - 1].scrollIntoView();
+                }
+            }, 100);
+            
+        });
+    </script>
+    @endscript
 </div>
