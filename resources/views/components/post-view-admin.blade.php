@@ -71,7 +71,8 @@
                 </svg>
                 <span class="ml-1">Bannir l'utilisateur</span>
             </button>
-
+            <!-- débannir l'utilisateur -->
+            <!--<livewire:admin.unban :userId="$post->owner_id"/>-->
         </div>
         <br>
 
