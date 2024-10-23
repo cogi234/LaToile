@@ -14,7 +14,7 @@ new class extends Component {
     {
         $this->query = $query;
         $this->matchedPosts = Post::where('content', 'like', '%' . $this->query . '%')
-            ->where('hidden', 0)
+            ->where('hidden', false)
             ->orderBy('updated_at', 'desc')
             ->get();
     }

@@ -9,49 +9,62 @@ use App\Http\Controllers\TagController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 
+//All routes that are guarded by the ban middleware
+Route::middleware(['banned'])->group(function () {
+    // Home/Dashboard
+    Route::view('/', 'dashboard')
+        ->name('dashboard');
+    Route::get('/home', function () {
+        return redirect()->route('dashboard');
+    })->name('home');
 
-Route::view('/', 'dashboard')
-    ->middleware(['banned'])
-    ->name('dashboard');
+    //User
+    Route::view('profile', 'profile')
+        ->middleware(['auth'])
+        ->name('profile');
+    Route::get('/user/{id}', [UserController::class, 'show']);
 
-Route::get('/home', function () {
-    return redirect()->route('dashboard');
-})->name('home');
+    //Posts
+    Route::get('/post/{id}', [PostController::class, 'show']);
+    Route::view('drafts', 'drafts')
+        ->middleware(['auth'])
+        ->name('drafts');
+    Route::view('queue', 'queued-posts')
+        ->middleware(['auth'])
+        ->name('queue');
 
+    //Tags
+    Route::get('/tag/{id}', [TagController::class, 'show']);
+
+    //Search
+    Route::get('/search', [SearchController::class, 'search'])
+        ->middleware(['auth'])
+        ->name('search');
+
+    //Messages
+    Route::get('/messages', [MessageController::class, 'show'])
+        ->middleware(['auth']);
+    Route::get('/messages/{targetId}', [MessageController::class, 'show'])
+        ->middleware(['auth']);
+
+    //Notifications
+    Route::view('/notifications', 'notifications')
+        ->middleware(['auth'])
+        ->name('notifications');
+
+    //Admin
+    Route::view('adminPage', 'adminPage')
+        ->middleware(['auth', 'admin'])
+        ->name('adminPage');
+});
+
+
+//The page that banned users see
 Route::view('banned', 'banned')
     ->name('banned');
+    
 
-Route::get('/search', [SearchController::class, 'search'])->name('search');
-
-Route::view('profile', 'profile')
-    ->middleware(['auth'])
-    ->name('profile');
-
-Route::view('adminPage', 'adminPage')
-    ->middleware(['auth', 'admin'])
-    ->name('adminPage');
-
-Route::view('drafts', 'drafts')
-    ->middleware(['auth'])
-    ->name('drafts');
-
-Route::view('queue', 'queued-posts')
-    ->middleware(['auth'])
-    ->name('queue');
-
-Route::get('/post/{id}', [PostController::class, 'show'])
-    ->middleware(['banned']);
-Route::get('/user/{id}', [UserController::class, 'show'])
-    ->middleware(['banned']);
-Route::get('/tag/{id}', [TagController::class, 'show'])
-    ->middleware(['banned']);
-
-Route::get('/messages', [MessageController::class, 'show'])
-    ->middleware(['auth', 'banned']);
-Route::get('/messages/{targetId}', [MessageController::class, 'show'])
-    ->middleware(['auth', 'banned']);
-
-
+//Emails
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->middleware('auth')->name('verification.notice');
