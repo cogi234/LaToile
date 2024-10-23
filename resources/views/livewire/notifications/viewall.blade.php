@@ -61,10 +61,9 @@ new class extends Component {
         $message = $notification->data['short_message'] ?? $notification->data['message'];
         $formattedTime = strftime('%d %B %Y à %H:%M', strtotime($notification->created_at));
         $url = $notification->data['url'];
+        $href = "";
         if ($notification->data['url'] != null)
-            $href = `href='{$url}'`;
-        else
-            $href = "";
+            $href = "href=" . $url;
     @endphp
     <a class="block w-full px-4 py-2 pb-4 leading-5 my-2 transition duration-150 ease-in-out rounded-lg
         text-gray-700 hover:bg-gray-200 focus:bg-gray-200 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:bg-gray-800"
