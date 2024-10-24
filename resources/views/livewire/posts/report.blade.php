@@ -4,7 +4,9 @@ use Livewire\Volt\Component;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
 use App\Models\Post;
+use App\Models\User;
 use App\Models\Report;
+use App\Notifications\ReportConfirmation;
 use Illuminate\Support\Facades\Auth;
 
 new class extends Component {
@@ -50,6 +52,9 @@ new class extends Component {
             'post_id' => $this->postId,
             'user_id' => Auth::id()
         ]);
+
+        // Envoyer une notificaiton à l'utilisateur
+        Auth::user()->notify(new ReportConfirmation(Post::find($this->postId), $this->reason));
 
         $this->close();
         $this->dispatch('reset-reports');

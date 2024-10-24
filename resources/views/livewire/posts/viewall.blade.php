@@ -3,9 +3,12 @@
 use Livewire\Volt\Component;
 use App\Models\Post;
 use Livewire\Attributes\On; 
+use Livewire\Attributes\Locked;
 
 new class extends Component {
+    #[Locked]
     public $posts;
+    #[Locked]
     public $moreAvailable = true;
 
     public function mount()

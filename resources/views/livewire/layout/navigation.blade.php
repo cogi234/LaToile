@@ -37,7 +37,7 @@ new class extends Component
                 </div>
             </div>
 
-            <!-- Search Bar -->
+            <!-- Middle Search Bar -->
             <div class="items-center content-center mx-6 w-48 md:w-72 " x-data="{ query: '' }">
                 <form id="searchForm" action="{{ route('search') }}" method="GET"
                     class="relative w-full flex flex-row dark:!text-gray-100">
@@ -67,18 +67,32 @@ new class extends Component
                 </form>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
+            <!-- Right of the top bar -->
+            <div class="hidden sm:flex sm:items-center sm:ms-6 w-">
+                <!-- Notifications dropdown -->
+                <x-dropdown align="right" width="w-72">
                     <x-slot name="trigger">
-                        <button
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                            @auth
-                            <img src="{{ auth()->user()->getAvatar() }}" alt="Profile Image"
-                                class="w-8 h-8 rounded-full mr-4 shadow-lg">
+                        <button class="inline-flex items-center px-3 pr-1 py-2 border border-transparent text-sm leading-4 font-medium rounded-md 
+                            text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 
+                            focus:outline-none transition ease-in-out duration-150"
+                            onclick="loadPostDisplay()">
+                            <livewire:notifications.count>
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <livewire:notifications.viewunread>
+                    </x-slot>
+                </x-dropdown>
+
+                <!-- User dropdown -->
+                <x-dropdown align="right" width="w-48">
+                    <x-slot name="trigger">
+                        <button class="inline-flex items-center px-3 pl-1 py-2 border border-transparent text-sm leading-4 font-medium rounded-md 
+                            text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 
+                            focus:outline-none transition ease-in-out duration-150">
                             <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name"
                                 x-on:profile-updated.window="name = $event.detail.name"></div>
-                            @endauth
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20">
@@ -178,7 +192,6 @@ new class extends Component
         <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <a href="{{ url('user/' . auth()->user()->id) }}">
                 <div class="px-4 flex flex-row items-center">
-                    @auth
                     <img src="{{ auth()->user()->getAvatar() }}" alt="Profile Image"
                         class="w-8 h-8 rounded-full mr-4 shadow-lg">
                     <div class="flex flex-col">
@@ -187,7 +200,6 @@ new class extends Component
                             x-on:profile-updated.window="name = $event.detail.name"></div>
                         <div class="font-medium text-sm text-gray-500">{{ auth()->user()->email }}</div>
                     </div>
-                    @endauth
                 </div>
             </a>
 
