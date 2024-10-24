@@ -69,7 +69,7 @@ new class extends Component {
 
 <div>
     @foreach ($posts as $post)
-        <x-post-view-admin :post="$post" wire:key='post_{{ $post->id }}' />
+        <x-post-view-admin-Traiter :post="$post" wire:key='postReport_{{ $post->id }}' />
     @endforeach
      
     @if ($moreAvailable)

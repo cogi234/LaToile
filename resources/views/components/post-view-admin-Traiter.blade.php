@@ -36,11 +36,9 @@
         </div>
         <div class="flex sm:flex-row flex-col sm:space-y-0 space-y-8 items-center">
 
-
+            <!-- Cacher un post -->
             <livewire:admin.hide-post id="{{ $post->id }}"/>
 
-            <!-- Faux report -->
-            <livewire:admin.false-report :reportId="$post->reports_id"/> 
             <!-- Avertissement -->
             <button title="Marqué le report comme traité et envoyer un avertissement à l'utilisateur"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 mr-4"
@@ -50,6 +48,7 @@
                 </svg>                  
                 <span class="ml-1">Envoyer un avertissement</span>
             </button>
+
             <!-- Supprimer post -->
             <button title="Supprimer le post"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 mr-4"
@@ -61,6 +60,7 @@
                 </svg>
                 <span class="ml-1">Supprimer le Post</span>
             </button>
+
             <!-- Bannir l'utilisateur -->
             <button title="Marqué le report comme traité bannir l'utilisateur et cacher son post"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-800 dark:hover:text-red-500 mr-4"
@@ -72,8 +72,9 @@
                 </svg>
                 <span class="ml-1">Bannir l'utilisateur</span>
             </button>
+
         </div>
-        <br>
+
 
     </div>
 
