@@ -6,7 +6,6 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;  
 use App\Models\Post;
 use App\Models\User;
-use App\Notifications\PostLiked;
 
 new class extends Component {
     #[Locked]
@@ -45,11 +44,6 @@ new class extends Component {
             $this->isLiked = true;
             $this->likeCount++;
             $this->formattedLikeCount = $this->formatLikeCount($this->likeCount);
-
-            //Send a notification to the liked user
-            $liked_post = Post::find($this->postId);
-            $liked_user = $liked_post->user;
-            $liked_user->notify(new PostLiked(Auth::user(), $liked_post));
         }
         else {
             return redirect()->route('login');

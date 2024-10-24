@@ -17,7 +17,7 @@
             $user = App\Models\User::find($block['id']);
             @endphp
             <hr class="mb-2" />
-            <x-post-user :user="$user" :post="$post" displayEditButton="{{ false }}" displayDeleteButton="{{ false }}"
+            <x-post-user :user="$user" :post="$post" displayEditButton="{{ false }}"
                 :key="$postId . '_' . $block['id'] . '_' . $createdAt" />
         @endif
     @endforeach

@@ -27,10 +27,8 @@ new class extends Component {
         if (Auth::check() && !$this->isHidden) {
             $post = Post::find($this->postId);
             if ($post) {
-                $post->timestamps = false;
                 $post->hidden = 1; // Set hidden to true (1)
                 $post->save(); // Save changes
-                $post->timestamps = true;
                 $this->isHidden = true; // Update the property
             }
         }
@@ -41,10 +39,8 @@ new class extends Component {
         if (Auth::check() && $this->isHidden) {
             $post = Post::find($this->postId);
             if ($post) {
-                $post->timestamps = false;
                 $post->hidden = 0; // Set hidden to false (0)
                 $post->save(); // Save changes
-                $post->timestamps = true;
                 $this->isHidden = false; // Update the property
             }
         }

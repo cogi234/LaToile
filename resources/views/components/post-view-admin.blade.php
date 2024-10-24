@@ -36,8 +36,9 @@
         </div>
         <div class="flex sm:flex-row flex-col sm:space-y-0 space-y-8 items-center">
 
-            <!-- Cacher un post -->
+
             <livewire:admin.hide-post id="{{ $post->id }}"/>
+
             <!-- Faux report -->
             <livewire:admin.false-report :reportId="$post->reports_id"/> 
             <!-- Avertissement -->
@@ -71,8 +72,6 @@
                 </svg>
                 <span class="ml-1">Bannir l'utilisateur</span>
             </button>
-            <!-- débannir l'utilisateur -->
-            <!--<livewire:admin.unban :userId="$post->owner_id"/>-->
         </div>
         <br>
 

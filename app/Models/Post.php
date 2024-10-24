@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Events\PostDeleting;
-use App\Notifications\PostShared;
 use DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -69,9 +68,6 @@ class Post extends Model
         $newPost->original_id = $this->original_id ?? $this->id;
 
         $newPost->save();
-        
-        //Send a notification to the shared user
-        User::find($this->user_id)->notify(new PostShared(User::find($userId), $newPost));
 
         return $newPost;
     }
