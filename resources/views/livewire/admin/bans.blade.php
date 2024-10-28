@@ -6,6 +6,7 @@ use Livewire\Attributes\Locked;
 use App\Models\User;
 use App\Models\Ban;
 use App\Models\Report;
+use App\Models\ReportMessage;
 use App\Models\Post;
 
 new class extends Component {
@@ -24,19 +25,27 @@ new class extends Component {
     public ?int $postId = -1;
 
     #[Locked]
+    public string $reportType = '';
+
+    #[Locked]
     public bool $enabled = false;
 
     #[On('open-banUser-modal')]
-    public function open(int $userId, int $reportId, int $postId)
+    public function open(int $userId, int $reportId, int $postId, string $reportType)
     {
+        // Charger le modèle correct en fonction de reportType
+        $reportClass = $reportType === 'Report' ? Report::class : ReportMessage::class;
+
         // Ne pas ouvrir le modal pour un utilisateur ou un post inexistant
         $user = User::find($userId);
         $post = Post::find($postId);
-        if ($user == null || $post == null) return;
+        $report = $reportClass::find($reportId);
+        if ($user == null || $post == null || $report == null) return;
 
         $this->userId = $userId;
         $this->reportId = $reportId;
         $this->postId = $postId;
+        $this->reportType = $reportType;
         $this->enabled = true;
         $this->resetValidation();
     }
@@ -44,7 +53,7 @@ new class extends Component {
     #[On('close-banUser-modal')]
     public function close()
     {
-        $this->reset('userId', 'reportId', 'enabled', 'banEndTime', 'permanent','reason');
+        $this->reset('userId', 'reportId', 'reportType', 'enabled', 'banEndTime', 'permanent','reason');
     }
 
     public function banUser()
@@ -82,6 +91,7 @@ new class extends Component {
             'end_time' => $this->banEndTime,
             'user_id' => $this->userId,
             'report_id' => $this->reportId,
+            'report_type' => $this->reportType,
         ]);
 
         // Mettre à jour le rapport pour indiquer qu'il a été traité
@@ -165,13 +175,14 @@ new class extends Component {
 
 <!-- Script pour ouvrir le formulaire de bannissement -->
 <script>
-    function showBanUserModal(userId = -1, reportId = -1, postId = -1) {
+    function showBanUserModal(userId = -1, reportId = -1, postId = -1, reportType = '') {
         this.dispatchEvent(
             new CustomEvent('open-banUser-modal', {
                 detail: {
                     userId: userId,
                     reportId : reportId,
-                    postId : postId
+                    postId : postId,
+                    reportType : reportType
                 }
             })
         );

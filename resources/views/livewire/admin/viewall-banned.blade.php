@@ -31,6 +31,7 @@ new class extends Component {
                     <th>End Time</th>
                     <th>User ID</th>
                     <th>Report ID</th>
+                    <th>Report Type</th>
                     <th>Created At</th>
                     <th>Updated At</th>
                 </tr>
@@ -43,6 +44,7 @@ new class extends Component {
                         <td>{{ $ban->end_time ? \Carbon\Carbon::parse($ban->end_time)->format('Y-m-d H:i:s') : 'N/A' }}</td>
                         <td>{{ $ban->user_id }}</td>
                         <td>{{ $ban->report_id ?? 'N/A' }}</td>
+                        <td>{{ $ban->report_type }}</td>
                         <td>{{ $ban->created_at ? \Carbon\Carbon::parse($ban->created_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
                         <td>{{ $ban->updated_at ? \Carbon\Carbon::parse($ban->updated_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
                     </tr>

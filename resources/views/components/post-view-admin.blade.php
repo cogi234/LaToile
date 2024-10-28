@@ -65,7 +65,7 @@
             <!-- Bannir l'utilisateur -->
             <button title="Marqué le report comme traité bannir l'utilisateur et cacher son post"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-800 dark:hover:text-red-500 mr-4"
-                onclick="event.stopPropagation(); showBanUserModal({{$post->owner_id}}, {{$post->reports_id}}, {{$post->id}});">
+                onclick="event.stopPropagation(); showBanUserModal({{$post->owner_id}}, {{$post->reports_id}}, {{$post->id}}, 'Report');">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
