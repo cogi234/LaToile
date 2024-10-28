@@ -38,6 +38,14 @@ return new class extends Migration
         Schema::table('posts', function (Blueprint $table) {
             $table->boolean("hidden")->default(false);
         });
+        Schema::create('report_messages', function (Blueprint $table) {
+            $table->id();
+            $table->text('reason');
+            $table->boolean('handled')->default(false);
+            $table->unsignedBigInteger('message_id');
+            $table->string('message_type');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -51,5 +59,6 @@ return new class extends Migration
         Schema::dropIfExists('reports');
         Schema::dropIfExists('warnings');
         Schema::dropIfExists('bans');
+        Schema::dropIfExists('reports_messages');
     }
 };

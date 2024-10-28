@@ -3,7 +3,7 @@
     => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:bg-gray-700 overflow-hidden shadow-sm
     rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0"]) }}>
     <!-- admin table -->
-    <div class="ml-4 text-gray-900 dark:text-gray-100">
+    <div class="ml-4 text-gray-900 dark:text-gray-100 mb-4">
         <!-- Personne qui a créer le report -->
         <div class="flex sm:flex-row sm:mb-0 mb-4 flex-col items-center">
             <span class="font-bold text-lg mr-4">Reporté par : </span>

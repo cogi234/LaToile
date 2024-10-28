@@ -3,9 +3,9 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
-use App\Models\Post;
-use App\Models\User;
-use App\Models\Report;
+use App\Models\ReportMessage;
+use App\Models\PrivateMessage;
+use App\Models\GroupMessage;
 use App\Notifications\ReportConfirmation;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,25 +14,32 @@ new class extends Component {
     public string $reason = ''; // La raison du report
 
     #[Locked]
-    public int $postId = -1;
+    public int $messageId = -1;
+
+    #[Locked]
+    public string $messageType = '';
 
     #[Locked]
     public bool $enabled = false;
 
-    #[On('open-report-modal')]
-    public function open(int $postId) {
-        // Ne pas ouvrir le modal pour un post inexistant
-        $post = Post::find($postId);
-        if ($post == null) return;
+    #[On('open-reportMessage-modal')]
+    public function open(int $messageId, string $messageType) {
+        // Charger le modèle correct en fonction de messageType
+        $messageClass = $messageType === 'PrivateMessage' ? PrivateMessage::class : GroupMessage::class;
 
-        $this->postId = $postId;
+        // Ne pas ouvrir le modal pour un message inexistant
+        $message = $messageClass::find($messageId);
+        if ($message == null) return;
+
+        $this->messageId = $messageId;
+        $this->messageType = $messageType;
         $this->enabled = true;
         $this->resetValidation();
     }
 
-    #[On('close-report-modal')]
+    #[On('close-reportMessage-modal')]
     public function close() {
-        $this->reset('postId', 'enabled', 'reason');
+        $this->reset('messageId', 'messageType', 'enabled', 'reason');
     }
 
     public function submitReport() {
@@ -47,17 +54,16 @@ new class extends Component {
         }
 
         // Sauvegarder le rapport dans la base de données
-        Report::create([
+        ReportMessage::create([
             'reason' => strip_tags($this->reason),
-            'post_id' => $this->postId,
-            'user_id' => Auth::id()
+            'message_id' => $this->messageId,
+            'message_type' => $this->messageType
         ]);
 
         // Envoyer une notificaiton à l'utilisateur
-        Auth::user()->notify(new ReportConfirmation(Post::find($this->postId), $this->reason));
+        Auth::user()->notify(new ReportConfirmation(null, $this->reason));
 
         $this->close();
-        $this->dispatch('reset-reports');
     }
 };
 ?>
@@ -77,7 +83,7 @@ new class extends Component {
             </button>
         </div>
         <form wire:submit.prevent='submitReport'>
-            <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Signaler le post</span>
+            <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Signaler le message</span>
 
             <!-- Sélecteur de raisons -->
             <select wire:model='reason'
@@ -89,8 +95,7 @@ new class extends Component {
                 <option title="Exemples : menaces, encouragement à la violence..." value="Menace ou incitation à la violence">Menace ou incitation à la violence</option>
                 <option title="Exemples : faux profils, usurpation d'identité..." value="Usurpation d'identité">Usurpation d'identité</option>
                 <option title="Exemples : escroqueries, fausses promesses, informations trompeuses..." value="Anarque, fraude ou fausses informations">Anarque, fraude ou fausses informations</option>
-                <option title="Exemples : contenu répétitif, trop long inutilement..." value="Spam">Spam</option>
-                <option title="Exemples : tags offensants ou inapproprié" value="Tag(s) inapproprié(s)">Tag(s) inapproprié(s)</option>            
+                <option title="Exemples : contenu répétitif, trop long inutilement..." value="Spam">Spam</option>         
             </select>
 
             @error('reason') <div class="text-red-600 font-bold mt-2">{{ $message }}</div> @enderror
@@ -112,13 +117,14 @@ new class extends Component {
 
 <!-- Script pour ouvrir le formulaire de signalement -->
 <script>
-    function showReportModal(postId = -1) {
-            this.dispatchEvent(
-                new CustomEvent('open-report-modal', {
-                    detail: {
-                        postId: postId
-                    }
-                })
-            );
-        }
+    function showReportMessageModal(messageId = -1, messageType = '') {
+        this.dispatchEvent(
+            new CustomEvent('open-reportMessage-modal', {
+                detail: {
+                    messageId: messageId,
+                    messageType: messageType
+                }
+            })
+        );
+    }
 </script>

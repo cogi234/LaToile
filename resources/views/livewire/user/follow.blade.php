@@ -51,7 +51,7 @@ new class extends Component {
 
 }; ?>
 
-<div  class="inline-block mx-2 mb-1">
+<div  class="inline-block mx-1">
 @if ($followed)
     <button wire:click='unfollow' title="Arrêter de suivre la personne" onclick="event.stopPropagation()" class="inline-flex items-center px-2 py-0.5 uppercase tracking-widest border border-transparent rounded-md font-semibold text-xs bg-gray-300 dark:bg-gray-600 text-grey-400 dark:text-gray-400 hover:bg-gray-400 dark:hover:bg-gray-700 focus:bg-gray-500 dark:focus:bg-gray-700 active:bg-gray-500 dark:active:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 mr-2">

@@ -18,11 +18,13 @@ class ReportConfirmation extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(Post $post, string $reason)
+    public function __construct(?Post $post, string $reason)
     {
         $this->message = '✅ Votre signalement pour "' . $reason . '" à bien été envoyé';
         $this->short_message = "✅ Votre signalement à bien été envoyé";
-        $this->url = '/post/' . $post->id;
+        if ($post) {
+            $this->url = '/post/' . $post->id;
+        } 
     }
 
     /**
