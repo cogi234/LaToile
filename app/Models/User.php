@@ -72,6 +72,16 @@ class User extends Authenticatable
             return Storage::url($this->avatar);
     }
 
+    public function isBanned() 
+    {
+        $bans = $this->bans()->get();
+        foreach ($bans as $ban) {
+            if ($ban->end_time == null || $ban->end_time < now())
+            return true;
+        }
+        return false;
+    }
+
     //Relationships
 
     /**

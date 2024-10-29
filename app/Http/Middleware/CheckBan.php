@@ -17,19 +17,8 @@ class CheckBan
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && !Auth::user()->moderator) {
-            // Récupérez l'utilisateur connecté
-            $user = Auth::user();
-
-            // Vérifiez s'il a un bannissement actif
-            $ban = Ban::where('user_id', $user->id)->first();
-
-            // Si un bannissement existe, vérifiez sa date de fin
-            if ($ban && !$ban->end_time || $ban && $ban->end_time > now()) {
+        if (Auth::check() && !Auth::user()->moderator && Auth::user()->isBanned()) {
                 return redirect()->route('banned');
-            } else if ($ban) {
-                $ban->delete(); // Supprimez le bannissement de la base de données
-            }
         }
         return $next($request);
     }
