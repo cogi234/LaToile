@@ -25,6 +25,7 @@ return new class extends Migration
             $table->boolean('read')->default(false);
             $table->foreignId('user_id');
             $table->foreignId('report_id')->nullable();
+            $table->string('report_type');
             $table->timestamps();
         });
         Schema::create('bans', function (Blueprint $table) {

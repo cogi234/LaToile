@@ -51,4 +51,12 @@ class Report extends Model
     {
         return $this->morphMany(Ban::class, 'report');
     }
+
+    /**
+     * The polymorphic relationship to the report.
+     */
+    public function warnings(): MorphMany
+    {
+        return $this->morphMany(Warning::class, 'report');
+    }
 }

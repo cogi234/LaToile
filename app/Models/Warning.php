@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Warning extends Model
 {
@@ -19,6 +20,7 @@ class Warning extends Model
         'message',
         'user_id',
         'report_id',
+        'report_type',
     ];
 
     
@@ -35,8 +37,8 @@ class Warning extends Model
     /**
      * The report that lead to this warning
      */
-    public function report(): BelongsTo
+    public function report(): MorphTo
     {
-        return $this->belongsTo(Report::class);
+        return $this->MorphTo();
     }
 }

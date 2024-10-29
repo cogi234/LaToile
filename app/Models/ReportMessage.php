@@ -37,11 +37,19 @@ class ReportMessage extends Model
         return $this->morphTo();
     }
 
-        /**
+    /**
      * Get all bans associated with this report message.
      */
     public function bans(): MorphMany
     {
         return $this->morphMany(Ban::class, 'report');
+    }
+
+    /**
+     * The polymorphic relationship to the report.
+     */
+    public function warnings(): MorphMany
+    {
+        return $this->morphMany(Warning::class, 'report');
     }
 }

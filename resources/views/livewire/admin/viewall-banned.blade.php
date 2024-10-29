@@ -47,6 +47,8 @@ new class extends Component {
                         <td>{{ $ban->report_type }}</td>
                         <td>{{ $ban->created_at ? \Carbon\Carbon::parse($ban->created_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
                         <td>{{ $ban->updated_at ? \Carbon\Carbon::parse($ban->updated_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
+                        <!-- débannir l'utilisateur -->
+                        <td><livewire:admin.unban :userId="$ban->user_id"/></td>
                     </tr>
                 @endforeach
             </tbody>
