@@ -5,6 +5,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use App\Models\PrivateMessage;
 use App\Models\User;
+use App\Notifications\MessageReceived;
 
 new class extends Component {
 
@@ -90,6 +91,9 @@ new class extends Component {
             'sender_id' => Auth::id(),
             'receiver_id' => $this->targetUserId,
         ]);
+
+        //Send a notification to the receiver
+        User::find($this->targetUserId)->notify(new MessageReceived(Auth::user()));
 
         $this->messageContent = '';
 
