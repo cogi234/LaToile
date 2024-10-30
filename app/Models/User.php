@@ -76,7 +76,7 @@ class User extends Authenticatable
     {
         $bans = $this->bans()->get();
         foreach ($bans as $ban) {
-            if ($ban->end_time == null || $ban->end_time > now())
+            if ($ban->end_time === null || $ban->end_time > now())
             return true;
         }
         return false;
