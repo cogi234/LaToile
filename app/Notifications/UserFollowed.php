@@ -20,7 +20,7 @@ class UserFollowed extends Notification
      */
     public function __construct(User $follower)
     {
-        $this->message = $follower->name . ' a commencé à te suivre!';
+        $this->message = "✨ " . $follower->name . ' a commencé à te suivre!';
         $this->url = '/user/' . $follower->id;
     }
 

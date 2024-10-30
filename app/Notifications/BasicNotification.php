@@ -19,7 +19,7 @@ class BasicNotification extends Notification
      */
     public function __construct(string $message, ?string $url = null, ?string $short_message = null)
     {
-        $this->message = $message;
+        $this->message = "🔔 " . $message;
         $this->url = $url;
         $this->short_message = $short_message;
     }

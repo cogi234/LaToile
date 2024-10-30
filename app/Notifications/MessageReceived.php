@@ -21,7 +21,7 @@ class MessageReceived extends Notification
      */
     public function __construct(User $sender)
     {
-        $this->message = $sender->name . " t'a envoyé un message!";
+        $this->message = "✉️ " . $sender->name . " t'a envoyé un message!";
         $this->url = '/messages/' . $sender->id;
     }
 

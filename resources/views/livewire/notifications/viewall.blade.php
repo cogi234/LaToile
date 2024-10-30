@@ -39,7 +39,7 @@ new class extends Component {
             $this->markRead($newNotifs);
 
             // Merge the new notifications with the existing ones
-            $this->notifications = $this->posts->concat($newNotifs);
+            $this->notifications = $this->notifications->concat($newNotifs);
 
             // Check if there are more pages to load
             $this->moreAvailable = $newNotifs->count() == 10;
