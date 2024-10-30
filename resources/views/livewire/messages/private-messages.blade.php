@@ -183,7 +183,6 @@ new class extends Component {
 ?>
 
 <div wire:click='stopEditing' class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
-
     <div class="border-r-2 h-full overflow-y-auto">
 
         <!-- Messsagerie de groupe -->

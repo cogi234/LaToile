@@ -1,8 +1,10 @@
 <x-app-layout>
     <livewire:messages.report />
-    <livewire:messages.private-messages :targetUserId="$targetUserId" />
-
-    
+        @if ($isGroup)
+                <livewire:messages.group-messages :targetGroupId="$targetGroupId" />
+        @else
+                <livewire:messages.private-messages :targetUserId="$targetUserId" />
+        @endif
 
     <style>
         main{
