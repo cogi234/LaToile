@@ -119,7 +119,7 @@ new class extends Component {
 
         $this->close();
 
-        return redirect()->route('adminPage');
+        $this->dispatch('reset-post-views');
     }
 };
 ?>

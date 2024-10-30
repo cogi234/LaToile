@@ -82,6 +82,15 @@ class User extends Authenticatable
         return false;
     }
 
+    public function unban()
+    {
+        $bans = $this->bans()->get();
+        foreach ($bans as $ban) {
+            if ($ban->end_time === null || $ban->end_time > now())
+                $ban->delete();
+        }
+    }
+
     //Relationships
 
     /**

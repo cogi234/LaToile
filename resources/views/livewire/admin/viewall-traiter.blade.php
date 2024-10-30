@@ -1,75 +1,62 @@
 <?php
 
 use Livewire\Volt\Component;
-use App\Models\Post;
+use App\Models\Report;
 use Livewire\Attributes\On;
 
 new class extends Component {
-    public $posts;
+    public $reports;
     public $moreAvailable = true;
 
     public function mount()
     {
-        // Get posts reported and not handled, selecting reporter and owner data
-        $this->posts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason', 'reports.id as reports_id')
-            ->join('reports', 'posts.id', '=', 'reports.post_id')
-            ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
-            ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
-            ->where('reports.handled', 1)  // Optional: Only show posts that have been handled
-            ->orderBy('posts.id', 'desc')
+        $this->reports = Report::where('handled', true)
+            ->with(['user', 'post', 'post.user'])
+            ->orderBy('id', 'desc')
             ->take(10)
-            ->with(['tags'])  // Eager load tags
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->reports->count() == 10;
     }
 
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason')
-                ->join('reports', 'posts.id', '=', 'reports.post_id')
-                ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
-                ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
-                ->where('reports.handled', 1)
-                ->where('posts.id', '<', $this->posts->last()->id)
-                ->orderBy('posts.id', 'desc')
+            $newReports = Report::where('handled', true)
+                ->where('id', '<', $this->reports->last()->id)
+                ->with(['user', 'post', 'post.user'])
+                ->orderBy('id', 'desc')
                 ->take(10)
-                ->with(['tags'])
                 ->get();
 
             // Merge the new posts with the existing ones
-            $this->posts = $this->posts->concat($newPosts);
+            $this->reports = $this->reports->concat($newReports);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newPosts->count() == 10;
+            $this->moreAvailable = $newReports->count() == 10;
         }
     }
 
     #[On('reset-post-views')]
     public function resetPosts()
     {
-        $this->posts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason')
-            ->join('reports', 'posts.id', '=', 'reports.post_id')
-            ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
-            ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
-            ->where('reports.handled', 1)
-            ->orderBy('posts.id', 'desc')
+        $this->reports = Report::where('handled', true)
+            ->with(['user', 'post', 'post.user'])
+            ->orderBy('id', 'desc')
             ->take(10)
-            ->with(['tags'])
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->reports->count() == 10;
     }
 };
 
 ?>
 
 <div>
-    @foreach ($posts as $post)
-        <x-post-view-admin-Traiter :post="$post" wire:key='postReport_{{ $post->id }}' />
+    @foreach ($reports as $report)
+        <x-report-view :report="$report" wire:key="report-{{ $report->id }}" />
     @endforeach
      
     @if ($moreAvailable)
@@ -78,9 +65,9 @@ new class extends Component {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
               
-            Charger plus de posts reporter
+            Charger plus de reports
         </x-primary-button>
     @else
-        <div class="dark:text-gray-300 text-center">Il n'y a aucun post traiter.</div>
+        <div class="dark:text-gray-300 text-center">Il ne reste plus de reports traités.</div>
     @endif
 </div>

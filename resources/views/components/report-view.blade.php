@@ -26,7 +26,7 @@
                     class="w-8 h-8 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
                 <span
                     class="mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 hover:underline dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
-                    {{ $report->post->name }}
+                    {{ $report->post->user->name }}
                 </span>
             </a>
         </div>
@@ -36,9 +36,9 @@
         <div class="flex sm:flex-row flex-col sm:space-y-0 space-y-8 items-center">
 
             <!-- Cacher un post -->
-            <livewire:admin.hide-post id="{{ $report->post->id }}"/>
+            <livewire:admin.hide-post id="{{ $report->post_id }}" :key="'hide_' . $report->id"/>
             <!-- Faux report -->
-            <livewire:admin.false-report :reportId="$report->id"/> 
+            <livewire:admin.false-report :reportId="$report->id" :key="'treat' . $report->id"/> 
 
              <!-- Avertissement -->
             <button title="Marquer le report comme traité et envoyer un avertissement à l'utilisateur"
@@ -61,8 +61,11 @@
                 </svg>
                 <span class="ml-1">Supprimer le Post</span>
             </button>
-
-            <!-- Bannir l'utilisateur -->
+            
+            <!-- Bannir/Debannir l'utilisateur -->
+            @if ($report->post->user->isBanned())
+            <livewire:admin.unban :user="$report->post->user" :key="'unban_' . $report->id"/>
+            @else 
             <button title="Marqué le report comme traité bannir l'utilisateur et cacher son post"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-800 dark:hover:text-red-500 mr-4"
                 onclick="event.stopPropagation(); showBanUserModal({{$report->post->user_id}}, {{$report->id}}, {{$report->post_id}}, 'Report');">
@@ -73,6 +76,8 @@
                 </svg>
                 <span class="ml-1">Bannir l'utilisateur</span>
             </button>
+            @endif
+
         </div>
     </div>
 

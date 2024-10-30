@@ -40,7 +40,7 @@ new class extends Component {
     }
 
     #[On('reset-post-views')]
-    public function resetPosts()
+    public function resetReports()
     {
         $this->reports = Report::where('handled', false)
             ->with(['user', 'post', 'post.user'])
