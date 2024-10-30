@@ -74,7 +74,7 @@ new class extends Component {
             $this->groupName = '';
 
             session()->flash('message', 'Le groupe a été créé avec succès.');
-            $this->redirect('/messages/');
+            $this->redirect('/messages/group');
         } else {
             session()->flash('error', 'Le nom du groupe ne peut pas être vide.');
         }
