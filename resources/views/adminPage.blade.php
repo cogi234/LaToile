@@ -1,24 +1,21 @@
 <x-app-layout>
-
+    <!-- Post forms -->
+    @auth
+    <x-post-forms />
+    @endauth
+    
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Post forms -->
-            @auth
-            <x-post-forms />
-            @endauth
-
-            <livewire:drafts.delete />
-            
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">            
             {{-- admin page --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5 mt-14 xl:mt-0">
                 <div class="tabs p-6 text-gray-900 dark:text-gray-100">
                     <!-- Les blocs sont maintenant des liens entièrement cliquables -->
                     <a href="javascript:void(0);" class="tab active" id="allAdmin-tab" onclick="showContent('allAdmin')">
-                        Post a traiter
+                        Post à traiter
                     </a>
                     @auth
                     <a href="javascript:void(0);" class="tab" id="postTraiter-tab" onclick="showContent('postTraiter')">
-                        post traiter
+                        post traité
                     </a>
                     <a href="javascript:void(0);" class="tab" id="UtilisateurBanni-tab" onclick="showContent('UtilisateurBanni')">
                         Utilisateur Banni
@@ -64,17 +61,13 @@
 
         // Cacher tous les contenus
         document.getElementById('allAdmin-content').style.display = 'none';
-        @auth
         document.getElementById('postTraiter-content').style.display = 'none';
         document.getElementById('UtilisateurBanni-content').style.display = 'none';
-        @endauth
 
         // Enlever la classe active de tous les onglets
         document.getElementById('allAdmin-tab').classList.remove('active');
-        @auth
         document.getElementById('postTraiter-tab').classList.remove('active');
         document.getElementById('UtilisateurBanni-tab').classList.remove('active');
-        @endauth
 
         // Afficher la section sélectionnée et rendre l'onglet actif
         document.getElementById(tab + '-content').style.display = 'block';

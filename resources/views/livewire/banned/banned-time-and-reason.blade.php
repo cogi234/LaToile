@@ -36,8 +36,10 @@ new class extends Component {
 };
 ?>
 @php
+if ($endTime != null) {
     Carbon::setLocale('fr');
     $date = Carbon::createFromFormat('Y-m-d', $endTime);
+}
 @endphp
 <div>
     <p class="text-sm text-gray-700 mb-6 dark:text-white">

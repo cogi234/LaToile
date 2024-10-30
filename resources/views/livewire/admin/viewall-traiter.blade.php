@@ -15,7 +15,7 @@ new class extends Component {
             ->join('reports', 'posts.id', '=', 'reports.post_id')
             ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
             ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
-            ->where('reports.handled', 1)  // Optional: Only show posts that haven't been handled
+            ->where('reports.handled', 1)  // Optional: Only show posts that have been handled
             ->orderBy('posts.id', 'desc')
             ->take(10)
             ->with(['tags'])  // Eager load tags

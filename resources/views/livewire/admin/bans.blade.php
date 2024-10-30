@@ -6,11 +6,13 @@ use Livewire\Attributes\Locked;
 use App\Models\User;
 use App\Models\Ban;
 use App\Models\Report;
+use App\Models\ReportMessage;
+use App\Models\PrivateMessage;
 use App\Models\Post;
 
 new class extends Component {
 
-    public string $reason = '';     // La raison du rapport
+    public string $reason = '';        // La raison du rapport
     public ?string $banEndTime = null; // La date de fin du bannissement
     public bool $permanent = false;
 
@@ -21,22 +23,33 @@ new class extends Component {
     public ?int $reportId = -1;
 
     #[Locked]
-    public ?int $postId = -1;
+    public ?int $messageOrPostId = -1;
+
+    #[Locked]
+    public string $reportType = '';
 
     #[Locked]
     public bool $enabled = false;
 
     #[On('open-banUser-modal')]
-    public function open(int $userId, int $reportId, int $postId)
+    public function open(int $userId, int $reportId, int $messageOrPostId, string $reportType)
     {
-        // Ne pas ouvrir le modal pour un utilisateur ou un post inexistant
+        // Charger le modèle correct en fonction de reportType
+        $reportClass = $reportType === 'Report' ? Report::class : ReportMessage::class;
+
+        $messageOrPost = $reportType === 'Report' ? Post::class : PrivateMessage::class;
+
+        // Ne pas ouvrir le modal pour un utilisateur ou un post/message inexistant
         $user = User::find($userId);
-        $post = Post::find($postId);
-        if ($user == null || $post == null) return;
+        $messageOrPost::find($messageOrPostId);
+        $report = $reportClass::find($reportId);
+
+        if ($user == null || $messageOrPost == null || $report == null) return;
 
         $this->userId = $userId;
         $this->reportId = $reportId;
-        $this->postId = $postId;
+        $this->messageOrPostId = $messageOrPostId;
+        $this->reportType = $reportType;
         $this->enabled = true;
         $this->resetValidation();
     }
@@ -44,7 +57,7 @@ new class extends Component {
     #[On('close-banUser-modal')]
     public function close()
     {
-        $this->reset('userId', 'reportId', 'enabled', 'banEndTime', 'permanent','reason');
+        $this->reset('userId', 'reportId', 'messageOrPostId', 'reportType', 'enabled', 'banEndTime', 'permanent', 'reason');
     }
 
     public function banUser()
@@ -82,20 +95,26 @@ new class extends Component {
             'end_time' => $this->banEndTime,
             'user_id' => $this->userId,
             'report_id' => $this->reportId,
+            'report_type' => $this->reportType,
         ]);
 
+        // Charger le modèle correct en fonction de reportType
+        $reportClass = $this->reportType === 'Report' ? Report::class : ReportMessage::class;
+
         // Mettre à jour le rapport pour indiquer qu'il a été traité
-        $report = Report::find($this->reportId);
+        $report = $reportClass::find($this->reportId);
         if ($report) {
             $report->handled = 1;
             $report->save();
         }
 
         // Mettre à jour le post pour qu'il ne doit plus être visible
-        $post = Post::find($this->postId);
-        if ($post) {
-            $post->hidden = 1;
-            $post->save();
+        if ($this->reportType == 'Report') {
+            $post = Post::find($this->messageOrPostId);
+            if ($post) {
+                $post->hidden = 1;
+                $post->save();
+            }
         }
 
         $this->close();
@@ -165,13 +184,14 @@ new class extends Component {
 
 <!-- Script pour ouvrir le formulaire de bannissement -->
 <script>
-    function showBanUserModal(userId = -1, reportId = -1, postId = -1) {
+    function showBanUserModal(userId = -1, reportId = -1, messageOrPostId = -1, reportType = '') {
         this.dispatchEvent(
             new CustomEvent('open-banUser-modal', {
                 detail: {
                     userId: userId,
                     reportId : reportId,
-                    postId : postId
+                    messageOrPostId : messageOrPostId,
+                    reportType : reportType
                 }
             })
         );

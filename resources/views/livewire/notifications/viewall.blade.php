@@ -39,7 +39,7 @@ new class extends Component {
             $this->markRead($newNotifs);
 
             // Merge the new notifications with the existing ones
-            $this->notifications = $this->posts->concat($newNotifs);
+            $this->notifications = $this->notifications->concat($newNotifs);
 
             // Check if there are more pages to load
             $this->moreAvailable = $newNotifs->count() == 10;
@@ -65,13 +65,12 @@ new class extends Component {
         if ($notification->data['url'] != null)
             $href = "href=" . $url;
     @endphp
-    <a class="block w-full px-4 py-2 pb-4 leading-5 my-2 transition duration-150 ease-in-out rounded-lg
+    <a class="block w-full px-4 py-2 pb-4 leading-5 my-2 transition duration-150 ease-in-out rounded-lg shadow-md
         text-gray-700 hover:bg-gray-200 focus:bg-gray-200 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:bg-gray-800"
         {{ $href }}>
         <div class="text-sm text-right dark:text-gray-400 mb-1">{{$formattedTime}}</div>
         <div>{{ $notification->data['message'] }}</div>
     </a>
-    <hr class="mx-1 border-gray-900 border-2 rounded">
     @endforeach
 
     

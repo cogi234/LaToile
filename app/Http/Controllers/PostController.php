@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 
 class PostController extends Controller
@@ -12,52 +13,12 @@ class PostController extends Controller
     {
         $post = Post::find($id);
 
-        if ($post == null || $post->hidden)
+        //If the post doesn't exist, or it's hidden and the user isn't connected or a moderator
+        if ($post == null || ($post->hidden && !Auth::check() && !Auth::user()->moderator))
             return redirect()->route('dashboard');
 
         return view('post.show', [
             'post' => $post
         ]);
-    }
-
-    public function deletePost(int $id)
-    {
-        // Récupérer le post avec les relations nécessaires
-        $post = Post::with(['previous', 'original_post', 'likes', 'tags', 'direct_shares'])->findOrFail($id);
-
-        // Supprimer les relations associées
-        $post->direct_shares()->delete(); // Supprime les posts qui répondent directement
-        $post->likes()->detach(); // Détache tous les likes
-        $post->tags()->detach(); // Détache tous les tags
-
-        // Supprimer les commentaires associés
-
-        // Supprimer le post
-        $post->delete();
-
-        return redirect()->route('dashboard');
-    }
-
-    public function updatePost(Request $request, $id)
-    {
-        $request->validate([
-            'newContent' => 'required|string',
-        ]);
-
-        // Trouver le post par son ID
-        $post = Post::findOrFail($id);
-        
-        $newContent = [
-            [
-                'type' => 'text',
-                'content' => $request->input('newContent'),
-            ]
-        ];
-
-        // Mettre à jour le contenu du post au format JSON
-        $post->content = $newContent;
-        $post->save();
-
-        return redirect()->route('dashboard');
     }
 }

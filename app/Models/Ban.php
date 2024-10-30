@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Ban extends Model
 {
@@ -22,6 +23,7 @@ class Ban extends Model
         'end_time',
         'user_id',
         'report_id',
+        'report_type',
     ];
 
     
@@ -36,10 +38,10 @@ class Ban extends Model
     }
 
     /**
-     * The report that lead to this ban
+     * The report that lead to this ban (polymorphic)
      */
-    public function report(): BelongsTo
+    public function report(): MorphTo
     {
-        return $this->belongsTo(Report::class);
+        return $this->morphTo();
     }
 }
