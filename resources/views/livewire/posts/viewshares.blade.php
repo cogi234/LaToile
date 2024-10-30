@@ -18,6 +18,8 @@ new class extends Component {
     {
         $this->post = $post;
         $this->shares = $this->post->original_shares()
+            ->withCount('tags')
+            ->where('tags_count', 0)
             ->where('content', '[]')
             ->orderBy('created_at', 'desc')
             ->take(10)
@@ -31,14 +33,16 @@ new class extends Component {
     {
         if ($this->moreAvailable) {
             $newShares = $this->post->original_shares()
+                ->withCount('tags')
+                ->where('tags_count', 0)
                 ->where('content', '[]')
                 ->where('created_at', '<', $this->shares->last()->created_at)
                 ->orderBy('created_at', 'desc')
                 ->take(10)
                 ->get();
 
-            // Merge the new posts with the existing ones
-            $this->shares = $this->posts->concat($newShares);
+            // Merge the new shares with the existing ones
+            $this->shares = $this->shares->concat($newShares);
 
             // Check if there are more pages to load
             $this->moreAvailable = $newShares->count() == 10;
@@ -49,6 +53,8 @@ new class extends Component {
     public function resetShares()
     {
         $this->shares = $this->post->original_shares()
+            ->withCount('tags')
+            ->where('tags_count', 0)
             ->where('content', '[]')
             ->orderBy('created_at', 'desc')
             ->take(10)
