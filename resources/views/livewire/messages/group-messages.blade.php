@@ -135,17 +135,29 @@ new class extends Component {
                     <!-- Menu déroulant avec les options -->
                     <div id="optionsMenu" class="absolute bg-white dark:bg-gray-700 shadow-md rounded-lg mt-2 p-4 hidden">
                         <!-- Option pour voir les membres du groupe -->
-                        <button onclick="toggleMembersMenu()" class="block text-left w-full py-1 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                        <button type="button" id="viewMembers" onclick="toggleMembersMenu()" class="flex justify-between items-center w-full py-1 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
                             Voir les membres
+                            <span class="ml-2">
+                                <!-- SVG flèche droite -->
+                                <svg class="w-4 h-4 text-gray-800 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0L13.707 9.293a1 1 0 010 1.414l-5 5a1 1 0 11-1.414-1.414L11.586 10 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </span>
                         </button>
+                        
+                        <!-- Séparateur -->
+                        <hr class="border-gray-300 dark:border-gray-600 my-2">
                         
                         <!-- Option pour quitter le groupe -->
                         <button onclick="leaveGroup()" class="block text-left w-full py-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-600 rounded">
                             Quitter le groupe
                         </button>
                     </div>
+
+                    <!-- Membres du groupe -->
+                    <livewire:messages.group-members-form />
                 
-                    <!-- Menu pour afficher les membres du groupe -->
+                    {{-- <!-- Menu pour afficher les membres du groupe -->
                     <div id="membersMenu" class="absolute bg-white dark:bg-gray-700 shadow-md rounded-lg mt-2 p-4 hidden">
                         <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Membres</h4>
                         @foreach ($groupMembers as $member)
@@ -153,7 +165,8 @@ new class extends Component {
                                 {{ $member->name }}
                             </div>
                         @endforeach
-                    </div>
+                    </div> --}}
+                    
                 </div>
             </div>
             <!-- Zone de discussion -->
@@ -263,11 +276,6 @@ new class extends Component {
         function toggleOptionsMenu() {
             document.getElementById("optionsMenu").classList.toggle("hidden");
             document.getElementById("membersMenu").classList.add("hidden");
-        }
-    
-        function toggleMembersMenu() {
-            document.getElementById("membersMenu").classList.toggle("hidden");
-            document.getElementById("optionsMenu").classList.add("hidden");
         }
     
         function leaveGroup() {
