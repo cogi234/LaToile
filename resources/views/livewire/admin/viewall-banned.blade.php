@@ -12,7 +12,6 @@ new class extends Component {
 
     public function mount()
 {
-
     $this->bans = Ban::with('user')->get();
 }
 
@@ -47,6 +46,8 @@ new class extends Component {
                         <td class="px-10">{{ $ban->user ? $ban->user->name : 'Unknown User' }}</td>
                         <td class="px-10">{{ $ban->created_at ? \Carbon\Carbon::parse($ban->created_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
                         <td class="px-10">{{ $ban->updated_at ? \Carbon\Carbon::parse($ban->updated_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
+                        <!-- débannir l'utilisateur -->
+                        <td><livewire:admin.unban :userId="$ban->user_id"/></td>
                     </tr>
                 @endforeach
             </tbody>
