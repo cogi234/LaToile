@@ -1,7 +1,5 @@
 <?php
 use Livewire\Volt\Component;
-use Illuminate\Support\Facades\Auth;
-use App\Models\PrivateMessage;
 
 new class extends Component {
     public bool $isGroupConversation = false;
@@ -15,13 +13,11 @@ new class extends Component {
 <div>
     <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
         <div class="flex flex-row gap-3 text-xl font-semibold dark:text-white">
-            <button
-                @class(['text-blue-500' => !$isGroupConversation])>
+            <button @class(['text-blue-500' => !$isGroupConversation])>
                 <span>Conversations</span>
             </button>
             <span>/</span>
-            <button
-                @class(['text-blue-500' => $isGroupConversation])>
+            <button @class(['text-blue-500' => $isGroupConversation])>
                 <span>Groupes</span>
             </button>
         </div>

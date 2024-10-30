@@ -1,4 +1,5 @@
 <x-app-layout>
+    <livewire:messages.report />
     <livewire:messages.private-messages :targetUserId="$targetUserId" />
 
     

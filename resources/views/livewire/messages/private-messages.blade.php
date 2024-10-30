@@ -5,10 +5,8 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use App\Models\PrivateMessage;
 use App\Models\User;
-use Livewire\WithPagination;
 
 new class extends Component {
-    use WithPagination;
 
     public string $messageContent = "";
     public $privateMessages = [];
@@ -185,28 +183,11 @@ new class extends Component {
 ?>
 
 <div wire:click='stopEditing' class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
-    <livewire:messages.report />
+
     <div class="border-r-2 h-full overflow-y-auto">
-        <!-- <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
-            <div class="flex flex-row gap-3 text-xl font-semibold dark:text-white">
-                <button>
-                    <span class="">Conversations</span>
-                </button>
-                <span>/</span>
-                <button>
-                    <span>Groupes</span>
-                </button>
-            </div>
-            <button type="button" id="addMessages" onclick="showMessageCreator()" 
-                class="btn btn-primary text-gray-500 dark:text-gray-300" title="Créer un groupe de discussion">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-            </button>
-        </div> -->
 
         <!-- Messsagerie de groupe -->
-        <livewire:messages.messageBoard :isGroup="false" />
+        <livewire:messages.messageBoard wire:key='{{str()->random(40)}}' />
 
         @if($privateMessages->isEmpty() && $targetUserId == null)
         <div class="p-4">
@@ -215,11 +196,11 @@ new class extends Component {
             </p>
         </div>
         @else
-        <div x-data="{ query: '' }">
+        <div>
             <!-- Search Bar -->
             <div class="p-4" >
                 <div class="relative">
-                    <input type="text" name="query" id="searchBar" x-model="query"
+                    <input type="text" name="query" id="searchBar"
                         class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
                         placeholder="Rechercher des Messages Directs"/>
             
