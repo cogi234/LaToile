@@ -11,14 +11,14 @@
                 <div class="tabs p-6 text-gray-900 dark:text-gray-100">
                     <!-- Les blocs sont maintenant des liens entièrement cliquables -->
                     <a href="javascript:void(0);" class="tab active" id="allAdmin-tab" onclick="showContent('allAdmin')">
-                        Post à traiter
+                        Posts à traiter
                     </a>
                     @auth
                     <a href="javascript:void(0);" class="tab" id="postTraiter-tab" onclick="showContent('postTraiter')">
-                        post traité
+                        Posts traités
                     </a>
                     <a href="javascript:void(0);" class="tab" id="UtilisateurBanni-tab" onclick="showContent('UtilisateurBanni')">
-                        Utilisateur Banni
+                        Utilisateurs Bannis
                     </a>
                     @endauth
                 </div>
