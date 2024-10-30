@@ -10,24 +10,26 @@
         displayDeleteButton="{{ true }}"
         main="true"/>
 
-    @if ($post->previous_content != null)
-    <!-- Le contenu des posts precedents dans la chaine de partage -->
-    <x-post-content :content="$post->previous_content" :postId="$post->id" />
-    @endif
-
-    <!-- Contenu du post -->
-    <div class="ml-4 text-gray-900 dark:text-gray-100">
-        @if ($post->previous_content != null && $post->content != null)
-        <hr class="mb-2" />
-        <x-post-user 
-        :key="$post->id" 
-        :user="$post->user" 
-        :post="$post"
-        displayEditButton="{{ false }}"
-        displayDeleteButton="{{ false }}"/>
+    <div>
+        @if ($post->previous_content != null)
+        <!-- Le contenu des posts precedents dans la chaine de partage -->
+        <x-post-content :content="$post->previous_content" :postId="$post->id" />
         @endif
+
+        <!-- Contenu du post -->
+        <div class="ml-4 text-gray-900 dark:text-gray-100">
+            @if ($post->previous_content != null && $post->content != null)
+            <hr class="mb-2" />
+            <x-post-user 
+            :key="$post->id" 
+            :user="$post->user" 
+            :post="$post"
+            displayEditButton="{{ false }}"
+            displayDeleteButton="{{ false }}"/>
+            @endif
+        </div>
+        <x-post-content :postId="$post->id" :content="$post->content" />
     </div>
-    <x-post-content :postId="$post->id" :content="$post->content" />
 
     <!-- Tags -->
     @if ($post->tags()->count() > 0)
