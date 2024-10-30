@@ -46,6 +46,7 @@ return new class extends Migration
             $table->boolean('handled')->default(false);
             $table->unsignedBigInteger('message_id');
             $table->string('message_type');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
         });
     }

@@ -17,13 +17,16 @@ new class extends Component {
     public int $messageId = -1;
 
     #[Locked]
+    public int $userId = -1;
+
+    #[Locked]
     public string $messageType = '';
 
     #[Locked]
     public bool $enabled = false;
 
     #[On('open-reportMessage-modal')]
-    public function open(int $messageId, string $messageType) {
+    public function open(int $messageId, string $messageType, int $userId) {
         // Charger le modèle correct en fonction de messageType
         $messageClass = $messageType === 'PrivateMessage' ? PrivateMessage::class : GroupMessage::class;
 
@@ -33,13 +36,14 @@ new class extends Component {
 
         $this->messageId = $messageId;
         $this->messageType = $messageType;
+        $this->userId = $userId;
         $this->enabled = true;
         $this->resetValidation();
     }
 
     #[On('close-reportMessage-modal')]
     public function close() {
-        $this->reset('messageId', 'messageType', 'enabled', 'reason');
+        $this->reset('messageId', 'messageType', 'userId', 'enabled', 'reason');
     }
 
     public function submitReport() {
@@ -57,7 +61,8 @@ new class extends Component {
         ReportMessage::create([
             'reason' => strip_tags($this->reason),
             'message_id' => $this->messageId,
-            'message_type' => $this->messageType
+            'message_type' => $this->messageType,
+            'user_id' => $this->userId,
         ]);
 
         // Envoyer une notificaiton à l'utilisateur
@@ -117,12 +122,13 @@ new class extends Component {
 
 <!-- Script pour ouvrir le formulaire de signalement -->
 <script>
-    function showReportMessageModal(messageId = -1, messageType = '') {
+    function showReportMessageModal(messageId = -1, messageType = '', userId = -1) {
         this.dispatchEvent(
             new CustomEvent('open-reportMessage-modal', {
                 detail: {
                     messageId: messageId,
-                    messageType: messageType
+                    messageType: messageType,
+                    userId: userId,
                 }
             })
         );

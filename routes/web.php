@@ -56,6 +56,11 @@ Route::middleware(['banned'])->group(function () {
     Route::view('adminPage', 'adminPage')
         ->middleware(['auth', 'admin'])
         ->name('adminPage');
+
+    //Settings
+    Route::view('settings', 'settings')
+    ->middleware(['auth'])
+    ->name('settings');
 });
 
 

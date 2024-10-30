@@ -283,7 +283,7 @@ new class extends Component {
                             <!-- Signaler -->
                             <button title="Signaler le message"
                                 class="share-button flex items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
-                                onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
+                                onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage', {{auth()->user()->id}});">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor" class="size-6">
                                     <path stroke-linecap="round" stroke-linejoin="round"
