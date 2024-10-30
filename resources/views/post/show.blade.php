@@ -29,11 +29,11 @@
             <div class="bg-transparent overflow-hidden">
                 <div class="text-gray-900 dark:text-gray-100">
                     <div id="responses-content" class="content-section" style="display: block;">
-                        <livewire:posts.viewresponses />
+                        <livewire:posts.viewresponses :post="$post" />
                     </div>
                     @auth
                     <div id="shares-content" class="content-section" style="display: none;">
-                        <livewire:posts.viewshares />
+                        <livewire:posts.viewshares :post="$post" />
                     </div>
                     <div id="likes-content" class="content-section" style="display: none;">
                         <livewire:posts.viewlikes :post="$post" />

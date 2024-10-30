@@ -71,7 +71,7 @@ new class extends Component {
         <!-- Image de profil -->
         <div>
             <img src="{{ $like->getAvatar() }}" alt="Profile Image"
-                class="w-10 h-10 rounded-full mr-4 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
+                class="w-10 h-10 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
         </div>
         <span class="flex">
             <b>{{ $like->name }}</b> 
