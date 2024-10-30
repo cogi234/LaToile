@@ -17,6 +17,8 @@ new class extends Component {
     public $searchQuery = '';
     public $searchResults = [];
 
+    public $groupMembers = [];
+
     public function mount(?int $targetGroupId)
     {
         $this->updateGroupConversations();
@@ -38,6 +40,7 @@ new class extends Component {
 
         $this->targetGroupId = $targetGroupId;
         $this->targetGroup = $targetGroup;
+        $this->getGroupMembers();
         $this->updateSelectedConversation();
         $this->dispatch('updateSelectedConversation');
     }
@@ -58,6 +61,12 @@ new class extends Component {
             $query->where('user_id', Auth::id())
                 ->where('group_id', $this->targetGroupId);
         })->get();
+    }
+    public function getGroupMembers()
+    {
+        if ($this->targetGroup) {
+            $this->groupMembers = $this->targetGroup->memberships()->get();
+        }
     }
 
 }; ?>
@@ -109,16 +118,42 @@ new class extends Component {
             </div>
         @endif
     </div>
-    @php
-        Log::info($targetGroup)
-    @endphp
+    
     @if ($targetGroup !== null)
         <div id="message_area" class="h-full flex flex-col overflow-y-scroll">
             <!-- Infos de la discussion -->
-            <div class="flex items-center pl-4 pt-2">
+            <div class="flex items-center gap-5 pl-4 pt-2 w-full">
                 {{-- <img class="w-12 h-12 rounded-full shadow-lg" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/> --}}
                 <div class="ml-3 text-sm font-medium text-gray-900 dark:text-white">
                     {{ $targetGroup->name }}
+                </div>
+                <div class="pr-12">
+                    <button class="text-gray-500 dark:text-gray-300" onclick="toggleOptionsMenu()">
+                        &#x2026;
+                    </button>
+                
+                    <!-- Menu déroulant avec les options -->
+                    <div id="optionsMenu" class="absolute bg-white dark:bg-gray-700 shadow-md rounded-lg mt-2 p-4 hidden">
+                        <!-- Option pour voir les membres du groupe -->
+                        <button onclick="toggleMembersMenu()" class="block text-left w-full py-1 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                            Voir les membres
+                        </button>
+                        
+                        <!-- Option pour quitter le groupe -->
+                        <button onclick="leaveGroup()" class="block text-left w-full py-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-600 rounded">
+                            Quitter le groupe
+                        </button>
+                    </div>
+                
+                    <!-- Menu pour afficher les membres du groupe -->
+                    <div id="membersMenu" class="absolute bg-white dark:bg-gray-700 shadow-md rounded-lg mt-2 p-4 hidden">
+                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Membres</h4>
+                        @foreach ($groupMembers as $member)
+                            <div class="py-1 text-gray-800 dark:text-gray-300">
+                                {{ $member->name }}
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
             <!-- Zone de discussion -->
@@ -126,7 +161,7 @@ new class extends Component {
                 @if ($selectedConversation)
                     @foreach ($selectedConversation as $message)
                         @php
-                            $isCurrentUserMessage = $message->sender_id == Auth::id();
+                            $isCurrentUserMessage = $message->user_id == Auth::id();
                             $currentTimeZone = 'America/Toronto';
                             $timeFormat = 'Y-m-d H:i';
                         @endphp
@@ -223,4 +258,20 @@ new class extends Component {
             </p>
         </div>
     @endif
+
+    <script>
+        function toggleOptionsMenu() {
+            document.getElementById("optionsMenu").classList.toggle("hidden");
+            document.getElementById("membersMenu").classList.add("hidden");
+        }
+    
+        function toggleMembersMenu() {
+            document.getElementById("membersMenu").classList.toggle("hidden");
+            document.getElementById("optionsMenu").classList.add("hidden");
+        }
+    
+        function leaveGroup() {
+            alert('Vous avez quitté le groupe');
+        }
+    </script>
 </div>
