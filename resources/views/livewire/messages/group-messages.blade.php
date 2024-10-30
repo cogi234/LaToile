@@ -24,8 +24,6 @@ new class extends Component {
                 session()->flash('error', 'Groupe non trouvé');
                 return;
             }
-
-            
         }
     }
 
