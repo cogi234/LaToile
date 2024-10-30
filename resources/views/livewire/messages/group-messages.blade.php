@@ -24,8 +24,6 @@ new class extends Component {
                 session()->flash('error', 'Groupe non trouvé');
                 return;
             }
-
-            
         }
     }
 
@@ -49,8 +47,26 @@ new class extends Component {
         $this->dispatch('updateSelectedConversation');
     }
 
+    public function updateGroupConversations() {
+        
+
+        
+
+        $this->updateSelectedConversation();
+    }
+
+    public function updateSelectedConversation() {
+        
+
+    }
+
 }; ?>
 
-<div>
-    Groupes
+<div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
+    <div class="border-r-2 h-full overflow-y-auto">
+        
+        <!-- Board pour changer avec messages de groupe + création -->
+        <livewire:messages.messageBoard :isGroup='true' wire:key='messageBoardComponent' />
+
+    </div>
 </div>
