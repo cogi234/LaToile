@@ -135,7 +135,7 @@ new class extends Component {
                     <!-- Menu déroulant avec les options -->
                     <div id="optionsMenu" class="absolute bg-white dark:bg-gray-700 shadow-md rounded-lg mt-2 p-4 hidden">
                         <!-- Option pour voir les membres du groupe -->
-                        <button type="button" id="viewMembers" onclick="toggleMembersMenu()" class="flex justify-between items-center w-full py-1 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                        <button type="button" id="viewMembers" onclick="toggleMembersMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
                             Voir les membres
                             <span class="ml-2">
                                 <!-- SVG flèche droite -->
@@ -153,9 +153,9 @@ new class extends Component {
                             Quitter le groupe
                         </button>
                     </div>
-
                     <!-- Membres du groupe -->
                     <livewire:messages.group-members-form />
+                    
                 
                     {{-- <!-- Menu pour afficher les membres du groupe -->
                     <div id="membersMenu" class="absolute bg-white dark:bg-gray-700 shadow-md rounded-lg mt-2 p-4 hidden">
