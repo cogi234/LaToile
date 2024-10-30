@@ -2,16 +2,20 @@
 
 use Livewire\Volt\Component;
 use App\Models\Ban; 
+use App\Models\User;
 use Livewire\Attributes\On;
 
 new class extends Component {
     public $bans;
+    public $posts;
+    
 
     public function mount()
-    {
-        // Retrieve all bans from the database
-        $this->bans = Ban::all();
-    }
+{
+
+    $this->bans = Ban::with('user')->get();
+}
+
 
 };
 
@@ -26,28 +30,27 @@ new class extends Component {
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Reason</th>
-                    <th>End Time</th>
-                    <th>User ID</th>
-                    <th>Report ID</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
+                    <th>Raison</th>
+                    <th>Date de fin</th>
+                    <th>Nom User</th>
+                    <th>Date de création</th>
+                    <th>Date de modification</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($bans as $ban)
-                    <tr>
-                        <td>{{ $ban->id }}</td>
-                        <td>{{ $ban->reason }}</td>
-                        <td>{{ $ban->end_time ? \Carbon\Carbon::parse($ban->end_time)->format('Y-m-d H:i:s') : 'N/A' }}</td>
-                        <td>{{ $ban->user_id }}</td>
-                        <td>{{ $ban->report_id ?? 'N/A' }}</td>
-                        <td>{{ $ban->created_at ? \Carbon\Carbon::parse($ban->created_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
-                        <td>{{ $ban->updated_at ? \Carbon\Carbon::parse($ban->updated_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
+                    <tr style="border: 1px solid #ccc; padding: 10px;">
+                        <td class="px-10 text-wrap" style="max-width: 200px; word-break: break-word;">
+                            {{ $ban->reason }}
+                        </td>
+                        <td class="px-10">{{ $ban->end_time ? \Carbon\Carbon::parse($ban->end_time)->format('Y-m-d H:i:s') : 'PERMANENT' }}</td>
+                        <td class="px-10">{{ $ban->user ? $ban->user->name : 'Unknown User' }}</td>
+                        <td class="px-10">{{ $ban->created_at ? \Carbon\Carbon::parse($ban->created_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
+                        <td class="px-10">{{ $ban->updated_at ? \Carbon\Carbon::parse($ban->updated_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     @endif
 </div>
+
