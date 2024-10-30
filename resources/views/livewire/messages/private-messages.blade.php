@@ -187,7 +187,7 @@ new class extends Component {
     <div class="border-r-2 h-full overflow-y-auto">
 
         <!-- Messsagerie de groupe -->
-        <livewire:messages.messageBoard wire:key='{{str()->random(40)}}' />
+        <livewire:messages.messageBoard wire:key='messageBoardComponent' />
 
         @if($privateMessages->isEmpty() && $targetUserId == null)
         <div class="p-4">
