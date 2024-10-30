@@ -32,7 +32,7 @@ new class extends Component {
         if (trim($this->search) === '') {
             $this->users = [];
         } else {
-            $this->users = User::where('name', 'like', $this->search . '%')
+            $this->users = User::where('name', 'like', '%' . $this->search . '%')
                 ->whereNotIn('id', $this->selectedUsers)
                 ->take(10)
                 ->get();
