@@ -15,14 +15,12 @@
                     <a href="javascript:void(0);" class="tab active" id="responses-tab" onclick="showContent('responses')">
                         Réponses
                     </a>
-                    @auth
                     <a href="javascript:void(0);" class="tab" id="shares-tab" onclick="showContent('shares')">
                         Partages
                     </a>
                     <a href="javascript:void(0);" class="tab" id="likes-tab" onclick="showContent('likes')">
                         J'aimes
                     </a>
-                    @endauth
                 </div>
             </div>
 
@@ -31,14 +29,12 @@
                     <div id="responses-content" class="content-section" style="display: block;">
                         <livewire:posts.viewresponses :post="$post" />
                     </div>
-                    @auth
                     <div id="shares-content" class="content-section" style="display: none;">
                         <livewire:posts.viewshares :post="$post" />
                     </div>
                     <div id="likes-content" class="content-section" style="display: none;">
                         <livewire:posts.viewlikes :post="$post" />
                     </div>
-                    @endauth
                 </div>
             </div>
 
