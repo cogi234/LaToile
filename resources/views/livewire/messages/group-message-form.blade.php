@@ -18,6 +18,10 @@ new class extends Component {
     #[Locked]
     public bool $enabled = false;
 
+    public function mount() {
+        $this->enabled = false;
+    }
+
     #[On('open-message-creator')]
     public function open() {
         $this->enabled = true;
