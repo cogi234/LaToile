@@ -46,6 +46,8 @@ Route::middleware(['banned'])->group(function () {
         ->middleware(['auth']);
     Route::get('/messages/user/{targetId}', [MessageController::class, 'showUserConversation'])
         ->middleware(['auth']);
+    Route::get('/messages/group', [MessageController::class, 'showGroupConversation'])
+        ->middleware(['auth']);
     Route::get('/messages/group/{groupId}', [MessageController::class, 'showGroupConversation'])
         ->middleware(['auth']);
 
