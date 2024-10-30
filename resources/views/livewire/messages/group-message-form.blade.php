@@ -128,7 +128,7 @@ new class extends Component {
                 @if (count($users) > 0)
                     <ul class="overflow-y-auto h-52">
                         @foreach ($users as $user)
-                            <li wire:click="selectUser({{ $user->id }})"
+                            <li wire:click="selectUser({{ $user->id }})" wire:key='userSelect_{{ $user->id }}'
                                 class="flex p-2 cursor-pointer text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700">
                                 <div id="avatar">
                                     <img class="w-12 h-12 rounded-full mr-4 shadow-lg" alt="Profile Image"
@@ -153,7 +153,8 @@ new class extends Component {
                         @php
                             $user = \App\Models\User::find($userId);
                         @endphp
-                        <span wire:click="deselectUser({{ $userId }})" class="flex items-center cursor-pointer text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded m-1 outline outline-1">
+                        <span wire:click="deselectUser({{ $userId }})" wire:key='userDeselect_{{ $userId }}'
+                            class="flex items-center cursor-pointer text-black dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 p-2 rounded m-1 outline outline-1">
                             {{ $user->name }}
                             <span class="ml-2 text-red-500 hover:text-red-700 transition-colors duration-200">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 inline-block">
@@ -198,7 +199,7 @@ new class extends Component {
                             @php
                                 $user = \App\Models\User::find($userId);
                             @endphp
-                            <span class="flex items-center cursor-pointer text-black dark:text-white p-2 rounded m-1 outline outline-1">
+                            <span wire:key='selectedUser_{{ $user->id }}' class="flex items-center cursor-pointer text-black dark:text-white p-2 rounded m-1 outline outline-1">
                                 {{ $user->name }}
                             </span>
                         @endforeach
