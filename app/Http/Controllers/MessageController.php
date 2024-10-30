@@ -11,12 +11,14 @@ class MessageController extends Controller
     {
         return view('messages.show', [
             'targetUserId' => null,
+            'isGroup' => false,
         ]);
     }
     public function showUserConversation($targetId = null)
     {
         return view('messages.show', [
             'targetUserId' => $targetId,
+            'isGroup' => false,
         ]);
     }
 
@@ -24,6 +26,7 @@ class MessageController extends Controller
     {
         return view('messages.show', [
             'targetGroupId' => $targetGroupId,
+            'isGroup' => true,
         ]);
     }
 }

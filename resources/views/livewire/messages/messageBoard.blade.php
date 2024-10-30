@@ -8,16 +8,26 @@ new class extends Component {
     {
         $this->isGroupConversation = $isGroup;
     }
+    public function goToPrivateMessages(){
+        if($this->isGroupConversation){
+            $this->redirect('/messages');
+        }
+    }
+    public function goToGroupMessages(){
+        if(!$this->isGroupConversation){
+            $this->redirect('/messages/group');
+        }
+    }
 };
 ?>
 <div>
     <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
         <div class="flex flex-row gap-3 text-xl font-semibold dark:text-white">
-            <button @class(['text-blue-500' => !$isGroupConversation])>
+            <button @class(['text-blue-500' => !$isGroupConversation]) wire:click='goToPrivateMessages'>
                 <span>Conversations</span>
             </button>
             <span>/</span>
-            <button @class(['text-blue-500' => $isGroupConversation])>
+            <button @class(['text-blue-500' => $isGroupConversation]) wire:click='goToGroupMessages'>
                 <span>Groupes</span>
             </button>
         </div>
@@ -30,11 +40,4 @@ new class extends Component {
     </div>
     <!-- Messsagerie de groupe -->
     <livewire:messages.group-message-form />
-    <div>
-        @if ($isGroupConversation)
-            {{-- Lien vers messages privé --}}
-        @else
-           {{-- Lien vers messages group --}}
-        @endif
-    </div>
 </div>

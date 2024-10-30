@@ -12,7 +12,7 @@ new class extends Component {
 
     public string $messageContent = '';
 
-    public function mount()
+    public function mount(?int $targetGroupId)
     {
         $this->updateGroupConversations();
 
@@ -25,10 +25,7 @@ new class extends Component {
                 return;
             }
 
-            // PrivateMessage::where('sender_id', $this->targetUserId)
-            //     ->where('receiver_id', Auth::id())
-            //     ->where('read', 0) // Only update unread messages
-            //     ->update(['read' => 1]);
+            
         }
     }
 
@@ -55,5 +52,5 @@ new class extends Component {
 }; ?>
 
 <div>
-    
+    Groupes
 </div>
