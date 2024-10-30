@@ -218,10 +218,12 @@ new class extends Component {
     <div class="h-full flex flex-col">
         <!-- Infos de la discussion -->
         <div class="flex items-center pl-4 pt-2">
-            <img class="w-12 h-12 rounded-full shadow-lg" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
-            <div class="ml-3 text-sm font-medium text-gray-900 dark:text-white">
-                {{ $targetUser->name }}
-            </div>
+            <a class="flex flex-row" href="{{ url('user/' . $targetUser->id) }}">
+                <img class="w-12 h-12 rounded-full shadow-lg hover:outline hover:outline-2 hover:outline-black/10" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
+                <div class="flex self-center ml-3 text-sm font-medium text-gray-900 hover:underline hover:dark:underline dark:text-white transition ease-in-out duration-150">
+                    {{ $targetUser->name }}
+                </div>
+            </a>
         </div>
         <!-- Zone de discussion -->
         <div id="discussion" class="flex-1 p-4 overflow-y-auto">
