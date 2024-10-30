@@ -6,6 +6,7 @@ use App\Models\Group;
 
 new class extends Component {
     public $groupMessages = [];
+    public $groups = [];
     public $selectedGroup = null;
     public ?Group $targetGroup = null;
     public ?int $targetGroupId = null;
@@ -17,31 +18,26 @@ new class extends Component {
         $this->updateGroupConversations();
 
         if ($targetGroupId !== null) {
-            $this->setSelectedUser($targetGroupId);
-
-            $this->targetGroup = Group::find($this->targetGroupId);
-            if (!$this->targetUser) {   
-                session()->flash('error', 'Groupe non trouvé');
-                return;
-            }
+            $this->setSelectedGroup($this->targetGroupId);
         }
     }
 
     public function setSelectedGroup(int $targetGroupId) {
-        if ($targetGroupId == Auth::id()) {
+        if ($targetGroupId) {
             $this->targetUserId = null;
             $this->targetUser = null;
             return;
         }
 
-        $targetUser = User::find($targetUserId);
-        if (!$targetUser) {
-            $this->targetUserId = null;
-            $this->targetUser = null;
+        $this->targetGroup = Group::find($this->targetGroupId);
+        if (!$this->targetGroup) { 
+            $this->targetGroupId = null;
+            $this->targetGroup = null;  
+            session()->flash('error', 'Groupe non trouvé');
             return;
         }
 
-        $this->targetUserId = $targetUserId;
+        $this->targetGroupId = $targetGroupId;
         $this->targetUser = $targetUser;
         $this->updateSelectedConversation();
         $this->dispatch('updateSelectedConversation');
@@ -49,7 +45,9 @@ new class extends Component {
 
     public function updateGroupConversations() {
         
-
+        $this->groups = Group::whereHas('memberships', function ($query) {
+            $query->where('user_id', Auth()->id);
+        })->get();
         
 
         $this->updateSelectedConversation();
@@ -67,6 +65,12 @@ new class extends Component {
         
         <!-- Board pour changer avec messages de groupe + création -->
         <livewire:messages.messageBoard :isGroup='true' wire:key='messageBoardComponent' />
-
+        @if($groups->isEmpty() && $targetGroupId == null)
+        <div class="p-4">
+            <p class="text-gray-500 dark:text-gray-300">
+                Bienvenue à votre messagerie. Écrivez entre vous et les autres sur La Toile
+            </p>
+        </div>
+        @else
     </div>
 </div>
