@@ -2,6 +2,7 @@
 <div id="post-{{ $post->id }}" onclick="window.location.href = '/post/{{ $post->id }}'" {{ $attributes->merge(['class'
     => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:bg-gray-700 overflow-hidden shadow-sm
     rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0"]) }}>
+
     <!-- admin table -->
     <div class="ml-4 text-gray-900 dark:text-gray-100 mb-4">
         <!-- Personne qui a créer le report -->
@@ -35,12 +36,7 @@
         </div>
         <div class="flex sm:flex-row flex-col sm:space-y-0 space-y-8 items-center">
 
-            <!-- Cacher un post -->
-            <livewire:admin.hide-post id="{{ $post->id }}"/>
-            <!-- Faux report -->
-            <livewire:admin.false-report :reportId="$post->reports_id"/> 
-
-             <!-- Avertissement -->
+            <!-- Avertissement -->
             <button title="Marqué le report comme traité et envoyer un avertissement à l'utilisateur"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 mr-4"
                 onclick="event.stopPropagation(); showWarningModal({{$post->owner_id}}, {{$post->reports_id}}, {{$post->id}}, 'Report');">
@@ -63,6 +59,9 @@
             </button>
 
             <!-- Bannir l'utilisateur -->
+            @if (App\Models\Ban::where('user_id', $post->owner_id)->first())
+            <livewire:admin.unban :userId="$post->owner_id"/>
+            @else 
             <button title="Marqué le report comme traité bannir l'utilisateur et cacher son post"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-800 dark:hover:text-red-500 mr-4"
                 onclick="event.stopPropagation(); showBanUserModal({{$post->owner_id}}, {{$post->reports_id}}, {{$post->id}}, 'Report');">
@@ -73,6 +72,8 @@
                 </svg>
                 <span class="ml-1">Bannir l'utilisateur</span>
             </button>
+            @endif
+
         </div>
     </div>
 

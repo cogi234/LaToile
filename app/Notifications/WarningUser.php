@@ -2,14 +2,15 @@
 
 namespace App\Notifications;
 
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class BasicNotification extends Notification
+class WarningUser extends Notification
 {
     use Queueable;
-
+    
     protected ?string $short_message = null;
     protected string $message;
     protected ?string $url = null;
@@ -17,11 +18,10 @@ class BasicNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $message, ?string $url = null, ?string $short_message = null)
+    public function __construct(string $warning)
     {
-        $this->message = "🔔 " . $message;
-        $this->url = $url;
-        $this->short_message = $short_message;
+        $this->message = "⚠️ Votre post a été supprimé : " . $warning;
+        $this->short_message = "⚠️ Attention! Vous-avez reçu un avertissement";
     }
 
     /**

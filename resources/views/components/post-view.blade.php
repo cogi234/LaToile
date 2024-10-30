@@ -10,32 +10,39 @@
         displayDeleteButton="{{ true }}"
         main="true"/>
 
-    @if ($post->previous_content != null)
-    <!-- Le contenu des posts precedents dans la chaine de partage -->
-    <x-post-content :content="$post->previous_content" :postId="$post->id" />
-    @endif
-
-    <!-- Contenu du post -->
-    <div class="ml-4 text-gray-900 dark:text-gray-100">
-        @if ($post->previous_content != null && $post->content != null)
-        <hr class="mb-2" />
-        <x-post-user 
-        :key="$post->id" 
-        :user="$post->user" 
-        :post="$post"
-        displayEditButton="{{ false }}"
-        displayDeleteButton="{{ false }}"/>
+    <div>
+        @if ($post->previous_content != null)
+        <!-- Le contenu des posts precedents dans la chaine de partage -->
+        <x-post-content :content="$post->previous_content" :postId="$post->id" />
         @endif
+
+        <!-- Contenu du post -->
+        <div class="ml-4 text-gray-900 dark:text-gray-100">
+            @if ($post->previous_content != null && $post->content != null)
+            <hr class="mb-2" />
+            <x-post-user 
+            :key="$post->id" 
+            :user="$post->user" 
+            :post="$post"
+            displayEditButton="{{ false }}"
+            displayDeleteButton="{{ false }}"/>
+            @endif
+        </div>
+        <x-post-content :postId="$post->id" :content="$post->content" />
     </div>
-    <x-post-content :postId="$post->id" :content="$post->content" />
 
     <!-- Tags -->
     @if ($post->tags()->count() > 0)
     <div>
         <hr class="mb-3 border-gray-600" />
         @foreach ($post->tags as $tag)
-        <a href="/tag/{{ $tag->id }}" target="_blank" onclick="event.stopPropagation()"
-            class="p-1 m-1 rounded-md bg-gray-200 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-gray-400">
+        @php
+            $followedTagCSS = "";
+            if (Auth::check() && Auth::user()->followed_tags->contains($tag))
+                $followedTagCSS = 'border-2 border-green-600 hover:border-green-800'
+        @endphp
+        <a href="/tag/{{ $tag->id }}" onclick="event.stopPropagation()"
+            class="p-1 m-1 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-gray-400 {{ $followedTagCSS }}">
             #{{ $tag->name }}
         </a>
         @endforeach

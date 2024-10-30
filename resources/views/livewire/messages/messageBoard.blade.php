@@ -6,6 +6,7 @@ use Livewire\Attributes\Validate;
 use App\Models\PrivateMessage;
 use App\Models\User;
 use Livewire\WithPagination;
+use App\Notifications\MessageReceived;
 
 new class extends Component {
     use WithPagination;
@@ -102,11 +103,17 @@ new class extends Component {
 
     }
 
-    #[Validate(['messageContent' => 'required|string|max:255'])]
+    #[Validate(['messageContent' => 'required|string|max:2000'])]
     public function send()
     {
+
         if (trim($this->messageContent) === '') {
             $this->messageContent = '';
+            return;
+        }
+
+        if (strlen($this->messageContent) > 2000) {
+            $this->addError('messageLenght', 'Message trop long (2000 caractères maximum).');
             return;
         }
 
@@ -117,6 +124,9 @@ new class extends Component {
             'sender_id' => Auth::id(),
             'receiver_id' => $this->targetUserId,
         ]);
+
+        //Send a notification to the receiver
+        User::find($this->targetUserId)->notify(new MessageReceived(Auth::user()));
 
         $this->messageContent = '';
 
@@ -139,7 +149,8 @@ new class extends Component {
     
     public function saveEdit()
     {
-        if (trim($this->editMessageContent) === '') {
+        if ($this->editMessageContent == null || strlen(trim($this->editMessageContent)) <= 0 || strlen(trim($this->editMessageContent)) > 2000) {
+            $this->addError('editMessageLenght', 'Votre message est trop court ou trop long. (1-2000)');
             return;
         }
 
@@ -194,6 +205,7 @@ new class extends Component {
 };?>
 
 <div wire:click='stopEditing' class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
+    <livewire:messages.report />
     <div class="border-r-2 h-full overflow-y-auto">
         <div class="flex flex-row justify-between items-center p-4 bg-gray-100 dark:bg-gray-700">
             <div class="flex flex-row gap-3 text-xl font-semibold dark:text-white">
@@ -299,38 +311,57 @@ new class extends Component {
                         @if($isCurrentUserMessage)
                         <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
                             id="message_{{ $message->id }}" 
-                            class="max-w-xs w-auto p-3 rounded-lg bg-blue-500 text-white"
+                            class="max-w-[60%] w-auto p-3 rounded-lg bg-blue-500 text-white cursor-pointer "
                             wire:click.stop='startEditing({{ $message->id }})'>
 
                             @if ($message->id == $editingMessageId)
                             <!-- Edit Box -->
                             <div>
                                 <div class="mt-2">
-                                    <input type="text" wire:model='editMessageContent' wire:keydown.enter='saveEdit' wire:keydown.escape='stopEditing'
-                                        class="w-full border rounded p-2 text-gray-900">
+                                    <textarea maxlength="2000" minlength="1"
+                                        wire:model="editMessageContent" 
+                                        wire:keydown.enter="saveEdit" 
+                                        wire:keydown.escape="stopEditing"
+                                        class="p-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white h-10 min-h-10 rounded">
+                                    </textarea>
+                                    @error('editMessageLenght') <div class="bg-red-500 px-2 text-white font-bold  rounded mt-2">{{ $message }}</div> @enderror
+                                    
                                     <div class="flex justify-end space-x-2 mt-2">
                                         <!-- Save (Edit) Button -->
-                                        <button type="button" wire:click.stop='saveEdit'
-                                            class="px-3 py-1 bg-green-500 text-white rounded flex items-center">
-                                            <i class="fas fa-save mr-2"></i> Enregistrer
+                                        <button type="button" title="Enregistrer les modifications" wire:click.stop='saveEdit'
+                                            class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded flex items-center transition duration-150 ease-in-out">
+                                            <i class="fas fa-save mr-2"></i>
+                                            <span class="mr-2"> Enregistrer </span>
                                         </button>
 
                                         <!-- Delete Button -->
-                                        <button type="button" wire:click.stop='deleteMessage'
-                                            class="px-3 py-1 bg-red-500 text-white rounded flex items-center">
-                                            <i class="fas fa-trash mr-2"></i> Supprimer
-                                        </button>
+                                        <button type="button" title="Supprimer le message" wire:click.stop='deleteMessage'
+                                            class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded flex items-center">
+                                            <i class="fas fa-trash mr-2"></i>
+                                            <span class="mr-2"> Supprimer </button>
                                     </div>
                                 </div>
                             </div>
                             @else
-                            <p>{{ $message->message }}</p>
+                            <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                <p class="mr-2 w-fit max-w-[100%] break-words">{{ $message->message }}</p>
+                            </div>                           
                             @endif
                         </div>
                         @else
                         <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
-                            class="max-w-xs w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
-                            <p>{{ $message->message }}</p>
+                            class="flex flex-row max-w-xs w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                            <!-- Signaler -->
+                            <button title="Signaler le message"
+                                class="share-button flex items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
+                                onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                    </svg>
+                            </button>
+                            <p class="ml-2 w-fit max-w-[100%] break-words">{{ $message->message }}</p>
                         </div>
                         @endif
                     </div>
@@ -351,13 +382,13 @@ new class extends Component {
                     $can_send_messages = false;
             @endphp
             @if ($can_send_messages)
+            @error('messageLenght') <br><div class="text-red-400 font-bold mt-2">{{ $message }}</div> @enderror
             <form wire:submit.prevent="send" class="flex items-center">
                 <!-- Champ de texte pour écrire le message -->
-                <input type="text" wire:model="messageContent" placeholder="Écrire un message..."
+                <input type="text" wire:model="messageContent" placeholder="Écrire un message..." maxlength="2000" minlength="1"
                     class="flex-1 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"/>
-                
                 <!-- Bouton d'envoi avec une icône d'avion en papier -->
-                <button type="submit" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 focus:outline-none">
+                <button type="submit" title="Envoyer le message" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v6l16-8-16-8v6l10 2-10 2z" />
                     </svg>

@@ -1,7 +1,7 @@
 <?php
 
 use Livewire\Volt\Component;
-use App\Models\Report;
+use App\Models\ReportMessage;
 use Livewire\Attributes\Locked;
 
 new class extends Component {
@@ -12,7 +12,7 @@ new class extends Component {
     public function setFalseReport(int $reportId)
     {
         // Mettre à jour le rapport pour indiquer qu'il a été traité
-        $report = Report::find($this->reportId);
+        $report = ReportMessage::find($this->reportId);
         if ($report) {
             $report->handled = 1;
             $report->save();

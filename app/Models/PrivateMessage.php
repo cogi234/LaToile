@@ -35,4 +35,9 @@ class PrivateMessage extends Model
     {
         return $this->belongsTo(User::class, 'receiver_id');
     }
+
+    public function reports()
+    {
+        return $this->morphMany(ReportMessage::class, 'message');
+    }
 }

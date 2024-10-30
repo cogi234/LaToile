@@ -34,6 +34,4 @@ Schedule::call(function () {
 
         $queue->delete();
     }
-
-    return "test";
 })->everyMinute();

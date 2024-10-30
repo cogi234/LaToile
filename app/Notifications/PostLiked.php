@@ -21,7 +21,7 @@ class PostLiked extends Notification
      */
     public function __construct(User $liker, Post $post)
     {
-        $this->message = $liker->name . " a aimé ton post!";
+        $this->message = "❤️ " . $liker->name . " a aimé ton post!";
         $this->url = '/post/' . $post->id;
     }
 

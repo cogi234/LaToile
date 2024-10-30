@@ -7,6 +7,9 @@ use App\Models\User;
 use App\Models\Report;
 use App\Models\Post;
 use App\Models\Warning;
+use App\Notifications\WarningUser;
+use App\Models\PrivateMessage;
+use App\Models\ReportMessage;
 
 new class extends Component {
 
@@ -19,22 +22,31 @@ new class extends Component {
     public ?int $reportId = -1;
 
     #[Locked]
-    public ?int $postId = -1;
+    public ?int $messageOrPostId = -1;
+
+    #[Locked]
+    public string $reportType = '';
 
     #[Locked]
     public bool $enabled = false;
 
     #[On('open-warning-modal')]
-    public function open(int $userId, int $reportId, int $postId)
+    public function open(int $userId, int $reportId, int $messageOrPostId, string $reportType)
     {
-        // Ne pas ouvrir le modal pour un utilisateur ou un post inexistant
+        // Charger le modèle correct en fonction de reportType
+        $reportClass = $reportType === 'Report' ? Report::class : ReportMessage::class;
+
+        $messageOrPost = $reportType === 'Report' ? Post::class : PrivateMessage::class;
+
+        // Ne pas ouvrir le modal pour un utilisateur ou un message/post inexistant
         $user = User::find($userId);
-        $post = Post::find($postId);
-        if ($user == null || $post == null) return;
+        $messageOrPost::find($messageOrPostId);
+        if ($user == null || $messageOrPost == null) return;
 
         $this->userId = $userId;
         $this->reportId = $reportId;
-        $this->postId = $postId;
+        $this->messageOrPostId = $messageOrPostId;
+        $this->reportType = $reportType;
         $this->enabled = true;
         $this->resetValidation();
     }
@@ -42,7 +54,7 @@ new class extends Component {
     #[On('close-warning-modal')]
     public function close()
     {
-        $this->reset('userId', 'reportId', 'postId', 'enabled', 'message');
+        $this->reset('userId', 'reportId', 'messageOrPostId', 'reportType', 'enabled', 'message');
     }
 
     public function sendWarning()
@@ -53,6 +65,9 @@ new class extends Component {
         $this->resetValidation();
 
         $textLength = strlen($this->message);
+
+        // Charger le modèle correct en fonction de reportType
+        $reportClass = $this->reportType === 'Report' ? Report::class : ReportMessage::class;
 
         // Validation de la raison et du datetime du rapport
         if ($this->message == null || $textLength < 5) {
@@ -65,21 +80,27 @@ new class extends Component {
             'message' => strip_tags($this->message),
             'user_id' => $this->userId,
             'report_id' => $this->reportId,
+            'report_type' => $this->reportType,
         ]);
 
         // Mettre à jour le rapport pour indiquer qu'il a été traité
-        $report = Report::find($this->reportId);
+        $report = $reportClass::find($this->reportId);
         if ($report) {
             $report->handled = 1;
             $report->save();
         }
 
         // Mettre à jour le post pour indiquer qu'il ne doit plus être visible
-        $post = Post::find($this->postId);
-        if ($post) {
-            $post->hidden = 1;
-            $post->save();
+        if ($this->reportType == 'Report') {
+            $post = Post::find($this->messageOrPostId);
+            if ($post) {
+                $post->hidden = 1;
+                $post->save();
+            }
         }
+
+        // Envoyer une notificaiton à l'utilisateur
+        User::find($this->userId)->notify(new WarningUser($this->message));
 
         $this->close();
 
@@ -128,13 +149,14 @@ new class extends Component {
 
 <!-- Script pour ouvrir le formulaire de bannissement -->
 <script>
-    function showWarningModal(userId = -1, reportId = -1, postId = -1) {
+    function showWarningModal(userId = -1, reportId = -1, messageOrPostId = -1, reportType = '') {
         this.dispatchEvent(
             new CustomEvent('open-warning-modal', {
                 detail: {
                     userId: userId,
                     reportId : reportId,
-                    postId : postId
+                    messageOrPostId : messageOrPostId,
+                    reportType : reportType,
                 }
             })
         );

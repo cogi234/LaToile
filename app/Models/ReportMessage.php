@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-class Report extends Model
+class ReportMessage extends Model
 {
     use HasFactory;
     
@@ -21,31 +22,23 @@ class Report extends Model
      */
     protected $fillable = [
         'reason',
-        'user_id',
-        'post_id',
+        'message_id',
+        'message_type',
     ];
 
     
     //Relationships
 
     /**
-     * The user who filed the report
+     * Définir la relation polymorphique avec les messages.
      */
-    public function user(): BelongsTo
+    public function message(): MorphTo
     {
-        return $this->belongsTo(User::class);
+        return $this->morphTo();
     }
 
     /**
-     * The post that got reported
-     */
-    public function post(): BelongsTo
-    {
-        return $this->belongsTo(Post::class);
-    }
-
-    /**
-     * Get all bans associated with this report.
+     * Get all bans associated with this report message.
      */
     public function bans(): MorphMany
     {

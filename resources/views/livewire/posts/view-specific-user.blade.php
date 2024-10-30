@@ -19,7 +19,9 @@ new class extends Component {
         $this->userId = $userId;
 
         $this->posts = User::find($this->userId)->posts()
-            ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+            ->where('hidden', false)
+            ->orderby('id', 'desc')
+            ->take(10)->with(['user', 'tags'])->get();
 
         // Vérifie s'il y a plus de posts à charger
         $this->moreAvailable = $this->posts->count() == 10;
@@ -30,6 +32,7 @@ new class extends Component {
         if ($this->moreAvailable) {
             $newPosts = User::find($this->userId)->posts()
                 ->where('id', '<', $this->posts->last()->id)
+                ->where('hidden', false)
                 ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
 
             // Fusionne les nouveaux posts avec les existants

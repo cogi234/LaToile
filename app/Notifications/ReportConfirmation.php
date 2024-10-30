@@ -2,14 +2,15 @@
 
 namespace App\Notifications;
 
+use App\Models\Post;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 
-class BasicNotification extends Notification
+class ReportConfirmation extends Notification
 {
     use Queueable;
-
+    
     protected ?string $short_message = null;
     protected string $message;
     protected ?string $url = null;
@@ -17,11 +18,13 @@ class BasicNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(string $message, ?string $url = null, ?string $short_message = null)
+    public function __construct(?Post $post, string $reason)
     {
-        $this->message = "🔔 " . $message;
-        $this->url = $url;
-        $this->short_message = $short_message;
+        $this->message = '✅ Votre signalement pour "' . $reason . '" à bien été envoyé';
+        $this->short_message = "✅ Votre signalement à bien été envoyé";
+        if ($post) {
+            $this->url = '/post/' . $post->id;
+        } 
     }
 
     /**

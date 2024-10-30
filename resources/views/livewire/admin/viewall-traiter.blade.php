@@ -15,7 +15,7 @@ new class extends Component {
             ->join('reports', 'posts.id', '=', 'reports.post_id')
             ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
             ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
-            ->where('reports.handled', 0)  // Optional: Only show posts that haven't been handled
+            ->where('reports.handled', 1)  // Optional: Only show posts that have been handled
             ->orderBy('posts.id', 'desc')
             ->take(10)
             ->with(['tags'])  // Eager load tags
@@ -32,7 +32,7 @@ new class extends Component {
                 ->join('reports', 'posts.id', '=', 'reports.post_id')
                 ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
                 ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
-                ->where('reports.handled', 0)
+                ->where('reports.handled', 1)
                 ->where('posts.id', '<', $this->posts->last()->id)
                 ->orderBy('posts.id', 'desc')
                 ->take(10)
@@ -54,7 +54,7 @@ new class extends Component {
             ->join('reports', 'posts.id', '=', 'reports.post_id')
             ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
             ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
-            ->where('reports.handled', 0)
+            ->where('reports.handled', 1)
             ->orderBy('posts.id', 'desc')
             ->take(10)
             ->with(['tags'])
@@ -69,7 +69,7 @@ new class extends Component {
 
 <div>
     @foreach ($posts as $post)
-            <x-post-view-admin :post="$post" wire:key="post-{{ $post->id }}" />
+        <x-post-view-admin-Traiter :post="$post" wire:key='postReport_{{ $post->id }}' />
     @endforeach
      
     @if ($moreAvailable)
@@ -81,6 +81,6 @@ new class extends Component {
             Charger plus de posts reporter
         </x-primary-button>
     @else
-        <div class="dark:text-gray-300 text-center">Il n'y a plus de post à traiter.</div>
+        <div class="dark:text-gray-300 text-center">Il n'y a aucun post traiter.</div>
     @endif
 </div>
