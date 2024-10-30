@@ -56,6 +56,10 @@ Route::middleware(['banned'])->group(function () {
     Route::view('adminPage', 'adminPage')
         ->middleware(['auth', 'admin'])
         ->name('adminPage');
+
+        Route::view('adminPageMessage', 'adminPageMessage')
+        ->middleware(['auth', 'admin'])
+        ->name('adminPageMessage');
 });
 
 
