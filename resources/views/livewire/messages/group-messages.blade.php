@@ -12,12 +12,16 @@ new class extends Component {
     public ?Group $targetGroup = null;
     public ?int $targetGroupId = null;
     public $selectedConversation = [];
-    public string $messageContent = '';
+    
     
     public $searchQuery = '';
     public $searchResults = [];
 
     public $groupMembers = [];
+
+    public string $messageContent = '';
+    public $editingMessageId = null;
+    public $editMessageContent = '';
 
     public function mount(?int $targetGroupId)
     {
@@ -69,9 +73,73 @@ new class extends Component {
         }
     }
 
+    public function send()
+    {
+        if (trim($this->messageContent) === '') {
+            $this->addError('messageLength', 'Message vide.');
+            $this->messageContent = '';
+            return;
+        }
+        
+        if (strlen(trim($this->messageContent)) > 2000) {
+            $this->addError('messageLength', 'Message trop long (2000 caractères maximum).');
+            $this->messageContent = '';
+            return;
+        }
+
+        GroupMessage::create([
+            'message' => trim($this->messageContent),
+            'user_id' => Auth::id(),
+            'group_id' => $this->targetGroupId,
+        ]);
+
+        $this->messageContent = '';
+
+        $this->updateSelectedConversation();
+    }
+
+    public function startEditing($messageId)
+    {
+        $this->editingMessageId = $messageId;
+        $message = GroupMessage::find($messageId);
+        $this->editMessageContent = $message->message;
+    }
+
+    public function stopEditing()
+    {
+        $this->editingMessageId = null;
+        $this->editMessageContent = '';
+    }
+    
+    public function saveEdit()
+    { 
+        if ($this->editMessageContent == null || strlen(trim($this->editMessageContent)) <= 0 || strlen(trim($this->editMessageContent)) > 2000) {
+            $this->addError('editMessageLength', 'Votre message est trop court ou trop long. (1-2000)');
+            return;
+        }
+
+        $message = GroupMessage::find($this->editingMessageId);
+        if ($message && $message->sender_id == Auth::id()) {
+            $message->message = trim($this->editMessageContent);
+            $message->save();
+        }
+        $this->stopEditing();
+        
+        $this->updateSelectedConversation();
+    }
+
+    public function deleteMessage()
+    {
+        $message = GroupMessage::find($this->editingMessageId);
+        if ($message && $message->user_id == Auth::id()) {
+            $message->delete();
+        }
+        
+        $this->updateSelectedConversation();
+    }
 }; ?>
 
-<div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
+<div wire:click='stopEditing' class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
     <div class="border-r-2 h-full overflow-y-auto">
         
         <!-- Board pour changer avec messages de groupe + création -->
@@ -271,15 +339,19 @@ new class extends Component {
             </p>
         </div>
     @endif
-
     <script>
         function toggleOptionsMenu() {
             document.getElementById("optionsMenu").classList.toggle("hidden");
-            document.getElementById("membersMenu").classList.add("hidden");
         }
     
         function leaveGroup() {
             alert('Vous avez quitté le groupe');
+        }
+
+        function toggleMembersMenu() {
+            this.dispatchEvent(
+                new CustomEvent('open-member-menu')
+            );
         }
     </script>
 </div>
