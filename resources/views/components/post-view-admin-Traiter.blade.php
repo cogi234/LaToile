@@ -10,7 +10,7 @@
             <span class="font-bold text-lg mr-4">Reporté par : </span>
             <a href="/user/{{$post->reporter_id}}" onclick="event.stopPropagation()"
                 class="flex flex-row mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
-                <img src="{{ \App\Models\User::find($post->reporter_id)->getAvatar() }}" alt="Profile Image"
+                <img src="{{ \App\Models\User::find($post->reporter_id)->getAvatar() }}" alt="Image de profil"
                     class="w-8 h-8 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
                 <span
                     class="mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 hover:underline dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
@@ -23,7 +23,7 @@
             <span class="font-bold text-lg mr-4">Propriétaire du post : </span>
             <a href="/user/{{$post->owner_id}}" onclick="event.stopPropagation()"
                 class="flex flex-row mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-gray-400 mb-2 transition duration-150 ease-in-out">
-                <img src="{{ $post->user->getAvatar() }}" alt="Profile Image"
+                <img src="{{ $post->user->getAvatar() }}" alt="Image de profil"
                     class="w-8 h-8 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
                 <span
                     class="mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 hover:underline dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
@@ -31,9 +31,17 @@
                 </span>
             </a>
         </div>
-        <div class="flex sm:flex-row flex-col sm:text-base text-lg items-center sm:mb-4 cursor-text mb-6" onclick="event.stopPropagation()">
+        <div class="flex sm:flex-row flex-col sm:text-base text-lg items-center cursor-text" onclick="event.stopPropagation()">
             <strong class="mr-1">Raison du report : </strong> {{ $post->reports_reason }}
         </div>
+        @php
+            Carbon\Carbon::setLocale('fr');
+            $date = $post->reports_date ? Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $post->reports_date) : null;
+        @endphp
+        <div class="flex sm:flex-row flex-col sm:text-base text-lg items-center sm:mb-4 cursor-text mb-6" onclick="event.stopPropagation()">
+            <strong class="mr-1">Reporté le : </strong> {{ $date->translatedFormat('d F Y \à H:i') }}
+        </div>
+
         <div class="flex sm:flex-row flex-col sm:space-y-0 space-y-8 items-center">
 
             <!-- Avertissement -->
@@ -60,7 +68,7 @@
 
             <!-- Bannir l'utilisateur -->
             @if (App\Models\Ban::where('user_id', $post->owner_id)->first())
-            <livewire:admin.unban :userId="$post->owner_id"/>
+            <livewire:admin.unban :userId="$post->owner_id" :reportType="'Report'"/>
             @else 
             <button title="Marqué le report comme traité bannir l'utilisateur et cacher son post"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-800 dark:hover:text-red-500 mr-4"

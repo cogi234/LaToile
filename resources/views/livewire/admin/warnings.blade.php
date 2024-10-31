@@ -102,9 +102,13 @@ new class extends Component {
         // Envoyer une notificaiton à l'utilisateur
         User::find($this->userId)->notify(new WarningUser($this->message));
 
-        $this->close();
+        if ($this->reportType === 'Report') {
+            return redirect()->route('adminPage');
+        } else {
+            return redirect()->route('adminPageMessage');
+        }
 
-        return redirect()->route('adminPage');
+        $this->close();
     }
 };
 ?>

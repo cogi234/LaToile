@@ -8,6 +8,7 @@ use App\Models\Ban;
 use App\Models\Report;
 use App\Models\ReportMessage;
 use App\Models\PrivateMessage;
+use App\Models\GroupMessage;
 use App\Models\Post;
 
 new class extends Component {
@@ -109,7 +110,7 @@ new class extends Component {
         }
 
         // Mettre à jour le post pour qu'il ne doit plus être visible
-        if ($this->reportType == 'Report') {
+        if ($this->reportType === 'Report') {
             $post = Post::find($this->messageOrPostId);
             if ($post) {
                 $post->hidden = 1;
@@ -117,9 +118,13 @@ new class extends Component {
             }
         }
 
-        $this->close();
+        if ($this->reportType === 'Report') {
+            return redirect()->route('adminPage');
+        } else {
+            return redirect()->route('adminPageMessage');
+        }
 
-        return redirect()->route('adminPage');
+        $this->close();
     }
 };
 ?>

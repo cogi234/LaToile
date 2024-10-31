@@ -98,7 +98,7 @@ new class extends Component {
                 <option title="Exemples : contenu pour adulte, suicide..." value="Contenu/Comportement inapproprié">Contenu/Comportement inapproprié</option>
                 <option title="Exemples : attaques personnelles, intimidation..." value="Harcèlement">Harcèlement</option>
                 <option title="Exemples : menaces, encouragement à la violence..." value="Menace ou incitation à la violence">Menace ou incitation à la violence</option>
-                <option title="Exemples : faux profils, usurpation d'identité..." value="Usurpation d'identité">Usurpation d'identité</option>
+                <option title="Exemples : Caractères spéciaux, corrompu, incorrect, dessins inapproprié..." value="Caractères incorrect/corrompu">Caractères incorrect/corrompu</option>
                 <option title="Exemples : escroqueries, fausses promesses, informations trompeuses..." value="Anarque, fraude ou fausses informations">Anarque, fraude ou fausses informations</option>
                 <option title="Exemples : contenu répétitif, trop long inutilement..." value="Spam">Spam</option>         
             </select>

@@ -86,7 +86,7 @@ new class extends Component
                 </x-dropdown>
 
                 <!-- User dropdown -->
-                <x-dropdown align="right" width="w-48">
+                <x-dropdown align="right" width="w-[208px]">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 pl-1 py-2 border border-transparent text-sm leading-4 font-medium rounded-md 
                             text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 
@@ -120,16 +120,14 @@ new class extends Component
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
                             </svg>
-                            Panel Admin
+                            Panel Admin Posts
                         </x-dropdown-link>
-                        @endif
 
-                        @if (Auth::user()->moderator)
                         <x-dropdown-link href="{{ route('adminPageMessage') }}" class="flex flex-row items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
                             </svg>
-                            Panel Admin Message
+                            Panel Admin Messages
                         </x-dropdown-link>
                         @endif
 
@@ -236,7 +234,14 @@ new class extends Component
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
                     </svg>
-                    Panel Admin
+                    Panel Admin Posts
+                </x-dropdown-link>
+
+                <x-dropdown-link href="{{ route('adminPageMessage') }}" class="flex flex-row items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+                    Panel Admin Messages
                 </x-dropdown-link>
                 @endif
                 

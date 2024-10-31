@@ -24,4 +24,5 @@
     <livewire:posts.report />
     <livewire:admin.bans />
     <livewire:admin.warnings />
+    <livewire:admin.delete-message />
 </div>
