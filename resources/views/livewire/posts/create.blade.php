@@ -202,6 +202,13 @@ new class extends Component {
 
         $queuedPost->save();
 
+        //If we were using a draft, we delete it
+        if ($this->draftId >= 0) {
+            $draft = Draft::find($this->draftId);
+            $draft->delete();
+            $this->dispatch('reset-draft-views');
+        }
+
         $this->close();
     }
 
