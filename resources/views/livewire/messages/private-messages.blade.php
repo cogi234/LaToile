@@ -196,6 +196,9 @@ new class extends Component {
         </div>
         @else
         <div>
+            <div class="pt-4 pr-4 pb-2 pl-4 bg-gray-100 dark:bg-gray-800">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Conversations</h3>
+            </div>
             <!-- Search Bar -->
             <div class="p-4" >
                 <div class="relative">
