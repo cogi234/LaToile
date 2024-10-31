@@ -17,6 +17,10 @@
                 </div>
             </div>
 
+            <livewire:posts.delete />
+            <livewire:admin.bans />
+            <livewire:admin.warnings />
+
             <div class="bg-transparent overflow-hidden">
                 <div class="text-gray-900 dark:text-gray-100">
                     <div id="allAdmin-content" class="content-section" style="display: block;">
