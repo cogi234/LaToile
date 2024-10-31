@@ -202,9 +202,9 @@ new class extends Component {
                 <!-- Second Column: 90% for the main content -->
                 <div class="col-span-9 h-full">
                     @if($onReqOpt)
-                        @if(count($invites) > 0)
-                            <div class="p-4 bg-gray-100 dark:bg-gray-800">
-                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Invitations</h3>
+                        <div class="p-4 bg-gray-100 dark:bg-gray-800">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Invitations</h3>
+                            @if(count($invites) > 0)
                                 @foreach($invites as $invite)
                                     <div class="flex justify-between items-center p-2 my-2 bg-gray-100 dark:bg-gray-700 rounded">
                                         <span>{{ $invite->name }}</span>
@@ -214,8 +214,8 @@ new class extends Component {
                                         </div>
                                     </div>
                                 @endforeach
-                            </div>
-                        @endif
+                            @endif
+                        </div>
                     @else
                         <!-- Search Bar -->
                         <div class="p-4">
