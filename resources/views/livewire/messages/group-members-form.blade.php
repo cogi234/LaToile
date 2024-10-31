@@ -63,11 +63,11 @@ new class extends Component {
         
     </div>
     <script>
-        // function toggleMembersMenu() {
-        //     this.dispatchEvent(
-        //         new CustomEvent('open-member-menu')
-        //     );
-        // }
+        function toggleMembersMenu() {
+            this.dispatchEvent(
+                new CustomEvent('open-member-menu')
+            );
+        }
     </script>
 </div>
 

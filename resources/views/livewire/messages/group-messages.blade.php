@@ -177,8 +177,7 @@ new class extends Component {
     }
 }; ?>
 
-{{-- wire:click='stopEditing' --}}
-<div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800"> 
+<div wire:click='stopEditing' class="grid grid-cols-2 h-full bg-white dark:bg-gray-800"> 
     <div class="border-r-2 h-full overflow-y-auto">
         
         <!-- Board pour changer avec messages de groupe + création -->
@@ -267,51 +266,44 @@ new class extends Component {
     @if ($targetGroup !== null)
         <div id="message_area" class="h-full flex flex-col overflow-y-scroll">
             <!-- Infos de la discussion -->
-            <div class="flex items-center gap-5 pl-4 pt-2 w-full">
+            <div class="flex items-center justify-between pl-4 pt-2 w-full">
                 {{-- <img class="w-12 h-12 rounded-full shadow-lg" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/> --}}
                 <div class="ml-3 text-sm font-medium text-gray-900 dark:text-white">
                     {{ $targetGroup->name }}
                 </div>
                 <div class="pr-12">
-                    <button class="text-gray-500 dark:text-gray-300" onclick="toggleOptionsMenu()">
-                        &#x2026;
-                    </button>
-                
                     <!-- Menu déroulant avec les options -->
-                    <div id="optionsMenu" class="absolute bg-white dark:bg-gray-700 shadow-md rounded-lg mt-2 p-4 hidden">
-                        <!-- Option pour voir les membres du groupe -->
-                        <button type="button" id="viewMembers" onclick="toggleMembersMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
-                            Voir les membres
-                            <span class="ml-2">
-                                <!-- SVG flèche droite -->
-                                <svg class="w-4 h-4 text-gray-800 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0L13.707 9.293a1 1 0 010 1.414l-5 5a1 1 0 11-1.414-1.414L11.586 10 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
-                                </svg>
-                            </span>
-                        </button>
-                        
-                        <!-- Séparateur -->
-                        <hr class="border-gray-300 dark:border-gray-600 my-2">
-                        
-                        <!-- Option pour quitter le groupe -->
-                        <button wire:click="leaveGroup({{ $targetGroup->id }})" class="block text-left w-full py-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-600 rounded">
-                            Quitter le groupe
-                        </button>
-                    </div>
+                    <x-dropdown width="w-64">
+                        <x-slot name="trigger">
+                            <button class="text-gray-500 dark:text-gray-300" onclick="toggleOptionsMenu()">
+                                &#x2026;
+                            </button>
+                        </x-slot>
+    
+                        <x-slot name="content">
+                            <!-- Option pour voir les membres du groupe -->
+                            <button type="button" id="viewMembers" onclick="toggleMembersMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                                Voir les membres
+                                <span class="ml-2">
+                                    <!-- SVG flèche droite -->
+                                    <svg class="w-4 h-4 text-gray-800 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0L13.707 9.293a1 1 0 010 1.414l-5 5a1 1 0 11-1.414-1.414L11.586 10 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                            </button>
+
+                            <!-- Séparateur -->
+                            <hr class="border-gray-300 dark:border-gray-600 my-2">
+
+                            <!-- Option pour quitter le groupe -->
+                            <button wire:click="leaveGroup({{ $targetGroup->id }})" class="block text-left w-full py-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-600 rounded">
+                                Quitter le groupe
+                            </button>
+                        </x-slot>
+                    </x-dropdown>
+    
                     <!-- Membres du groupe -->
                     <livewire:messages.group-members-form />
-                    
-                
-                    {{-- <!-- Menu pour afficher les membres du groupe -->
-                    <div id="membersMenu" class="absolute bg-white dark:bg-gray-700 shadow-md rounded-lg mt-2 p-4 hidden">
-                        <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Membres</h4>
-                        @foreach ($groupMembers as $member)
-                            <div class="py-1 text-gray-800 dark:text-gray-300">
-                                {{ $member->name }}
-                            </div>
-                        @endforeach
-                    </div> --}}
-                    
                 </div>
             </div>
             <!-- Zone de discussion -->
@@ -416,15 +408,4 @@ new class extends Component {
             </p>
         </div>
     @endif
-    <script>
-        function toggleOptionsMenu() {
-            document.getElementById("optionsMenu").classList.toggle("hidden");
-        }
-    
-        function toggleMembersMenu() {
-            this.dispatchEvent(
-                new CustomEvent('open-member-menu')
-            );
-        }
-    </script>
 </div>
