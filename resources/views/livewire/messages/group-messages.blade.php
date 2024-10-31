@@ -86,6 +86,7 @@ new class extends Component {
 
     public function leaveGroup($groupId){
         Group::find($groupId)->memberships()->detach(Auth::id());
+        $this->loadInvitations();
     }
 
     public function updateGroupConversations() {
