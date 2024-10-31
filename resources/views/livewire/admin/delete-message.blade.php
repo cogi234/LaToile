@@ -6,6 +6,7 @@ use Livewire\Attributes\Locked;
 use App\Models\Post;
 use App\Models\PrivateMessage;
 use App\Models\GroupMessage;
+use App\Models\ReportMessage;
 
 new class extends Component {
     
@@ -40,15 +41,20 @@ new class extends Component {
             $messageClass = $this->messageType === 'PrivateMessage' ? PrivateMessage::class : GroupMessage::class;
 
             $message = $messageClass::find($this->messageId);
+            $reportMessage = ReportMessage::where('message_id', $this->messageId)
+            ->where('message_type', $this->messageType);
+
             if ($message != null) {
+                $reportMessage->delete();
                 $message->delete();
                 $this->dispatch('reset-message-views');
             }
 
+            return redirect()->route('adminPageMessage');
+
             $this->close();
         }
     }
-
 
 }; ?>
 

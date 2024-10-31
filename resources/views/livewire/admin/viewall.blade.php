@@ -11,7 +11,7 @@ new class extends Component {
     public function mount()
     {
         // Get posts reported and not handled, selecting reporter and owner data
-        $this->posts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason', 'reports.id as reports_id')
+        $this->posts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason', 'reports.id as reports_id', 'reports.created_at as reports_date')
             ->join('reports', 'posts.id', '=', 'reports.post_id')
             ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
             ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
@@ -28,7 +28,7 @@ new class extends Component {
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason')
+            $newPosts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason', 'reports.id as reports_id', 'reports.created_at as reports_date')
                 ->join('reports', 'posts.id', '=', 'reports.post_id')
                 ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
                 ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
@@ -50,7 +50,7 @@ new class extends Component {
     #[On('reset-post-views')]
     public function resetPosts()
     {
-        $this->posts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason')
+        $this->posts = Post::select('posts.*', 'reports.user_id as reporter_id', 'reporter.name as reporter_name', 'owner.id as owner_id', 'owner.name as owner_name', 'reports.reason as reports_reason', 'reports.id as reports_id', 'reports.created_at as reports_date')
             ->join('reports', 'posts.id', '=', 'reports.post_id')
             ->join('users as reporter', 'reports.user_id', '=', 'reporter.id')  // Join reporter using user_id
             ->join('users as owner', 'posts.user_id', '=', 'owner.id')  // Join post owner
@@ -78,7 +78,7 @@ new class extends Component {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
               
-            Charger plus de posts reporter
+            Charger plus de posts reporté
         </x-primary-button>
     @else
         <div class="dark:text-gray-300 text-center">Il n'y a plus de post à traiter.</div>

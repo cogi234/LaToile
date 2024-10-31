@@ -8,15 +8,16 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- admin page -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5 mt-14 xl:mt-0">
-                <div class="tabs p-6 text-gray-900 dark:text-gray-100">
-                    <a href="javascript:void(0);" class="tab active" id="allAdmin-tab" data-target="allAdmin-content">
+                <div class="tabs p-6 text-gray-900 dark:text-gray-100 flex">
+                    <a href="javascript:void(0);" class="tab flex-1" id="allAdmin-tab" data-target="allAdmin-content">
                         Message à traiter
                     </a>
-                    @auth
-                    <a href="javascript:void(0);" class="tab" id="postTraiter-tab" data-target="postTraiter-content">
+                    <a href="javascript:void(0);" class="tab flex-1" id="messageTraiter-tab" data-target="messageTraiter-content">
                         Message traité
                     </a>
-                    @endauth
+                    <a href="javascript:void(0);" class="tab flex-1" id="UtilisateurBanni-tab" data-target="UtilisateursBannis-content">
+                        Utilisateurs bannis (pour un message)
+                    </a>
                 </div>
             </div>
 
@@ -25,11 +26,12 @@
                     <div id="allAdmin-content" class="content-section content-active">
                         <livewire:admin.viewallMessage />
                     </div>
-                    @auth
-                    <div id="postTraiter-content" class="content-section">
+                    <div id="messageTraiter-content" class="content-section">
                         <livewire:admin.viewallMessageTraiter />
                     </div>
-                    @endauth
+                    <div id="UtilisateursBannis-content" class="content-section">
+                        <livewire:admin.viewall-banned/>
+                    </div>
                 </div>
             </div>
 
@@ -80,18 +82,35 @@
             const tabs = document.querySelectorAll('.tab');
             const contents = document.querySelectorAll('.content-section');
 
+            // Récupérer l'onglet actif depuis localStorage
+            const activeTab = localStorage.getItem('activeTab') || 'allAdmin-tab';
+
+            // Fonction pour afficher le contenu de l'onglet actif
+            function showTab(tabId) {
+                // Remove active class from all tabs and contents
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('content-active'));
+
+                // Add active class to the clicked tab and corresponding content
+                const activeTabElement = document.getElementById(tabId);
+                activeTabElement.classList.add('active');
+                const target = document.getElementById(activeTabElement.getAttribute('data-target'));
+                target.classList.add('content-active');
+            }
+
+            // Afficher l'onglet actif lors du chargement de la page
+            showTab(activeTab);
+
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
-                    // Remove active class from all tabs and contents
-                    tabs.forEach(t => t.classList.remove('active'));
-                    contents.forEach(c => c.classList.remove('content-active'));
-
-                    // Add active class to the clicked tab and corresponding content
-                    tab.classList.add('active');
-                    const target = document.getElementById(tab.getAttribute('data-target'));
-                    target.classList.add('content-active');
+                    // Enregistrer l'onglet actif dans localStorage
+                    localStorage.setItem('activeTab', tab.id);
+                    showTab(tab.id); // Afficher le nouvel onglet
                 });
             });
+
+            // Envoyer l'event pour reset le contenu des tabs
+            this.dispatchEvent(new Event('reset-messages-views'));
         });
     </script>
 </x-app-layout>

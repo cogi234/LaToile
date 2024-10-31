@@ -3,19 +3,17 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">            
             {{-- admin page --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5 mt-14 xl:mt-0">
-                <div class="tabs p-6 text-gray-900 dark:text-gray-100">
+                <div class="tabs p-6 text-gray-900 dark:text-gray-100 flex">
                     <!-- Les blocs sont maintenant des liens entièrement cliquables -->
-                    <a href="javascript:void(0);" class="tab active" id="allAdmin-tab" onclick="showContent('allAdmin')">
+                    <a href="javascript:void(0);" class="tab active flex-1" id="allAdmin-tab" onclick="showContent('allAdmin')">
                         Post à traiter
                     </a>
-                    @auth
-                    <a href="javascript:void(0);" class="tab" id="postTraiter-tab" onclick="showContent('postTraiter')">
-                        post traité
+                    <a href="javascript:void(0);" class="tab flex-1" id="postTraiter-tab" onclick="showContent('postTraiter')">
+                        Post traité
                     </a>
-                    <a href="javascript:void(0);" class="tab" id="UtilisateurBanni-tab" onclick="showContent('UtilisateurBanni')">
-                        Utilisateur Banni
+                    <a href="javascript:void(0);" class="tab flex-1" id="UtilisateurBanni-tab" onclick="showContent('UtilisateurBanni')">
+                        Utilisateurs Bannis (pour un post)
                     </a>
-                    @endauth
                 </div>
             </div>
 
@@ -24,14 +22,12 @@
                     <div id="allAdmin-content" class="content-section" style="display: block;">
                         <livewire:admin.viewall />
                     </div>
-                    @auth
                     <div id="postTraiter-content" class="content-section" style="display: none;">
                         <livewire:admin.viewall-traiter/>
                     </div>
                     <div id="UtilisateurBanni-content" class="content-section" style="display: none;">
                         <livewire:admin.viewall-banned/>
                     </div>
-                    @endauth
                 </div>
             </div>
 

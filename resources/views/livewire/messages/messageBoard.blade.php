@@ -279,7 +279,7 @@ new class extends Component {
                         </div>
                         @else
                         <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
-                            class="flex flex-row max-w-xs w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                            class="flex flex-row max-w-[60%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
                             <!-- Signaler -->
                             <button title="Signaler le message"
                                 class="share-button flex items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
@@ -290,7 +290,7 @@ new class extends Component {
                                         d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                                     </svg>
                             </button>
-                            <p class="ml-2 w-fit max-w-[100%] break-words">{{ $message->message }}</p>
+                            <p class="ml-2 w-fit max-w-[100%] break-words overflow-hidden">{{ $message->message }}</p>
                         </div>
                         @endif
                     </div>
