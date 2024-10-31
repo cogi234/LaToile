@@ -71,7 +71,10 @@ new class extends Component {
     }
 
     public function acceptInvitation($groupId) {
-        Group::find($groupId)->memberships()->attach(Auth::id());
+        $group = Group::find($groupId);
+        
+        $group->invites()->updateExistingPivot(Auth::id(), ['status' => 'member']);
+        
         $this->loadInvitations();
         $this->updateGroupConversations();
     }
@@ -79,6 +82,10 @@ new class extends Component {
     public function rejectInvitation($groupId) {
         Group::find($groupId)->invites()->detach(Auth::id());
         $this->loadInvitations();
+    }
+
+    public function leaveGroup($groupId){
+        Group::find($groupId)->memberships()->detach(Auth::id());
     }
 
     public function updateGroupConversations() {
@@ -170,7 +177,8 @@ new class extends Component {
     }
 }; ?>
 
-<div wire:click='stopEditing' class="grid grid-cols-2 h-full bg-white dark:bg-gray-800">
+{{-- wire:click='stopEditing' --}}
+<div class="grid grid-cols-2 h-full bg-white dark:bg-gray-800"> 
     <div class="border-r-2 h-full overflow-y-auto">
         
         <!-- Board pour changer avec messages de groupe + création -->
@@ -186,13 +194,13 @@ new class extends Component {
                 <!-- First Column: 10% for icons -->
                 <div class="col-span-1 flex flex-col items-center space-y-8 p-4 border-r-2 h-full">
                     <!-- Icon for viewing messages -->
-                    <button wire:click='switchToChats' class="text-gray-500 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400" title="Messages">
+                    <button wire:click='switchToChats' class="text-gray-500 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 @if (!$onReqOpt) dark:text-indigo-500  @endif" title="Messages">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
                         </svg>                      
                     </button>
                     <!-- Icon for viewing requests -->
-                    <button wire:click='switchToRequests' class="text-gray-500 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400" title="Demandes">
+                    <button wire:click='switchToRequests' class="text-gray-500 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 @if ($onReqOpt) dark:text-indigo-500  @endif" title="Demandes">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
                         </svg>                      
@@ -286,7 +294,7 @@ new class extends Component {
                         <hr class="border-gray-300 dark:border-gray-600 my-2">
                         
                         <!-- Option pour quitter le groupe -->
-                        <button onclick="leaveGroup()" class="block text-left w-full py-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-600 rounded">
+                        <button wire:click="leaveGroup({{ $targetGroup->id }})" class="block text-left w-full py-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-600 rounded">
                             Quitter le groupe
                         </button>
                     </div>
@@ -413,10 +421,6 @@ new class extends Component {
             document.getElementById("optionsMenu").classList.toggle("hidden");
         }
     
-        function leaveGroup() {
-            alert('Vous avez quitté le groupe');
-        }
-
         function toggleMembersMenu() {
             this.dispatchEvent(
                 new CustomEvent('open-member-menu')
