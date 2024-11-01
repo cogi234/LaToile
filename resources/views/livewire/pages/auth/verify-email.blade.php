@@ -36,6 +36,7 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
+    <x-dark-light-mode-script />
     <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
         {{ __('Merci de votre inscription') }}
     </div>

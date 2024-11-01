@@ -24,6 +24,7 @@ new class extends Component
 }; ?>
 
 <section class="space-y-6">
+    <x-dark-light-mode-script />
     <header>
         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             {{ __('Supprimer le compte') }}

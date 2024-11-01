@@ -1,5 +1,4 @@
-<form wire:submit="updateApparence" class="mt-6 space-y-6">
-    <livewire:scripts />
+<form class="mt-6 space-y-6">
     <div>
         <span class="text-gray-900 dark:text-gray-100">Quel apparence souhaites-tu avoir sur le site?</span><br>
         <span class="mt-1 text-sm text-gray-600 dark:text-gray-400">Mode clair / Mode sombre</span>
