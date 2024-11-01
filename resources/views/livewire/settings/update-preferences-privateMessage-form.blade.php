@@ -36,8 +36,8 @@ new class extends Component
 <!-- Section message privé -->
 <form wire:submit="updatePreferences" class="mt-6 space-y-6">
     <div>
-        <span>Qui peut m'envoyer des messages privés?</span><br>
-        <div class="flex flex-row">
+        <span class="text-gray-900 dark:text-gray-100">Qui peut m'envoyer des messages privés?</span><br>
+        <div class="flex flex-row mt-1">
             <input type="checkbox" wire:click='updatePreferences' wire:model='can_get_messages_from_anyone'
                 id="can_get_messages_from_anyone" name="can_get_messages_from_anyone" class="size-4 mr-1" />
             <x-input-label for="can_get_messages_from_anyone"

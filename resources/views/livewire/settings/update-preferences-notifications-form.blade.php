@@ -40,8 +40,8 @@ new class extends Component
 <!-- Modifier wire:model, wire:click, id, label, etc. -->
 <form wire:submit="updatePreferences" class="mt-6 space-y-6">
     <div>
-        <span>Quel type de notification je souhaite recevoir?</span><br>
-        <div class="flex flex-row">
+        <span class="text-gray-900 dark:text-gray-100">Quel type de notification je souhaite recevoir?</span><br>
+        <div class="flex flex-row mt-1">
             <input type="checkbox" wire:model='can_get_messages_from_anyone' id="can_get_messages_from_anyone"
                 name="can_get_messages_from_anyone" class="size-4 mr-1" />
             <x-input-label for="can_get_messages_from_anyone" value="Notification de nouveau message" class="inline" />

@@ -27,6 +27,24 @@
                         </div>
                         <livewire:settings.update-preferences-privateMessage-form />
                         <livewire:settings.update-preferences-notifications-form />
+                    </section>
+                </div>
+            </div>
+            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                <div class="max-w-full">
+                    <!-- Section apparences -->
+                    <section>
+                        <div>
+                            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                Apparence
+                            </h2>
+
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                Mettez à jour l'apparence pour l'utilisation du site.
+                            </p>
+                        </div>
+                        <livewire:settings.update-apparences />
+                    </section>
                 </div>
             </div>
         </div>
