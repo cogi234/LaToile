@@ -239,8 +239,15 @@ new class extends Component {
         <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" class="ml-4" />
 
         <form wire:submit='store'>
-            <textarea wire:model="text" placeholder="Partagez vos pensées" class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
-                    rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-20"></textarea>
+            <div class="flex flex-row">
+                <textarea wire:model="text" placeholder="Partagez vos pensées" id="postTextArea" class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                        rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-20"></textarea>
+                <button type="button" id="emoji-button" class="ml-2" title="Émojis">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 dark:text-gray-100 hover:text-orange-500 dark:hover:text-yellow-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
+                    </svg>                      
+                </button>
+            </div>
             @error('text') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
             <div class="mt-2">
                 <p class="text-black dark:text-white">Tags:</p>
@@ -358,5 +365,20 @@ new class extends Component {
                 );
             }
         }
+    </script>
+    <script type="module">
+        import { EmojiButton } from 'https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.2/dist/index.js';
+
+        const button = document.querySelector('#emoji-button');
+        const textarea = document.querySelector('#postTextArea');
+        const picker = new EmojiButton();
+
+        button.addEventListener('click', () => {
+            picker.togglePicker(button);
+        });
+
+        picker.on('emoji', emoji => {
+            textarea.value += emoji.emoji;
+        });
     </script>
 </div>
