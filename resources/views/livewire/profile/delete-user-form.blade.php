@@ -3,6 +3,17 @@
 use App\Livewire\Actions\Logout;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Volt\Component;
+use App\Models\Post;
+use App\Models\Ban;
+use App\Models\Draft;
+use App\Models\GroupMessage;
+use App\Models\QueuedPost;
+use App\Models\Report;
+use App\Models\ReportMessage;
+use App\Models\PrivateMessage;
+use App\Models\User;
+use App\Models\Tag;
+use App\Models\Warning;
 
 new class extends Component
 {
@@ -17,7 +28,34 @@ new class extends Component
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        tap(Auth::user(), $logout(...))->deleteOnCascade();
+        //tap(Auth::user(), $logout(...))->delete();
+        $user = Auth::user();
+
+        // Supprimer toutes les relations avec l'utilisateurs
+        $posts = Post::where("user_id", $user->id)->get();
+        foreach ($posts as $post) {
+            DB::table('post_has_tags')->where('post_id', $post->id)->delete();
+        }
+        Ban::where("user_id", $user->id)->delete();
+        Draft::where("user_id", $user->id)->delete();
+        QueuedPost::where("user_id", $user->id)->delete();
+        Report::where("user_id", $user->id)->delete();
+        Warning::where("user_id", $user->id)->delete();
+        PrivateMessage::where("sender_id", $user->id)->delete();
+        PrivateMessage::where("receiver_id", $user->id)->delete();
+        GroupMessage::where("user_id", $user->id)->delete();
+        DB::table('likes')->where("user_id", $user->id)->delete();
+        DB::table('group_memberships')->where("user_id", $user->id)->delete();
+        DB::table('followed_tags')->where('user_id', $user->id)->delete();
+        DB::table('blocked_tags')->where('user_id', $user->id)->delete();
+        DB::table('followed_users')->where('user', $user->id)->delete();
+        DB::table('blocked_users')->where('user', $user->id)->delete();
+        DB::table('notifications')->where('notifiable_id', $user->id)->delete();
+        Post::where("user_id", $user->id)->delete();
+
+        Auth::logout();
+
+        $user->delete();
 
         $this->redirect('/', navigate: true);
     }
