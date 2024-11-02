@@ -24,6 +24,7 @@ class ReportMessage extends Model
         'reason',
         'message_id',
         'message_type',
+        'user_id',
     ];
 
     

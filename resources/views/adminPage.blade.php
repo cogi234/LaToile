@@ -1,42 +1,37 @@
 <x-app-layout>
-    <!-- Post forms -->
-    @auth
-    <x-post-forms />
-    @endauth
-    
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">            
             {{-- admin page --}}
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5 mt-14 xl:mt-0">
-                <div class="tabs p-6 text-gray-900 dark:text-gray-100">
+                <div class="tabs p-6 text-gray-900 dark:text-gray-100 flex">
                     <!-- Les blocs sont maintenant des liens entièrement cliquables -->
                     <a href="javascript:void(0);" class="tab active" id="allAdmin-tab" onclick="showContent('allAdmin')">
                         Posts à traiter
                     </a>
-                    @auth
                     <a href="javascript:void(0);" class="tab" id="postTraiter-tab" onclick="showContent('postTraiter')">
                         Posts traités
                     </a>
                     <a href="javascript:void(0);" class="tab" id="UtilisateurBanni-tab" onclick="showContent('UtilisateurBanni')">
                         Utilisateurs Bannis
                     </a>
-                    @endauth
                 </div>
             </div>
+
+            <livewire:posts.delete />
+            <livewire:admin.bans />
+            <livewire:admin.warnings />
 
             <div class="bg-transparent overflow-hidden">
                 <div class="text-gray-900 dark:text-gray-100">
                     <div id="allAdmin-content" class="content-section" style="display: block;">
                         <livewire:admin.viewall />
                     </div>
-                    @auth
                     <div id="postTraiter-content" class="content-section" style="display: none;">
                         <livewire:admin.viewall-traiter/>
                     </div>
                     <div id="UtilisateurBanni-content" class="content-section" style="display: none;">
                         <livewire:admin.viewall-banned/>
                     </div>
-                    @endauth
                 </div>
             </div>
 

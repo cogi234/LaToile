@@ -33,7 +33,7 @@ new class extends Component {
             $newTags = [];
             foreach ($this->tags as $tag) {
                 $newTag = trim($tag);
-                if (strlen($newTag) > 0) {
+                if (mb_strlen($newTag) > 0) {
                     $newTags[] = $newTag;
                 }
             }
@@ -72,7 +72,7 @@ new class extends Component {
     public function store() {
         //Validate
         $this->resetValidation();
-        $textLength = strlen($this->text);
+        $textLength = mb_strlen($this->text);
         if ($this->sharedPostId < 0 && $textLength == 0) {
             //If we are not sharing a post, we need some text to post
             $this->addError('text', 'Il est impossible de publier un post vide!');
@@ -167,7 +167,7 @@ new class extends Component {
 
     public function queuePost() {
         $this->resetValidation();
-        $textLength = strlen($this->text);
+        $textLength = mb_strlen($this->text);
         if ($textLength == 0) {
             //If we are not sharing a post, we need some text to post
             $this->addError('text', 'Il est impossible de publier un post vide!');
@@ -202,6 +202,13 @@ new class extends Component {
 
         $queuedPost->save();
 
+        //If we were using a draft, we delete it
+        if ($this->draftId >= 0) {
+            $draft = Draft::find($this->draftId);
+            $draft->delete();
+            $this->dispatch('reset-draft-views');
+        }
+
         $this->close();
     }
 
@@ -232,15 +239,22 @@ new class extends Component {
         <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" class="ml-4" />
 
         <form wire:submit='store'>
-            <textarea wire:model="text" placeholder="Partagez vos pensées" class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
-                    rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-20"></textarea>
+            <div class="flex flex-row">
+                <textarea wire:model="text" placeholder="Partagez vos pensées" id="postTextArea" class="block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50
+                        rounded-md shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white min-h-20"></textarea>
+                <button type="button" id="emoji-button" class="ml-2" title="Émojis">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 dark:text-gray-100 hover:text-orange-500 dark:hover:text-yellow-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
+                    </svg>                      
+                </button>
+            </div>
             @error('text') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
             <div class="mt-2">
                 <p class="text-black dark:text-white">Tags:</p>
                 @foreach ($tags as $tag)
                 <span class="m-1 text-gray-800 dark:text-gray-300">#
                     <input type="text" wire:model.blur='tags.{{ $loop->index }}' wire:key='tag_{{ $loop->index }}'
-                        maxlength="32" style="min-width: 5em; width: {{ strlen($tag) }}em"
+                        maxlength="32" style="min-width: 5em; width: {{ mb_strlen($tag) }}em"
                         class="inline-block ml-[-3px] py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
                         focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300" />
                 </span>
@@ -351,5 +365,21 @@ new class extends Component {
                 );
             }
         }
+    </script>
+    <script type="module">
+        import { EmojiButton } from 'https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.2/dist/index.js';
+
+        const button = document.querySelector('#emoji-button');
+        const textarea = document.querySelector('#postTextArea');
+        const picker = new EmojiButton();
+
+        button.addEventListener('click', () => {
+            picker.togglePicker(button);
+        });
+
+        picker.on('emoji', emoji => {
+            textarea.value += emoji.emoji;
+            textarea.dispatchEvent(new Event('input'));
+        });
     </script>
 </div>

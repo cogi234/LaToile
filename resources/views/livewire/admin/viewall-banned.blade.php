@@ -2,56 +2,73 @@
 
 use Livewire\Volt\Component;
 use App\Models\Ban; 
+use App\Models\User;
 use Livewire\Attributes\On;
+use Carbon\Carbon;
 
 new class extends Component {
     public $bans;
+    public $posts;
+    public $currentAdminPage = "adminPage";
+    
 
     public function mount()
     {
-        // Retrieve all bans from the database
-        $this->bans = Ban::all();
+        if (request()->routeIs('adminPage')) {
+            $this->currentAdminPage = "Report";
+            $this->bans = Ban::with('user')
+            ->where('report_type', 'Report')
+            ->get();
+        } else {
+            $this->currentAdminPage = "ReportMessage";
+            $this->bans = Ban::with('user')
+            ->where('report_type', 'ReportMessage')
+            ->get();
+        }
     }
-
 };
 
 ?>
 
 <div>
-    <h2>Ban List</h2>
-
     @if($bans->isEmpty())
-        <p>No bans found.</p>
+        <p>Aucun ban n'a été trouvé pour ce type de bannissement.</p>
     @else
-        <table>
+        <table class="w-full">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Reason</th>
-                    <th>End Time</th>
-                    <th>User ID</th>
-                    <th>Report ID</th>
-                    <th>Report Type</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
+                    <th>Utilisateur</th>
+                    <th>Raison</th>
+                    <th>Date de bannissement</th>
+                    <th>Date de fin</th>
                 </tr>
             </thead>
-            <tbody>
+            <body>
                 @foreach($bans as $ban)
-                    <tr>
-                        <td>{{ $ban->id }}</td>
-                        <td>{{ $ban->reason }}</td>
-                        <td>{{ $ban->end_time ? \Carbon\Carbon::parse($ban->end_time)->format('Y-m-d H:i:s') : 'N/A' }}</td>
-                        <td>{{ $ban->user_id }}</td>
-                        <td>{{ $ban->report_id ?? 'N/A' }}</td>
-                        <td>{{ $ban->report_type }}</td>
-                        <td>{{ $ban->created_at ? \Carbon\Carbon::parse($ban->created_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
-                        <td>{{ $ban->updated_at ? \Carbon\Carbon::parse($ban->updated_at)->format('Y-m-d H:i:s') : 'N/A' }}</td>
+                    <tr class="p-[15px] border-2 border-gray-300/50">
+                        <td class="px-10 text-center">
+                            <a class="flex flex-row items-center hover:font-bold hover:underline" href="/user/{{$ban->user->id}}">
+                                <img src="{{ \App\Models\User::find($ban->user->id)->getAvatar() }}" alt="Image de profil"
+                                    class="w-8 h-8 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
+                                {{ $ban->user ? $ban->user->name : 'Utilisateur inconnu' }}
+                            </a>
+                        </td>
+                        <td class="px-10 text-wrap items-center" style="max-width: 250px; word-break: break-word;">
+                            {{ $ban->reason }}
+                        </td>
+                        @php
+                            Carbon::setLocale('fr');
+                            $dateDebut = $ban->created_at ? Carbon::createFromFormat('Y-m-d H:i:s', $ban->created_at) : null;
+                            $dateFin = $ban->end_time ? Carbon::createFromFormat('Y-m-d', $ban->end_time) : null;
+                        @endphp
+                        <td class="px-10 text-center">{{ $dateDebut ? $dateDebut->translatedFormat('d F Y \à H:i') : 'N/A' }}</td>
+                        <td class="px-10 text-center">{{ $dateFin ? $dateFin->translatedFormat('d F Y') : 'PERMANENT' }}</td>
                         <!-- débannir l'utilisateur -->
-                        <td><livewire:admin.unban :userId="$ban->user_id"/></td>
+                        <td><livewire:admin.unban :userId="$ban->user_id" :reportType="'{{$currentAdminPage}}'" /></td>
                     </tr>
                 @endforeach
-            </tbody>
+            </body>
         </table>
     @endif
 </div>
+

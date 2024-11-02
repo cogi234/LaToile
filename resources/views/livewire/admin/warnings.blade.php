@@ -99,12 +99,12 @@ new class extends Component {
             }
         }
 
-        // Envoyer une notificaiton à l'utilisateur
+        // Envoyer une notification à l'utilisateur
         User::find($this->userId)->notify(new WarningUser($this->message));
 
-        $this->close();
+        $this->dispatch('reset-post-views');
 
-        return redirect()->route('adminPage');
+        $this->close();
     }
 };
 ?>

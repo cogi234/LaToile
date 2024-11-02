@@ -1,3 +1,18 @@
+<?php
+use Livewire\Volt\Component;
+
+$linkConverter = new class extends Component {
+
+    public function convertUrlToLink($text)
+    {
+        return preg_replace(
+            '/(https?:\/\/[^\s]+)/',
+            '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">$1</a>',
+            e($text)
+        );
+    }
+}
+?>
 <div {{ $attributes->merge(['class' => "post-content ml-4 mt-4 text-gray-900 dark:text-gray-100"]) }}>
     @foreach ($content as $block)
         @php
@@ -10,7 +25,7 @@
         @endphp
         @if ($block['type'] == 'text')
             <p class="p-2 w-fit max-w-[100%] break-words cursor-text" onclick="event.stopPropagation()">
-                {{ $block['content'] }}
+                {!! $linkConverter->convertUrlToLink($block['content']) !!}
             </p>
         @elseif ($block['type'] == 'user')
             @php

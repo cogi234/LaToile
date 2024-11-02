@@ -18,7 +18,7 @@ new class extends Component {
             $report->save();
         }
 
-        return redirect()->route('adminPage');
+        return redirect()->route('adminPageMessage');
     }
 };
 ?>
