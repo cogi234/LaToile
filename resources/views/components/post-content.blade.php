@@ -35,7 +35,7 @@ $linkConverter = new class extends Component {
                     :key="$postId . '_' . $block['id'] . '_' . $createdAt" />
             @break
             @case('text')
-                <p class="p-2 w-fit max-w-[100%] break-words cursor-text" onclick="event.stopPropagation()">
+                <p class="p-2 w-fit max-w-full break-words cursor-text" onclick="event.stopPropagation()">
                     {!! $linkConverter->convertUrlToLink($block['content']) !!}
                 </p>
             @break
