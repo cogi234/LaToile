@@ -35,7 +35,7 @@
         </div>
         @php
             Carbon\Carbon::setLocale('fr');
-            $date = $post->reports_date ? Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $post->reports_date) : null;
+            $date = $report->created_at ? Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $report->created_at) : null;
         @endphp
         <div class="flex sm:flex-row flex-col sm:text-base text-lg items-center sm:mb-4 cursor-text mb-6" onclick="event.stopPropagation()">
             <strong class="mr-1">Reporté le : </strong> {{ $date->translatedFormat('d F Y \à H:i') }}

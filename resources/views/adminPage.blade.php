@@ -8,7 +8,6 @@
                     <a href="javascript:void(0);" class="tab active" id="allAdmin-tab" onclick="showContent('allAdmin')">
                         Posts à traiter
                     </a>
-                    @auth
                     <a href="javascript:void(0);" class="tab" id="postTraiter-tab" onclick="showContent('postTraiter')">
                         Posts traités
                     </a>
