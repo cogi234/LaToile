@@ -33,7 +33,7 @@ new class extends Component {
             $newTags = [];
             foreach ($this->tags as $tag) {
                 $newTag = trim($tag);
-                if (strlen($newTag) > 0) {
+                if (mb_strlen($newTag) > 0) {
                     $newTags[] = $newTag;
                 }
             }
@@ -72,7 +72,7 @@ new class extends Component {
     public function store() {
         //Validate
         $this->resetValidation();
-        $textLength = strlen($this->text);
+        $textLength = mb_strlen($this->text);
         if ($this->sharedPostId < 0 && $textLength == 0) {
             //If we are not sharing a post, we need some text to post
             $this->addError('text', 'Il est impossible de publier un post vide!');
@@ -167,7 +167,7 @@ new class extends Component {
 
     public function queuePost() {
         $this->resetValidation();
-        $textLength = strlen($this->text);
+        $textLength = mb_strlen($this->text);
         if ($textLength == 0) {
             //If we are not sharing a post, we need some text to post
             $this->addError('text', 'Il est impossible de publier un post vide!');
@@ -254,7 +254,7 @@ new class extends Component {
                 @foreach ($tags as $tag)
                 <span class="m-1 text-gray-800 dark:text-gray-300">#
                     <input type="text" wire:model.blur='tags.{{ $loop->index }}' wire:key='tag_{{ $loop->index }}'
-                        maxlength="32" style="min-width: 5em; width: {{ strlen($tag) }}em"
+                        maxlength="32" style="min-width: 5em; width: {{ mb_strlen($tag) }}em"
                         class="inline-block ml-[-3px] py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
                         focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300" />
                 </span>
@@ -379,6 +379,7 @@ new class extends Component {
 
         picker.on('emoji', emoji => {
             textarea.value += emoji.emoji;
+            textarea.dispatchEvent(new Event('input'));
         });
     </script>
 </div>

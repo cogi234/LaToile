@@ -1,5 +1,5 @@
 <div id="post-{{ $post->id }}" onclick="window.location.href = '/post/{{ $post->id }}'" {{ $attributes->merge(['class'
-    => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:dark:bg-gray-700 overflow-hidden
+    => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:dark:bg-gray-700/60 overflow-hidden
     shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0"]) }}>
     <!-- L'utilisateur qui a publier le post -->
     <x-post-user
@@ -34,14 +34,17 @@
     <!-- Tags -->
     @if ($post->tags()->count() > 0)
     <div>
-        <hr class="mb-3 border-gray-600" />
+        <hr class="mb-3 border-none h-[2px] text-gray-200/80 bg-gray-200/80 dark:text-gray-300/15 dark:bg-gray-300/15" />
         @foreach ($post->tags as $tag)
         @php
             $followedTagCSS = "";
-            if (Auth::check() && Auth::user()->followed_tags->contains($tag))
-                $followedTagCSS = 'border-2 border-green-600 hover:border-green-800'
+            $titleTag = "";
+            if (Auth::check() && Auth::user()->followed_tags->contains($tag)) {
+                $followedTagCSS = 'border-2 border-green-400 hover:border-green-600';
+                $titleTag = 'Vous suivez le tag "' . $tag->name . '"'; 
+            }
         @endphp
-        <a href="/tag/{{ $tag->id }}" onclick="event.stopPropagation()"
+        <a href="/tag/{{ $tag->id }}" title="{{ $titleTag }}" onclick="event.stopPropagation()"
             class="p-1 m-1 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-gray-400 {{ $followedTagCSS }}">
             #{{ $tag->name }}
         </a>

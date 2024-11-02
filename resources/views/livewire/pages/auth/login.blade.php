@@ -25,8 +25,6 @@ new #[Layout('layouts.guest')] class extends Component
 }; ?>
 
 <div>
-    <x-dark-light-mode-script />
-
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

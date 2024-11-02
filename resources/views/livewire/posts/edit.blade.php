@@ -39,7 +39,7 @@ new class extends Component {
 
         //Validate
         $this->resetValidation();
-        $textLength = strlen($this->text);
+        $textLength = mb_strlen($this->text);
         if ($post->previous_content == null && $textLength == 0) {
             //If we are not sharing a post, we need some text to post
             $this->addError('text', 'Il est impossible de publier un post vide!');
@@ -78,7 +78,7 @@ new class extends Component {
         foreach ($blocks as $block) {
             if ($block['type'] == 'text') {
                 if ($text != '')
-                    $text .= '\n\n';
+                    $text .= "\n\n";
                 $text .= $block['content']; 
             }
         }
@@ -154,6 +154,7 @@ new class extends Component {
     
         picker.on('emoji', emoji => {
             textarea.value += emoji.emoji;
+            textarea.dispatchEvent(new Event('input'));
         });
     </script>
 </div>
