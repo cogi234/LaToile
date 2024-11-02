@@ -41,7 +41,7 @@ new class extends Component
 <form wire:submit="updatePreferences" class="mt-6 space-y-6">
     <div>
         <span class="text-gray-900 dark:text-gray-100">Quel type de notification je souhaite recevoir?</span><br>
-        <div class="flex flex-row mt-1">
+        <div class="flex flex-row sm:mb-2 sm:mt-1 mt-2 mb-5">
             <input type="checkbox" wire:model='can_get_messages_from_anyone' id="can_get_messages_from_anyone"
                 name="can_get_messages_from_anyone" class="size-4 mr-1" />
             <x-input-label for="can_get_messages_from_anyone" value="Notification de nouveau message" class="inline" />
@@ -49,7 +49,7 @@ new class extends Component
                 Sauvegardé.
             </x-action-message>
         </div>
-        <div class="flex flex-row">
+        <div class="flex flex-row mt-1 sm:mb-2 mb-5">
             <input type="checkbox" wire:model='can_get_messages_from_anyone2' id="can_get_messages_from_anyone2"
                 name="can_get_messages_from_anyone" class="size-4 mr-1" />
             <x-input-label for="can_get_messages_from_anyone2" value="Notification de nouveau suivi" class="inline" />
@@ -57,7 +57,7 @@ new class extends Component
                 Sauvegardé.
             </x-action-message>
         </div>
-        <div class="flex flex-row">
+        <div class="flex flex-row mt-1 sm:mb-2 mb-5">
             <input type="checkbox" wire:model='can_get_messages_from_anyone3' id="can_get_messages_from_anyone3"
                 name="can_get_messages_from_anyone" class="size-4 mr-1" />
             <x-input-label for="can_get_messages_from_anyone3" value="Notification de nouveau partage/commentaire"
@@ -66,7 +66,7 @@ new class extends Component
                 Sauvegardé.
             </x-action-message>
         </div>
-        <div class="flex flex-row">
+        <div class="flex flex-row mt-1 sm:mb-0 mb-2">
             <input type="checkbox" wire:model='can_get_messages_from_anyone4' id="can_get_messages_from_anyone4"
                 name="can_get_messages_from_anyone" class="size-4 mr-1" />
             <x-input-label for="can_get_messages_from_anyone4" value="Notification de nouvelle mention j'aime"
