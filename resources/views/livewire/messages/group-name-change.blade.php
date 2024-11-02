@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Group;
 
 new class extends Component {
-    public $users = [];
+    public $groupName = '';
     public $errorMessage = '';
 
     #[Locked]
@@ -18,12 +18,12 @@ new class extends Component {
         $this->enabled = false;
     }
 
-    #[On('open-member-menu')]
+    #[On('open-groupName-menu')]
     public function open() {
         $this->enabled = true;
     }
 
-    #[On('open-member-menu')]
+    #[On('open-groupName-menu')]
     public function close() {
         $this->reset('enabled');
     }
@@ -63,9 +63,9 @@ new class extends Component {
         
     </div>
     <script defer>
-        function toggleMembersMenu() {
+        function toggleGroupNameMenu() {
             this.dispatchEvent(
-                new CustomEvent('open-member-menu')
+                new CustomEvent('open-groupName-menu')
             );
         }
     </script>
