@@ -1,3 +1,53 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input[type=checkbox].toggle {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+
+label.toggle {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 40px; /* Réduit la largeur */
+    height: 20px; /* Réduit la hauteur */
+    background: rgb(221, 218, 55);
+    display: block;
+    border-radius: 20px; /* Ajuste le rayon pour correspondre à la nouvelle taille */
+    position: relative;
+}
+
+label.toggle:after {
+    content: '';
+    position: absolute;
+    top: 2px; /* Ajuste pour le rendre plus petit */
+    left: 2px; /* Ajuste pour le rendre plus petit */
+    width: 16px; /* Réduit la largeur du bouton intérieur */
+    height: 16px; /* Réduit la hauteur du bouton intérieur */
+    background: #fff;
+    border-radius: 16px; /* Ajuste le rayon pour correspondre à la nouvelle taille */
+    transition: 0.3s;
+}
+
+input.toggle:checked + label.toggle {
+    background: rgb(51, 68, 163);
+}
+
+input.toggle:checked + label.toggle:after {
+    left: calc(100% - 2px); /* Ajuste pour correspondre à la nouvelle taille */
+    transform: translateX(-100%);
+}
+
+label.toggle:active:after {
+    width: 20px; /* Réduit la taille du bouton actif */
+}
+
+img.emoji {
+    width: 20px; /* ajustez la taille ici */
+    height: 20px; /* maintenez les proportions */
+    display: inline-block;
+    margin-right: 2px;
+}
+

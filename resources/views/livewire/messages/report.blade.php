@@ -17,13 +17,16 @@ new class extends Component {
     public int $messageId = -1;
 
     #[Locked]
+    public int $userId = -1;
+
+    #[Locked]
     public string $messageType = '';
 
     #[Locked]
     public bool $enabled = false;
 
     #[On('open-reportMessage-modal')]
-    public function open(int $messageId, string $messageType) {
+    public function open(int $messageId, string $messageType, int $userId) {
         // Charger le modèle correct en fonction de messageType
         $messageClass = $messageType === 'PrivateMessage' ? PrivateMessage::class : GroupMessage::class;
 
@@ -33,13 +36,14 @@ new class extends Component {
 
         $this->messageId = $messageId;
         $this->messageType = $messageType;
+        $this->userId = $userId;
         $this->enabled = true;
         $this->resetValidation();
     }
 
     #[On('close-reportMessage-modal')]
     public function close() {
-        $this->reset('messageId', 'messageType', 'enabled', 'reason');
+        $this->reset('messageId', 'messageType', 'userId', 'enabled', 'reason');
     }
 
     public function submitReport() {
@@ -57,7 +61,8 @@ new class extends Component {
         ReportMessage::create([
             'reason' => strip_tags($this->reason),
             'message_id' => $this->messageId,
-            'message_type' => $this->messageType
+            'message_type' => $this->messageType,
+            'user_id' => $this->userId,
         ]);
 
         // Envoyer une notificaiton à l'utilisateur
@@ -92,7 +97,7 @@ new class extends Component {
                 <option title="Exemples : contenu pour adulte, suicide..." value="Contenu/Comportement inapproprié">Contenu/Comportement inapproprié</option>
                 <option title="Exemples : attaques personnelles, intimidation..." value="Harcèlement">Harcèlement</option>
                 <option title="Exemples : menaces, encouragement à la violence..." value="Menace ou incitation à la violence">Menace ou incitation à la violence</option>
-                <option title="Exemples : faux profils, usurpation d'identité..." value="Usurpation d'identité">Usurpation d'identité</option>
+                <option title="Exemples : Caractères spéciaux, corrompu, incorrect, dessins inapproprié..." value="Caractères incorrect/corrompu">Caractères incorrect/corrompu</option>
                 <option title="Exemples : escroqueries, fausses promesses, informations trompeuses..." value="Anarque, fraude ou fausses informations">Anarque, fraude ou fausses informations</option>
                 <option title="Exemples : contenu répétitif, trop long inutilement..." value="Spam">Spam</option>         
             </select>
@@ -116,12 +121,13 @@ new class extends Component {
 
 <!-- Script pour ouvrir le formulaire de signalement -->
 <script>
-    function showReportMessageModal(messageId = -1, messageType = '') {
+    function showReportMessageModal(messageId = -1, messageType = '', userId = -1) {
         this.dispatchEvent(
             new CustomEvent('open-reportMessage-modal', {
                 detail: {
                     messageId: messageId,
-                    messageType: messageType
+                    messageType: messageType,
+                    userId: userId,
                 }
             })
         );
