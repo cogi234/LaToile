@@ -2,22 +2,25 @@
 
 use Illuminate\Support\Carbon;
 use Livewire\Volt\Component;
+use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
 use App\Models\Post;
 use App\Models\Draft;
 use App\Models\QueuedPost;
+use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\Config;
 
 new class extends Component {
+    use WithFileUploads;
+
     public array $inputs = [
         [
             'type' => 'text',
             'content' => ''
         ]
     ];
-
-    public string $text = "";
 
     public array $tags = [''];
 
@@ -30,7 +33,7 @@ new class extends Component {
     #[Locked]
     public int $draftId = -1;
     #[Locked]
-    public bool $enabled = true; //TRUE FOR TESTING. PUT IT BACK AFTER
+    public bool $enabled = false;
     #[Locked]
     public bool $enabledQueueDialog = false;
 
@@ -67,7 +70,7 @@ new class extends Component {
         $this->enabled = true;
         if ($draftId >= 0) {
             $draft = Draft::find($draftId);
-            $this->text = implode('\n\n', array_map(fn($block) => $block['content'], $draft->content));
+            $this->inputs = $this->inputsFromContent($draft->content);
             $this->tags = $draft->tags;
             if ($draft->previous != null) {
                 $this->sharedPostId = $draft->previous_id;
@@ -80,45 +83,82 @@ new class extends Component {
         }
     }
 
+    public function inputsFromContent($content) : array {
+        $inputs = [];
+
+        foreach ($content as $block) {
+            switch ($block['type']) {
+                case 'text':{
+                    $inputs[] = [
+                        'type' => 'text',
+                        'content' => implode('\n\n', array_map(fn($block) => $block['content'], $content))
+                    ];
+                    break;
+                }
+                case 'image':{
+                    $inputs[] = [
+                        'type' => 'image',
+                        'content' => null,
+                        'url' => $block['url']
+                    ];
+                    break;
+                }
+            }
+        }
+
+        return $inputs;
+    }
+
+    public function contentFromInputs($inputs) : array {
+        $maxImageSize = Config::get('image.max_image_size');
+
+        $content = [];
+
+        foreach ($inputs as $input) {
+            switch ($input['type']) {
+                case 'text':{
+                    //Split the text into a content array and add it to the existing content
+                    array_splice($content, sizeof($content), 0, Post::parseTextToBlocks($input['content']));
+                    break;
+                }
+                case 'image':{
+                    $imageBlock = [
+                        'type' => 'image'
+                    ];
+                    // Si une image est téléchargée, la sauvegarder
+                    if ($input['content'] != null) {
+                        //Essayer de compresser l'image
+                        $image = Image::read($input['content'])->scaleDown($maxImageSize, $maxImageSize)->toJpeg();
+                        $imageBlock['url'] = 'files/' . Str::random(40) . '.jpg';
+                        $image->save('storage/' . $imageBlock['url']);
+                        $content[] = $imageBlock;
+                    }
+                    break;
+                }
+            }
+        }
+
+        return $content;
+    }
+
     #[On('close-post-creator')]
     public function close(){
-        $this->reset('text', 'tags', 'previousContent', 'sharedPostId', 'enabled', 'enabledQueueDialog');
+        $this->reset('inputs', 'tags', 'previousContent', 'sharedPostId', 'enabled', 'enabledQueueDialog');
     }
     
     public function publish() {
-        //Validate
-        $this->resetValidation();
-        $textLength = mb_strlen($this->text);
-        if ($this->sharedPostId < 0 && $textLength == 0) {
-            //If we are not sharing a post, we need some text to post
-            $this->addError('text', 'Il est impossible de publier un post vide!');
+        if (!$this->validateInputs())
             return;
-        }
-        if ($textLength > 0 && $textLength < 5) {
-            //If we are posting something, the text needs to be at least 5 characters long
-            $this->addError('text', 'Il est impossible de publier un post avec moins de 5 caractères!');
-            return;
-        }
-        if ($textLength > 8000) {
-            $this->addError('text', 'Il est impossible de publier un post avec plus de 8000 caractères!');
-            return;
-        }
-        foreach ($this->tags as $tag) {
-            if (!is_string($tag)){
-                $this->addError('tags', 'Un des tag n\'est pas du texte!');
-                return;
-            }
-        }
-        
-        //Create a content array from the text
-        $blocks = Post::parseTextToBlocks($this->text);
+
+        $content = $this->contentFromInputs($this->inputs);
+
         //If the shared post id is positive, we are sharing a post. Otherwise, we are creating a new post
         if ($this->sharedPostId >= 0) {
             $previousPost = Post::find($this->sharedPostId);
-            $post = $previousPost->share(Auth::user()->id, $blocks);
+            $post = $previousPost->share(Auth::user()->id, $content);
         } else {
             $post = new Post;
-            $post->content = $blocks;
+            $post->content = $content;
             $post->user_id = Auth::user()->id;
         }
 
@@ -149,17 +189,17 @@ new class extends Component {
 
     public function saveDraft() {        
         //Create a content array from the text
-        $blocks = Post::parseTextToBlocks($this->text);
+        $content = $this->contentFromInputs($this->inputs);
 
         //We create a new draft or modify the existing one
         if ($this->draftId >= 0) {
             $draft = Draft::find($this->draftId);
-            $draft->content = $blocks;
+            $draft->content = $content;
             $draft->tags = $this->tags;
         } else {
             $draft = new Draft;
             $draft->user_id = Auth::user()->id;
-            $draft->content = $blocks;
+            $draft->content = $content;
             $draft->tags = $this->tags;
 
             //If we are sharing a post, we add its id to the draft
@@ -182,31 +222,16 @@ new class extends Component {
     }
 
     public function queuePost() {
-        $this->resetValidation();
-        $textLength = mb_strlen($this->text);
-        if ($textLength == 0) {
-            //If we are not sharing a post, we need some text to post
-            $this->addError('text', 'Il est impossible de publier un post vide!');
-            closeQueueDialog();
+        if (!$this->validateInputs())
             return;
-        }
-        if ($textLength > 8000) {
-            $this->addError('text', 'Il est impossible de publier un post avec plus de 8000 caractères!');
-            closeQueueDialog();
-            return;
-        }
-        if ($this->queueTime == null || $this->queueTime <= now()) {
-            $this->addError('time', 'Il faut choisir un temps de publication qui est dans le futur!');
-            return;
-        }
 
         //Create a content array from the text
-        $blocks = Post::parseTextToBlocks($this->text);
+        $content = $this->contentFromInputs($this->inputs);
 
         //We create a new queued post
         $queuedPost = new QueuedPost;
         $queuedPost->user_id = Auth::user()->id;
-        $queuedPost->content = $blocks;
+        $queuedPost->content = $content;
         $queuedPost->tags = $this->tags;
         $queuedPost->scheduled_time = $this->queueTime;
 
@@ -226,6 +251,46 @@ new class extends Component {
         }
 
         $this->close();
+    }
+
+    public function validateInputs() : bool {
+        $this->resetValidation();
+
+        $textLength = 0;
+        $mediaCount = 0;
+        foreach ($this->inputs as $input) {
+            if ($input['type'] == 'text')
+                $textLength += mb_strlen($input['content']);
+            else
+                $mediaCount++;
+        }
+
+        if ($this->sharedPostId < 0 && $textLength == 0 && $mediaCount == 0) {
+            //If we are not sharing a post, we need some text to post
+            $this->addError('input', 'Il est impossible de publier un post vide!');
+            return false;
+        }
+        if ($textLength > 0 && $textLength < 5 && $mediaCount == 0) {
+            //If we are posting something, the text needs to be at least 5 characters long
+            $this->addError('input', 'Il est impossible de publier un post avec moins de 5 caractères!');
+            return false;
+        }
+        if ($textLength > 8000) {
+            $this->addError('input', 'Il est impossible de publier un post avec plus de 8000 caractères!');
+            return false;
+        }
+        foreach ($this->tags as $tag) {
+            if (!is_string($tag)){
+                $this->addError('tags', 'Un des tag n\'est pas du texte!');
+                return false;
+            }
+            if (mb_strlen($tag) > 32){
+                $this->addError('tags', 'Un des tag est trop long!');
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }; ?>
@@ -261,14 +326,34 @@ new class extends Component {
                 <div class="group py-1">
                 @switch($input['type'])
                     @case('text')
-                        <textarea wire:key='input_{{ $loop->index }}' wire:model="inputs.{{ $loop->index }}.content" id="input_{{ $loop->index }}"
-                            placeholder="Partagez vos pensées" @if ($loop->first) autofocus @endif
-                            oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
-                            class="peer block w-full h-9 !border-none !ring-0 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"></textarea>
-                        @break
-                
-                    @default
+                    <!-- Text input -->
+                    <textarea wire:key='input_{{ $loop->index }}' wire:model="inputs.{{ $loop->index }}.content" id="input_{{ $loop->index }}"
+                        placeholder="Partagez vos pensées" @if ($loop->first) autofocus @endif
+                        oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                        class="block w-full h-9 !border-none !ring-0 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"></textarea>
+                    @break
+                    @case('image')
+                    <!-- Image input -->
+                    <div>
+                        <a x-data x-on:click="$refs.fileInput.click()" class="w-fit m-auto block">
+                            <input type="file" wire:model="inputs.{{ $loop->index }}.content" x-ref="fileInput" style="display:none">
+                            
+                            @if ($inputs[$loop->index]['content'] != null)
+                                <img src="{{ $inputs[$loop->index]['content']->temporaryUrl() }}" alt="Photo de profil" class="max-w-full">
+                            @elseif (isset($inputs[$loop->index]['url']) && $inputs[$loop->index]['url'] != null)
+                            <img src="{{ $inputs[$loop->index]['url'] }}" alt="Photo de profil" class="max-w-full">
+                            @else
+                                <div class="cursor-pointer mx-auto p-2 rounded-md w-fit text-black dark:text-white border-2 border-blue-400">Cliquez ici pour ajouter une image</div>
+                            @endif
+                        </a>
+                    
+                        <div wire:loading wire:target="input_{{ $loop->index }}" class="dark:text-gray-100">
+                            Chargement...
+                        </div>
+                    </div>
+                    @break
                 @endswitch
+
                     <div class="hidden group-hover:flex flex-row">
                         <button wire:click='insertInput({{ $loop->index }}, "image")' type="button" class="mx-2" title="Ajouter une image">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -288,7 +373,7 @@ new class extends Component {
                 </button>
                 -->
             </div>
-            @error('text') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
+            @error('input') <div class="text-red-600 font-bold mt-2"> {{ $message }}</div> @enderror
 
             <!-- Tags -->
             <div class="mt-2">
