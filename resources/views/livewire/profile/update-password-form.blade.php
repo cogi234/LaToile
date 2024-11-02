@@ -70,10 +70,10 @@ new class extends Component
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('enregistrée') }}</x-primary-button>
+            <x-primary-button>{{ __('enregistrer') }}</x-primary-button>
 
             <x-action-message class="me-3" on="password-updated">
-                {{ __('enregistrée.') }}
+                {{ __('Enregistré.') }}
             </x-action-message>
         </div>
     </form>

@@ -17,7 +17,7 @@ new class extends Component
             'password' => ['required', 'string', 'current_password'],
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        tap(Auth::user(), $logout(...))->deleteOnCascade();
 
         $this->redirect('/', navigate: true);
     }
@@ -30,7 +30,7 @@ new class extends Component
         </h2>
 
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __('Une fois votre compte supprimé, toutes ses ressources et données seront définitivement supprimées. Veuillez saisir votre mot de passe pour confirmer que vous souhaitez supprimer définitivement votre compte.') }}
+            {{ __('Une fois votre compte supprimé, toutes ses ressources et données seront définitivement supprimées. Il ne sera plus possible d\'y avoir accès.') }}
         </p>
     </header>
 
@@ -59,7 +59,7 @@ new class extends Component
                     name="password"
                     type="password"
                     class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
+                    placeholder="{{ __('Mot de passe') }}"
                 />
 
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
