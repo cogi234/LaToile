@@ -1,4 +1,4 @@
-<?php
+@php
 use Livewire\Volt\Component;
 
 $linkConverter = new class extends Component {
@@ -12,7 +12,8 @@ $linkConverter = new class extends Component {
         );
     }
 }
-?>
+@endphp
+
 <div {{ $attributes->merge(['class' => "post-content ml-4 mt-4 text-gray-900 dark:text-gray-100"]) }}>
     @foreach ($content as $block)
         @php
@@ -23,17 +24,24 @@ $linkConverter = new class extends Component {
             $createdAt = $post->created_at;
         }
         @endphp
-        @if ($block['type'] == 'text')
-            <p class="p-2 w-fit max-w-[100%] break-words cursor-text" onclick="event.stopPropagation()">
-                {!! $linkConverter->convertUrlToLink($block['content']) !!}
-            </p>
-        @elseif ($block['type'] == 'user')
-            @php
-            $user = App\Models\User::find($block['id']);
-            @endphp
-            <hr class="mb-2" />
-            <x-post-user :user="$user" :post="$post" displayEditButton="{{ false }}" displayDeleteButton="{{ false }}"
-                :key="$postId . '_' . $block['id'] . '_' . $createdAt" />
-        @endif
+
+        @switch($block['type'])
+            @case('user')
+                @php
+                $user = App\Models\User::find($block['id']);
+                @endphp
+                <hr class="mb-2" />
+                <x-post-user :user="$user" :post="$post" displayEditButton="{{ false }}" displayDeleteButton="{{ false }}"
+                    :key="$postId . '_' . $block['id'] . '_' . $createdAt" />
+            @break
+            @case('text')
+                <p class="p-2 w-fit max-w-[100%] break-words cursor-text" onclick="event.stopPropagation()">
+                    {!! $linkConverter->convertUrlToLink($block['content']) !!}
+                </p>
+            @break
+            @case('image')
+                <img src="{{ $block['url'] }}" alt="[Image non fonctionnelle]" class="max-w-full rounded-md">
+            @break
+        @endswitch
     @endforeach
 </div>

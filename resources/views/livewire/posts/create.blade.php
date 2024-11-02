@@ -129,8 +129,8 @@ new class extends Component {
                     if ($input['content'] != null) {
                         //Essayer de compresser l'image
                         $image = Image::read($input['content'])->scaleDown($maxImageSize, $maxImageSize)->toJpeg();
-                        $imageBlock['url'] = 'files/' . Str::random(40) . '.jpg';
-                        $image->save('storage/' . $imageBlock['url']);
+                        $imageBlock['url'] = '/files/' . Str::random(40) . '.jpg';
+                        $image->save('storage' . $imageBlock['url']);
                         $content[] = $imageBlock;
                     }
                     break;
