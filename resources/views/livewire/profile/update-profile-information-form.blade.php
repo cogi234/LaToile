@@ -74,8 +74,8 @@ new class extends Component
             //Essayer de compresser l'image
             $size = Config::get('image.avatar_size');
             $image = Image::read($this->avatar)->cover($size, $size, 'center')->toJpeg();
-            $user->avatar = 'profile-photo/' . Str::random(40) . '.jpg';
-            $image->save('storage/' . $user->avatar);
+            $user->avatar = '/profile-photo/' . Str::random(40) . '.jpg';
+            $image->save('storage' . $user->avatar);
         }
 
         if ($user->isDirty('email')) {
