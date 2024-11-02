@@ -32,3 +32,33 @@
         </div>
     </body>
 </html>
+
+<style>
+    img.emoji {
+        width: 20px; /* ajustez la taille ici */
+        height: 20px; /* maintenez les proportions */
+        display: inline-block;
+        margin-right: 2px;
+    }
+
+    img.twemoji {
+        width: 20px; /* ajustez la taille ici */
+        height: 20px; /* maintenez les proportions */
+        display: inline-block;
+        margin-right: 2px;
+    }
+
+    svg.twemoji {
+        width: 20px; /* ajustez la taille ici */
+        height: 20px; /* maintenez les proportions */
+        display: inline-block;
+        margin-right: 2px;
+    }
+
+    .twemoji {
+        width: 20px; /* ajustez la taille ici */
+        height: 20px; /* maintenez les proportions */
+        display: inline-block;
+        margin-right: 2px;
+    }
+</style>

@@ -65,3 +65,10 @@ svg.twemoji {
     margin-right: 2px;
 }
 
+.twemoji {
+    width: 20px; /* ajustez la taille ici */
+    height: 20px; /* maintenez les proportions */
+    display: inline-block;
+    margin-right: 2px;
+}
+
