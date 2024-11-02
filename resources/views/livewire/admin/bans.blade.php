@@ -118,12 +118,7 @@ new class extends Component {
             }
         }
 
-        if ($this->reportType === 'Report') {
-            return redirect()->route('adminPage');
-        } else {
-            return redirect()->route('adminPageMessage');
-        }
-
+        $this->dispatch('reset-post-views');
         $this->close();
     }
 };

@@ -44,8 +44,17 @@ Route::middleware(['banned'])->group(function () {
     //Messages
     Route::get('/messages', [MessageController::class, 'show'])
         ->middleware(['auth']);
-    Route::get('/messages/{targetId}', [MessageController::class, 'show'])
+    Route::get('/messages/user/{targetId}', [MessageController::class, 'showUserConversation'])
         ->middleware(['auth']);
+    Route::get('/messages/group', [MessageController::class, 'showGroupConversation'])
+        ->middleware(['auth']);
+    Route::get('/messages/group/{groupId}', [MessageController::class, 'showGroupConversation'])
+        ->middleware(['auth']);
+
+    // Route::get('/messages', [MessageController::class, 'show'])
+    //     ->middleware(['auth']);
+    // Route::get('/messages/{targetId}', [MessageController::class, 'show'])
+    //     ->middleware(['auth']);
 
     //Notifications
     Route::view('/notifications', 'notifications')

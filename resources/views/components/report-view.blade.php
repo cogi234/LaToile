@@ -1,41 +1,41 @@
-@auth
-<div id="post-{{ $post->id }}" onclick="window.location.href = '/post/{{ $post->id }}'" {{ $attributes->merge(['class'
-    => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:bg-gray-700 overflow-hidden shadow-sm
-    rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0"]) }}>
+
+<div id="report-{{ $report->id }}" onclick="window.location.href = '/post/{{ $report->post_id }}'" 
+    {{ $attributes->merge(['class' => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:bg-gray-700 overflow-hidden
+    shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0"]) }}>
     <!-- admin table -->
     <div class="ml-4 text-gray-900 dark:text-gray-100 mb-4">
         <!-- Personne qui a créer le report -->
         <div class="flex sm:flex-row sm:mb-0 mb-4 flex-col items-center">
             <span class="font-bold text-lg mr-4">Reporté par : </span>
-            <a href="/user/{{$post->reporter_id}}" onclick="event.stopPropagation()"
+            <a href="/user/{{$report->user_id}}" onclick="event.stopPropagation()"
                 class="flex flex-row mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
-                <img src="{{ \App\Models\User::find($post->reporter_id)->getAvatar() }}" alt="Profile Image"
+                <img src="{{ $report->user->getAvatar() }}" alt="Profile Image"
                     class="w-8 h-8 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
                 <span
                     class="mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 hover:underline dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
-                    {{ $post->reporter_name }}
+                    {{ $report->user->name }}
                 </span>
             </a>
         </div>
         <!-- Personne reporté -->
         <div class="flex sm:flex-row sm:mb-0 mb-4 flex-col items-center">
             <span class="font-bold text-lg mr-4">Propriétaire du post : </span>
-            <a href="/user/{{$post->owner_id}}" onclick="event.stopPropagation()"
+            <a href="/user/{{$report->post->user_id}}" onclick="event.stopPropagation()"
                 class="flex flex-row mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 dark:text-white dark:hover:text-gray-400 mb-2 transition duration-150 ease-in-out">
-                <img src="{{ $post->user->getAvatar() }}" alt="Profile Image"
+                <img src="{{ $report->post->user->getAvatar() }}" alt="Profile Image"
                     class="w-8 h-8 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
                 <span
                     class="mr-2 text-lg font-bold text-gray-700 hover:text-gray-900 hover:underline dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
-                    {{ $post->owner_name }}
+                    {{ $report->post->user->name }}
                 </span>
             </a>
         </div>
-        <div class="flex sm:flex-row flex-col sm:text-base text-lg items-center cursor-text" onclick="event.stopPropagation()">
-            <strong class="mr-1">Raison du report : </strong> {{ $post->reports_reason }}
+        <div class="flex sm:flex-row flex-col sm:text-base text-lg items-center sm:mb-4 cursor-text mb-6" onclick="event.stopPropagation()">
+            <strong class="mr-1">Raison du report : </strong> {{ $report->reason }}
         </div>
         @php
             Carbon\Carbon::setLocale('fr');
-            $date = $post->reports_date ? Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $post->reports_date) : null;
+            $date = $report->created_at ? Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $report->created_at) : null;
         @endphp
         <div class="flex sm:flex-row flex-col sm:text-base text-lg items-center sm:mb-4 cursor-text mb-6" onclick="event.stopPropagation()">
             <strong class="mr-1">Reporté le : </strong> {{ $date->translatedFormat('d F Y \à H:i') }}
@@ -43,14 +43,14 @@
         <div class="flex sm:flex-row flex-col sm:space-y-0 space-y-8 items-center">
 
             <!-- Cacher un post -->
-            <livewire:admin.hide-post id="{{ $post->id }}"/>
+            <livewire:admin.hide-post id="{{ $report->post_id }}" :key="'hide_' . $report->id"/>
             <!-- Faux report -->
-            <livewire:admin.false-report :reportId="$post->reports_id"/> 
+            <livewire:admin.false-report :reportId="$report->id" :key="'treat' . $report->id"/> 
 
              <!-- Avertissement -->
-            <button title="Marqué le report comme traité et envoyer un avertissement à l'utilisateur"
+            <button title="Marquer le report comme traité et envoyer un avertissement à l'utilisateur"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 mr-4"
-                onclick="event.stopPropagation(); showWarningModal({{$post->owner_id}}, {{$post->reports_id}}, {{$post->id}}, 'Report');">
+                onclick="event.stopPropagation(); showWarningModal({{$report->post->user->id}}, {{$report->id}}, {{$report->post_id}}, 'Report');">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 1 1 0-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c.253.962.584 1.892.985 2.783.247.55.06 1.21-.463 1.511l-.657.38c-.551.318-1.26.117-1.527-.461a20.845 20.845 0 0 1-1.44-4.282m3.102.069a18.03 18.03 0 0 1-.59-4.59c0-1.586.205-3.124.59-4.59m0 9.18a23.848 23.848 0 0 1 8.835 2.535M10.34 6.66a23.847 23.847 0 0 0 8.835-2.535m0 0A23.74 23.74 0 0 0 18.795 3m.38 1.125a23.91 23.91 0 0 1 1.014 5.395m-1.014 8.855c-.118.38-.245.754-.38 1.125m.38-1.125a23.91 23.91 0 0 0 1.014-5.395m0-3.46c.495.413.811 1.035.811 1.73 0 .695-.316 1.317-.811 1.73m0-3.46a24.347 24.347 0 0 1 0 3.46" />
                 </svg>                  
@@ -60,7 +60,7 @@
             <!-- Supprimer post -->
             <button title="Supprimer le post"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 mr-4"
-                onclick="event.stopPropagation(); showPostDeletePopup({{$post->id}})">
+                onclick="event.stopPropagation(); showPostDeletePopup({{$report->post->id}})">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -68,11 +68,14 @@
                 </svg>
                 <span class="ml-1">Supprimer le Post</span>
             </button>
-
-            <!-- Bannir l'utilisateur -->
+            
+            <!-- Bannir/Debannir l'utilisateur -->
+            @if ($report->post->user->isBanned())
+            <livewire:admin.unban :user="$report->post->user" :key="'unban_' . $report->id"/>
+            @else 
             <button title="Marqué le report comme traité bannir l'utilisateur et cacher son post"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-red-800 dark:hover:text-red-500 mr-4"
-                onclick="event.stopPropagation(); showBanUserModal({{$post->owner_id}}, {{$post->reports_id}}, {{$post->id}}, 'Report');">
+                onclick="event.stopPropagation(); showBanUserModal({{$report->post->user_id}}, {{$report->id}}, {{$report->post_id}}, 'Report');">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -80,27 +83,29 @@
                 </svg>
                 <span class="ml-1">Bannir l'utilisateur</span>
             </button>
+            @endif
+
         </div>
     </div>
 
     <!-- Le contenu des posts précédents dans la chaîne de partage -->
-    @if ($post->previous_content != null)
-    <x-post-content :content="$post->previous_content" :postId="$post->id" />
+    @if ($report->post->previous_content != null)
+    <x-post-content :content="$report->post->previous_content" :postId="$report->post->id" />
     @endif
 
     <!-- Contenu du post -->
     <div class="ml-4 text-gray-900 dark:text-gray-100">
-        <x-post-user :key="'post' . $post->id" :user="$post->user" :post="$post" displayEditButton="{{ false }}"
+        <x-post-user :key="'post' . $report->post->id" :user="$report->post->user" :post="$report->post" displayEditButton="{{ false }}"
             displayDeleteButton="{{ false }}" />
     </div>
 
-    <x-post-content :postId="$post->id" :content="$post->content" />
+    <x-post-content :postId="$report->post->id" :content="$report->post->content" />
 
     <!-- Tags -->
-    @if (count($post->tags) > 0)
+    @if (count($report->post->tags) > 0)
     <div>
         <hr class="mb-3 border-gray-600" />
-        @foreach ($post->tags as $tag)
+        @foreach ($report->post->tags as $tag)
         <a href="/tag/{{ $tag->id }}" target="_blank" onclick="event.stopPropagation()"
             class="p-1 m-1 rounded-md dark:bg-gray-900 dark:text-gray-400">
             #{{ $tag->name }}
@@ -109,4 +114,3 @@
     </div>
     @endif
 </div>
-@endauth

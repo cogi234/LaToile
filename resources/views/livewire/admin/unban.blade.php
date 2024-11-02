@@ -3,35 +3,28 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\Locked;
 use App\Models\User;
-use App\Models\Ban;
 
 new class extends Component {
 
     #[Locked]
-    public int $userId = -1;
+    public User $user;
 
-    #[Locked]
-    public string $reportType = '';
-
-    public function unbanUser(int $userId, string $reportType)
+    public function mount(User $user) 
     {
-        // Trouver le ban de l'utilisateur
-        $ban = Ban::where('user_id', $userId)->first();
-        
-        if ($ban) {
-            $ban->delete(); // Supprime l'enregistrement
-        }
+        $this->user = $user;
+    }
 
-        if ($reportType === 'Report') {
-            return redirect()->route('adminPage');
-        } else {
-            return redirect()->route('adminPageMessage');
-        }
+    public function unbanUser()
+    {
+        $this->user->unban();
+
+        // Envoyer l'event pour reset le contenu des tabs
+        $this->dispatch('reset-post-views');
     }
 };
 ?>
 
-<button wire:click="unbanUser({{$userId}}, '{{$reportType}}')" title="Débannir l'utilisateur"
+<button wire:click="unbanUser" title="Débannir l'utilisateur"
 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-green-500 dark:hover:blue-green-500 mr-4"
 onclick="event.stopPropagation()">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
