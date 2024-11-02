@@ -268,7 +268,6 @@ new class extends Component {
         <div id="message_area" class="h-full flex flex-col overflow-y-scroll">
             <!-- Infos de la discussion -->
             <div class="flex items-center justify-between pl-4 pt-2 w-full">
-                {{-- <img class="w-12 h-12 rounded-full shadow-lg" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/> --}}
                 <div class="ml-3 text-sm font-medium text-gray-900 dark:text-white">
                     {{ $targetGroup->name }}
                 </div>
@@ -315,6 +314,13 @@ new class extends Component {
                             $isCurrentUserMessage = $message->user_id == Auth::id();
                             $currentTimeZone = 'America/Toronto';
                             $timeFormat = 'Y-m-d H:i';
+                            $messageText = $message->message;
+                            $textWithURLS = preg_replace(
+                                '/(https?:\/\/[^\s]+)/',
+                                '<a href="$1" target="_blank" rel="noopener noreferrer" class="hover:underline">$1</a>',
+                                $messageText
+                            );
+                            $messageText = Twemoji::text($textWithURLS)->svg()->toHTML();
                         @endphp
 
                         <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
@@ -355,7 +361,7 @@ new class extends Component {
                                 </div>
                                 @else
                                 <div class="flex flex-row w-fit max-w-[100%] break-words">
-                                    <p class="mr-2 w-fit max-w-[100%] break-words">{{ $message->message }}</p>
+                                    <p class="mr-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
                                 </div>
                                 @endif
                             </div>
@@ -373,7 +379,7 @@ new class extends Component {
                                         </svg>
                                 </button>
                                 <!-- Contenu du message -->
-                                <p class="ml-2 w-fit max-w-[100%] break-words">{{ $message->message }}</p>
+                                <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
                             </div>
                             @endif
                         </div>

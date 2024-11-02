@@ -5,6 +5,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use App\Models\PrivateMessage;
 use App\Models\User;
+use Astrotomic\Twemoji\Twemoji;
 
 new class extends Component {
 
@@ -220,10 +221,14 @@ new class extends Component {
                 @if($targetUserId !== null && !in_array($targetUserId, $uniqueSenderIds))
                 <div class="p-4 bg-gray-100 dark:bg-gray-700 cursor-pointer">
                     <div class="flex items-start">
-                        <img class="w-10 h-10 rounded-full" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
-                        <div class="ml-3 text-sm font-medium text-gray-900 dark:text-white">
-                            {{ $targetUser->name }}
-                        </div>
+                        <a class="flex flex-row" href="{{ url('user/' . $targetUser->id) }}">
+                            <a class="flex flex-row" href="{{ url('user/' . $targetUser->id) }}">
+                                <img class="w-12 h-12 rounded-full shadow-lg hover:outline hover:outline-2 hover:outline-black/10" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
+                                <div class="flex self-center ml-3 text-sm font-medium text-gray-900 hover:underline hover:dark:underline dark:text-white transition ease-in-out duration-150">
+                                    {{ $targetUser->name }}
+                                </div>
+                            </a>
+                        </a>
                     </div>
                 </div>
                 @endif
@@ -254,10 +259,12 @@ new class extends Component {
     <div id="message_area" class="h-full flex flex-col overflow-y-scroll">
         <!-- Infos de la discussion -->
         <div class="flex items-center pl-4 pt-2">
-            <img class="w-12 h-12 rounded-full shadow-lg" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
-            <div class="ml-3 text-sm font-medium text-gray-900 dark:text-white">
-                {{ $targetUser->name }}
-            </div>
+            <a class="flex flex-row" href="{{ url('user/' . $targetUser->id) }}">
+                <img class="w-12 h-12 rounded-full shadow-lg hover:outline hover:outline-2 hover:outline-black/10" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
+                <div class="flex self-center ml-3 text-sm font-medium text-gray-900 hover:underline hover:dark:underline dark:text-white transition ease-in-out duration-150">
+                    {{ $targetUser->name }}
+                </div>
+            </a>
         </div>
         <!-- Zone de discussion -->
         <div id="discussion" class="flex-1 p-4">
@@ -267,6 +274,13 @@ new class extends Component {
                         $isCurrentUserMessage = $message->sender_id == Auth::id();
                         $currentTimeZone = 'America/Toronto';
                         $timeFormat = 'Y-m-d H:i';
+                        $messageText = $message->message;
+                        $textWithURLS = preg_replace(
+                            '/(https?:\/\/[^\s]+)/',
+                            '<a href="$1" target="_blank" rel="noopener noreferrer" class="hover:underline">$1</a>',
+                            $messageText
+                        );
+                        $messageText = Twemoji::text($textWithURLS)->svg()->toHTML();
                     @endphp
 
                     <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
@@ -307,7 +321,7 @@ new class extends Component {
                             </div>
                             @else
                             <div class="flex flex-row w-fit max-w-[100%] break-words">
-                                <p class="mr-2 w-fit max-w-[100%] break-words">{{ $message->message }}</p>
+                                <p class="mr-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
                             </div>
                             @endif
                         </div>
@@ -325,7 +339,7 @@ new class extends Component {
                                     </svg>
                             </button>
                             <!-- Contenu du message -->
-                            <p class="ml-2 w-fit max-w-[100%] break-words">{{ $message->message }}</p>
+                            <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
                         </div>
                         @endif
                     </div>

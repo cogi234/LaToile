@@ -1,15 +1,18 @@
 <?php
 use Livewire\Volt\Component;
+use Astrotomic\Twemoji\Twemoji;
 
 $linkConverter = new class extends Component {
 
     public function convertUrlToLink($text)
     {
-        return preg_replace(
+        $textWithURLS = preg_replace(
             '/(https?:\/\/[^\s]+)/',
             '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">$1</a>',
             e($text)
         );
+
+        return Twemoji::text($textWithURLS)->svg()->toHTML();
     }
 }
 ?>
@@ -24,7 +27,7 @@ $linkConverter = new class extends Component {
         }
         @endphp
         @if ($block['type'] == 'text')
-            <p class="p-2 w-fit max-w-[100%] break-words cursor-text" onclick="event.stopPropagation()">
+            <p class="p-2 w-fit max-w-[100%] break-words cursor-text" id="postContent" onclick="event.stopPropagation()">
                 {!! $linkConverter->convertUrlToLink($block['content']) !!}
             </p>
         @elseif ($block['type'] == 'user')

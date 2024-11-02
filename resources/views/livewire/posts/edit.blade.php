@@ -150,11 +150,25 @@ new class extends Component {
     
         button.addEventListener('click', () => {
             picker.togglePicker(button);
+            parseEmoji();
         });
     
         picker.on('emoji', emoji => {
             textarea.value += emoji.emoji;
             textarea.dispatchEvent(new Event('input'));
         });
+
+        function parseEmoji() {
+            if (typeof twemoji !== "undefined" && typeof twemoji.parse === "function") {
+                // Parse the document body to replace emoji codes with images
+                twemoji.parse(document.body, {
+                    base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
+                    folder: '72x72/',
+                    ext: '.png'
+                });
+            } else {
+                console.error("Twemoji library did not load correctly.");
+            }
+        }
     </script>
 </div>
