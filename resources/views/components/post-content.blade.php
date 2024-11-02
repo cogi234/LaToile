@@ -40,7 +40,7 @@ $linkConverter = new class extends Component {
                 </p>
             @break
             @case('image')
-                <img src="{{ $block['url'] }}" alt="[Image non fonctionnelle]" class="max-w-full rounded-md mx-auto">
+                <img src="{{ $block['url'] }}" alt="[Image non fonctionnelle]" class="max-w-full rounded-md mx-auto my-2">
             @break
         @endswitch
     @endforeach
