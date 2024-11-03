@@ -129,7 +129,11 @@ new class extends Component {
 
     public function startEditing($messageId)
     {
-        $this->editingMessageId = $messageId;
+        if ($this->editingMessageId === $messageId) {
+            $this->editingMessageId = null; // Quittez le mode d'édition si vous êtes déjà en mode édition
+        } else {
+            $this->editingMessageId = $messageId; // Activez le mode d'édition pour ce message
+        }
         $message = PrivateMessage::find($messageId);
         $this->editMessageContent = $message->message;
     }
@@ -258,7 +262,7 @@ new class extends Component {
 
     <div id="message_area" class="h-full flex flex-col overflow-y-scroll">
         <!-- Infos de la discussion -->
-        <div class="flex items-center pl-4 pt-2">
+        <div class="flex items-center pl-4 pt-2 lg:mb-0 mb-3">
             <a class="flex flex-row" href="{{ url('user/' . $targetUser->id) }}">
                 <img class="w-12 h-12 rounded-full shadow-lg hover:outline hover:outline-2 hover:outline-black/10" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
                 <div class="flex self-center ml-3 text-sm font-medium text-gray-900 hover:underline hover:dark:underline dark:text-white transition ease-in-out duration-150">
@@ -286,10 +290,16 @@ new class extends Component {
                     <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
                         <!-- Message Container -->
                         @if($isCurrentUserMessage)
+                        <!-- Edit Button -->
+                        <button type="button" title="Modifier le message" wire:click.stop='startEditing({{ $message->id }})'>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 mr-2 stroke-gray-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                            </svg>                              
+                        </button>
                         <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
-                            id="message_{{ $message->id }}" 
-                            class="max-w-[60%] w-auto p-3 rounded-lg bg-blue-500 text-white cursor-pointer"
-                            wire:click.stop='startEditing({{ $message->id }})'>
+                            id="message_{{ $message->id }}" wire:click.stop
+                            class="lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-blue-500 text-white"
+                            >
 
                             @if ($message->id == $editingMessageId)
                             <!-- Edit Box -->
@@ -302,10 +312,10 @@ new class extends Component {
                                         class="p-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white h-10 min-h-10 rounded">
                                     </textarea>
                                     @error('editMessageLength') <div class="bg-red-500 px-2 text-white font-bold  rounded mt-2">{{ $message }}</div> @enderror
-                                    <div class="flex justify-end space-x-2 mt-2">
+                                    <div class="flex lg:flex-row w-full flex-col justify-end lg:space-x-2 mt-2">
                                         <!-- Save (Edit) Button -->
                                         <button type="button" title="Enregistrer les modifications" wire:click.stop='saveEdit'
-                                            class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded flex items-center transition duration-150 ease-in-out">
+                                            class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white lg:mb-0 mb-2 rounded flex items-center transition duration-150 ease-in-out">
                                             <i class="fas fa-save mr-2"></i>
                                             <span class="mr-2"> Enregistrer </span>
                                         </button>
@@ -327,10 +337,10 @@ new class extends Component {
                         </div>
                         @else
                         <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
-                            class="flex flex-row max-w-xs w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                            class="flex lg:flex-row flex-col lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
                             <!-- Signaler -->
                             <button title="Signaler le message"
-                                class="share-button flex items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
+                                class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
                                 onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor" class="size-6">
@@ -339,7 +349,9 @@ new class extends Component {
                                     </svg>
                             </button>
                             <!-- Contenu du message -->
-                            <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                            <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                            </div>
                         </div>
                         @endif
                     </div>
@@ -363,9 +375,8 @@ new class extends Component {
             @error('messageLength') <br><div class="text-red-400 font-bold mt-2">{{ $message }}</div> @enderror
             <form wire:submit.prevent="send" class="flex items-center">
                 <!-- Champ de texte pour écrire le message -->
-                <input type="text" wire:model="messageContent" placeholder="Écrire un message..." maxlength="2000" minlength="1"
+                <input type="text" wire:model="messageContent" id="privateMessagePostTextInput" placeholder="Écrire un message..." maxlength="2000" minlength="1"
                     class="flex-1 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"/>
-                
                 <!-- Bouton d'envoi avec une icône d'avion en papier -->
                 <button type="submit" title="Envoyer le message" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
