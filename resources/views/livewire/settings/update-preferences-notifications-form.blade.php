@@ -8,17 +8,20 @@ use Livewire\Attributes\Locked;
 
 new class extends Component
 {
-    public bool $can_get_messages_from_anyone = true;
-    public bool $can_get_messages_from_anyone2 = true;
-    public bool $can_get_messages_from_anyone3 = true;
-    public bool $can_get_messages_from_anyone4 = true;
+    public bool $can_get_notification_from_message = true;
+    public bool $can_get_notification_from_follow = true;
+    public bool $can_get_notification_from_share = true;
+    public bool $can_get_notification_from_like = true;
 
     /**
      * Mount the component.
      */
     public function mount(): void
     {
-        $this->can_get_messages_from_anyone = Auth::user()->can_get_messages_from_anyone;
+        $this->can_get_notification_from_message = Auth::user()->can_get_notification_from_message;
+        $this->can_get_notification_from_follow = Auth::user()->can_get_notification_from_follow;
+        $this->can_get_notification_from_share = Auth::user()->can_get_notification_from_share;
+        $this->can_get_notification_from_like = Auth::user()->can_get_notification_from_like;
     }
 
     /**
@@ -28,7 +31,10 @@ new class extends Component
     {
         $user = Auth::user();
 
-        $user->can_get_messages_from_anyone = $this->can_get_messages_from_anyone;
+        $user->can_get_notification_from_message = $this->can_get_notification_from_message;
+        $user->can_get_notification_from_follow = $this->can_get_notification_from_follow;
+        $user->can_get_notification_from_share = $this->can_get_notification_from_share;
+        $user->can_get_notification_from_like = $this->can_get_notification_from_like;
 
         $user->save();
 
@@ -37,43 +43,36 @@ new class extends Component
 }; ?>
 
 <!-- Section notifications -->
-<!-- Modifier wire:model, wire:click, id, label, etc. -->
 <form wire:submit="updatePreferences" class="mt-6 space-y-6">
     <div>
         <span class="text-gray-900 dark:text-gray-100">Quel type de notification je souhaite recevoir?</span><br>
-        <div class="flex flex-row sm:mb-2 sm:mt-1 mt-2 mb-5">
-            <input type="checkbox" wire:model='can_get_messages_from_anyone' id="can_get_messages_from_anyone"
-                name="can_get_messages_from_anyone" class="size-4 mr-1" />
-            <x-input-label for="can_get_messages_from_anyone" value="Notification de nouveau message" class="inline" />
-            <x-action-message class="me-3 ml-2" on="preferences-updated">
-                Sauvegardé.
-            </x-action-message>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+            Si vous décochez toutes les cases, seules les notifications essentielles seront envoyées.
+        </p>
+        <div class="flex flex-row sm:mb-2 sm:mt-1 pt-2 mb-5">
+            <input type="checkbox" wire:click='updatePreferences' wire:model='can_get_notification_from_message' id="can_get_notification_from_message"
+                name="can_get_notification_from_message" class="size-4 mr-1" />
+            <x-input-label for="can_get_notification_from_message" value="Notification de nouveau message." class="inline" />
         </div>
         <div class="flex flex-row mt-1 sm:mb-2 mb-5">
-            <input type="checkbox" wire:model='can_get_messages_from_anyone2' id="can_get_messages_from_anyone2"
-                name="can_get_messages_from_anyone" class="size-4 mr-1" />
-            <x-input-label for="can_get_messages_from_anyone2" value="Notification de nouveau suivi" class="inline" />
-            <x-action-message class="me-3 ml-2" on="preferences-updated">
-                Sauvegardé.
-            </x-action-message>
+            <input type="checkbox" wire:click='updatePreferences' wire:model='can_get_notification_from_follow' id="can_get_notification_from_follow"
+                name="can_get_notification_from_follow" class="size-4 mr-1" />
+            <x-input-label for="can_get_notification_from_follow" value="Notification de nouveau suivi." class="inline" />
         </div>
         <div class="flex flex-row mt-1 sm:mb-2 mb-5">
-            <input type="checkbox" wire:model='can_get_messages_from_anyone3' id="can_get_messages_from_anyone3"
-                name="can_get_messages_from_anyone" class="size-4 mr-1" />
-            <x-input-label for="can_get_messages_from_anyone3" value="Notification de nouveau partage/commentaire"
+            <input type="checkbox" wire:click='updatePreferences' wire:model='can_get_notification_from_share' id="can_get_notification_from_share"
+                name="can_get_notification_from_share" class="size-4 mr-1" />
+            <x-input-label for="can_get_notification_from_share" value="Notification de nouveau partage ou commentaire."
                 class="inline" />
-            <x-action-message class="me-3 ml-2" on="preferences-updated">
-                Sauvegardé.
-            </x-action-message>
         </div>
         <div class="flex flex-row mt-1 sm:mb-0 mb-2">
-            <input type="checkbox" wire:model='can_get_messages_from_anyone4' id="can_get_messages_from_anyone4"
-                name="can_get_messages_from_anyone" class="size-4 mr-1" />
-            <x-input-label for="can_get_messages_from_anyone4" value="Notification de nouvelle mention j'aime"
+            <input type="checkbox" wire:click='updatePreferences' wire:model='can_get_notification_from_like' id="can_get_notification_from_like"
+                name="can_get_notification_from_like" class="size-4 mr-1" />
+            <x-input-label for="can_get_notification_from_like" value="Notification de nouvelle mention j'aime."
                 class="inline" />
-            <x-action-message class="me-3 ml-2" on="preferences-updated">
-                Sauvegardé.
-            </x-action-message>
         </div>
+        <x-action-message class="mt-2" on="preferences-updated">
+            Préférences de notifications sauvegardé.
+        </x-action-message>
     </div>
 </form>

@@ -9,15 +9,17 @@
 
                 {{-- Nom et Abonnés / Abonnement --}}
                 <div class="mr-2">
-                    <h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $user->name }}</h2>
+                    <div class="flex flex-row">
+                        <h2 class="text-xl font-semibold text-black dark:text-gray-100 mr-2">{{ $user->name }}</h2>
+                        @auth
+                            @if (auth()->user()->id !== $user->id)
+                            <livewire:user.follow id="{{ $user->id }}" />
+                            @endif
+                        @endauth
+                    </div>
                     <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
                     <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p>
                 </div>
-                @auth
-                @if (auth()->user()->id !== $user->id)
-                <livewire:user.follow id="{{ $user->id }}" />
-                @endif
-                @endauth
             </div>
 
             {{-- Éditer profil --}}
@@ -43,7 +45,7 @@
                         <div id="dropdownMenu" class="hidden absolute top-32 right-72 bg-gray-700 dark:bg-gray-900 rounded-md shadow-lg z-50 max-h-48 overflow-auto">
                             <ul class="py-1 text-sm min-h-fit text-gray-200">
                                 <li>
-                                    <a href="{{ url('messages/' . $user->id) }}" title="Envoyer un message à {{$user->name}} ?" class="flex px-4 py-2 hover:bg-gray-600 items-center">
+                                    <a href="{{ url('messages/user/' . $user->id) }}" title="Envoyer un message à {{$user->name}} ?" class="flex px-4 py-2 hover:bg-gray-600 items-center">
                                         <span class="mr-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />

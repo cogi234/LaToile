@@ -21,4 +21,22 @@
             padding: 20px;
         }
     </style>
+    <script>
+        function parseEmoji() {
+            if (typeof twemoji !== "undefined" && typeof twemoji.parse === "function") {
+                // Parse the document body to replace emoji codes with images
+                twemoji.parse(document.body, {
+                    base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
+                    folder: '72x72/',
+                    ext: '.png'
+                });
+            } else {
+                console.error("Twemoji library did not load correctly.");
+            }
+        }
+        document.addEventListener("DOMContentLoaded", function() {
+            // Appeler parseEmoji pour initialiser les emojis à la première chargement
+            parseEmoji();
+        });
+    </script
 </x-app-layout>
