@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-6">
-        <x-follow-view :userId="$userId" />
+        <x-follow-view :user="$user" />
     </div>
     <style>
         .tabs {
@@ -83,8 +83,8 @@
             document.getElementById('following-content').style.display = 'none';
 
             // Enlever la classe active de tous les onglets
-            document.getElementById('posts-tab').classList.remove('active');
-            document.getElementById('users-tab').classList.remove('active');
+            document.getElementById('followed-tab').classList.remove('active');
+            document.getElementById('following-tab').classList.remove('active');
 
             // Afficher la section sélectionnée et rendre l'onglet actif
             document.getElementById(tab + '-content').style.display = 'block';

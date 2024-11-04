@@ -17,8 +17,8 @@
                             @endif
                         @endauth
                     </div>
-                    <a href=""><p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p></a>
-                    <a href=""><p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p></a>
+                    <a href="/user-followers/{{$user->id}}"><p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p></a>
+                    <a href="/user-followings/{{$user->id}}"><p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p></a>
                 </div>
             </div>
 
