@@ -62,7 +62,7 @@ new class extends Component {
         @endif --}}
         
     </div>
-    <script defer>
+    <script>
         function toggleMembersMenu() {
             this.dispatchEvent(
                 new CustomEvent('open-member-menu')
