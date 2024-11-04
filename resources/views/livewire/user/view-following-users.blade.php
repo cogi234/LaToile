@@ -29,7 +29,7 @@ new class extends Component
 
     public function loadMore()
     {
-        $additionalUsers = User::find(auth()->id())->followers()
+        $additionalUsers = User::find($this->userId)->followers()
             ->where('id', '!=', auth()->id())
             ->skip(count($this->followingUsers))
             ->take($this->perPage)
@@ -59,7 +59,7 @@ new class extends Component
                         <!-- Nom et Abonnés / Abonnement -->
                         <div>
                             <div class="flex flex-row">
-                                <a href="/user/{{$followingUser->id}}" class="hover:underline mr-2"><h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $matchedUser->name }}</h2></a>
+                                <a href="/user/{{$followingUser->id}}" class="hover:underline mr-2"><h2 class="text-xl font-semibold text-black dark:text-gray-100">{{ $followingUser->name }}</h2></a>
                                 @auth
                                     @if (auth()->user()->id !== $followingUser->id)
                                     <livewire:user.follow id="{{ $followingUser->id }}" />
