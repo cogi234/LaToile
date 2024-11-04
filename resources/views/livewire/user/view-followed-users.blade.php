@@ -9,7 +9,6 @@ new class extends Component
     public $userId;
     public $followedUsers = [];
     public $moreAvailable = true;
-    public $query = '';
     protected $perPage = 10;
 
     public function mount($userId)
@@ -42,7 +41,6 @@ new class extends Component
 
     public function resetUsers()
     {
-        $this->query = '';
         $this->loadFollowedUsers();
     }
 }; ?>
