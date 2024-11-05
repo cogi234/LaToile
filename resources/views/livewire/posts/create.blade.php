@@ -33,6 +33,8 @@ new class extends Component {
     #[Locked]
     public int $draftId = -1;
     #[Locked]
+    public int $editId = -1;
+    #[Locked]
     public bool $enabled = false;
     #[Locked]
     public bool $enabledQueueDialog = false;
@@ -64,11 +66,23 @@ new class extends Component {
     }
 
     #[On('open-post-creator')]
-    public function open(int $sharedId = -1, int $draftId = -1) {
+    public function open(int $sharedId = -1, int $draftId = -1, int $editId = -1) {
+        $this->editId = $editId;
         $this->draftId =  $draftId;
         $this->sharedPostId = $sharedId;
         $this->enabled = true;
-        if ($draftId >= 0) {
+        if ($editId >= 0) {
+            $original = Post::find($editId);
+            $this->inputs = $this->inputsFromContent($original->content);
+            //We always need a text input at the end
+            if ($this->inputs[sizeof($this->inputs) - 1]['type'] != 'text')
+                $this->inputs[] = [ 'type' => 'text', 'content' => '' ];
+            $this->tags = $original->tags->map(function ($tag, $key) { return $tag->name; })->toArray();
+            if ($original->previous != null) {
+                $this->sharedPostId = $original->previous_id;
+                $this->previousContent = $original->previous->createPreviousContent();
+            }
+        } else if ($draftId >= 0) {
             $draft = Draft::find($draftId);
             $this->inputs = $this->inputsFromContent($draft->content);
             $this->tags = $draft->tags;
@@ -150,6 +164,11 @@ new class extends Component {
         if (!$this->validateInputs())
             return;
 
+        if ($this->editId) {
+            $this->editPost();
+            return;
+        }
+
         $content = $this->contentFromInputs($this->inputs);
 
         //If the shared post id is positive, we are sharing a post. Otherwise, we are creating a new post
@@ -210,6 +229,38 @@ new class extends Component {
         }
 
         $draft->save();
+
+        $this->close();
+    }
+
+    public function editPost() {
+        $post = Post::find($this->editId);
+        $content = $this->contentFromInputs($this->inputs);
+
+        $post->content = $content;
+        //We add the post_id to the content blocks
+        if ($post->content != null){
+            $content = $post->content;
+            for ($i = 0; $i < sizeof($content); $i++) {
+                $content[$i]['post_id'] = $post->id;
+            }
+            $post->content = $content;
+        }
+
+        //We remove the tags that were removed from the post, and remove the tags that arent new from our list
+        foreach ($post->tags as $tag) {
+            $index = array_search($tag->name, $this->tags);
+            if ($index === false)
+                $tag->detach();
+            else
+                unset($this->tags[$index]);
+        }
+        //Then the tags left in our array are the new ones, so we add them
+        $post->addTags($this->tags);
+
+        $post->save();
+        
+        $this->dispatch('reset-post-views');
 
         $this->close();
     }
@@ -484,8 +535,16 @@ new class extends Component {
 
     <script>
         //Envoyer l'event pour activer le post editor
-        function showPostCreator(postId = -1, draftId = -1) {
-            if (draftId >= 0) {
+        function showPostCreator(postId = -1, draftId = -1, editId = -1) {
+            if (editId >= 0) {
+                this.dispatchEvent(
+                    new CustomEvent('open-post-creator', {
+                        detail: {
+                            editId: editId
+                        }
+                    })
+                );
+            } else if (draftId >= 0) {
                 this.dispatchEvent(
                     new CustomEvent('open-post-creator', {
                         detail: {
