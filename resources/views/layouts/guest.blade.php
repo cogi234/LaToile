@@ -16,33 +16,6 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <!-- Twemoji -->
         <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-        <script>
-            function parseEmoji() {
-                if (typeof twemoji !== "undefined" && typeof twemoji.parse === "function") {
-                    // Parse the document body to replace emoji codes with images
-                    twemoji.parse(document.body, {
-                        base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
-                        folder: '72x72/',
-                        ext: '.png'
-                    });
-                } else {
-                    console.error("Twemoji library did not load correctly.");
-                }
-            }
-            document.addEventListener("DOMContentLoaded", function() {
-                // Appeler parseEmoji pour initialiser les emojis à la première chargement
-                parseEmoji();
-
-                // Initialiser MutationObserver pour surveiller les ajouts dans le DOM
-                const observer = new MutationObserver((mutations) => {
-                    setTimeout(() => {
-                        parseEmoji();
-                    }, 500);
-                });
-
-                observer.observe(document.body, { childList: true, subtree: true });
-            });
-        </script>
 
     </head>
     <body class="font-sans text-gray-900 antialiased">
@@ -59,3 +32,33 @@
         </div>
     </body>
 </html>
+
+<style>
+    img.emoji {
+        width: 20px; /* ajustez la taille ici */
+        height: 20px; /* maintenez les proportions */
+        display: inline-block;
+        margin-right: 2px;
+    }
+
+    img.twemoji {
+        width: 20px; /* ajustez la taille ici */
+        height: 20px; /* maintenez les proportions */
+        display: inline-block;
+        margin-right: 2px;
+    }
+
+    svg.twemoji {
+        width: 20px; /* ajustez la taille ici */
+        height: 20px; /* maintenez les proportions */
+        display: inline-block;
+        margin-right: 2px;
+    }
+
+    .twemoji {
+        width: 20px; /* ajustez la taille ici */
+        height: 20px; /* maintenez les proportions */
+        display: inline-block;
+        margin-right: 2px;
+    }
+</style>

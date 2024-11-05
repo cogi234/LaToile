@@ -32,6 +32,10 @@ class PostShared extends Notification
      */
     public function via(object $notifiable): array
     {
+        // User notification preference
+        if (!$notifiable->can_get_notification_from_share) {
+            return [];
+        }
         return ['database'];
     }
 

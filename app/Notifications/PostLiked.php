@@ -32,6 +32,10 @@ class PostLiked extends Notification
      */
     public function via(object $notifiable): array
     {
+        // User notification preference
+        if (!$notifiable->can_get_notification_from_like) {
+            return [];
+        }
         return ['database'];
     }
 

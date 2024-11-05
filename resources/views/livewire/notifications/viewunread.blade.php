@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\DatabaseNotification;
 use Livewire\Attributes\Locked;
 use Livewire\Attributes\On;
+use Astrotomic\Twemoji\Twemoji;
 
 new class extends Component {
     #[Locked]
@@ -34,6 +35,7 @@ new class extends Component {
     @foreach ($notifications as $notification)
     @php
         $message = $notification->data['short_message'] ?? $notification->data['message'];
+        $messageWithTwemoji = Twemoji::text($message)->svg()->toHTML();
         $formattedTime = strftime('%d %B %Y à %H:%M', strtotime($notification->created_at));
         $url = $notification->data['url'] ?? route('notifications');
     @endphp
@@ -41,7 +43,7 @@ new class extends Component {
         text-gray-700 hover:bg-gray-200 focus:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800 dark:focus:bg-gray-800"
         href="{{ $url }}" title="{{ $notification->data['message'] }}">
         <div class="text-xs text-right dark:text-gray-400 mb-1">{{$formattedTime}}</div>
-        <div>{{ $message }}</div>
+        <div>{!! $messageWithTwemoji !!}</div>
     </a>
     <hr class="mx-1 border-gray-200 border-2 rounded">
     @endforeach

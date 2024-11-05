@@ -22,7 +22,7 @@ class MessageReceived extends Notification
     public function __construct(User $sender)
     {
         $this->message = "✉️ " . $sender->name . " t'a envoyé un message!";
-        $this->url = '/messages/' . $sender->id;
+        $this->url = '/messages/user/' . $sender->id;
     }
 
     /**
@@ -32,6 +32,10 @@ class MessageReceived extends Notification
      */
     public function via(object $notifiable): array
     {
+        // User notification preference
+        if (!$notifiable->can_get_notification_from_message) {
+            return [];
+        }
         return ['database'];
     }
 
