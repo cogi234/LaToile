@@ -71,12 +71,21 @@ new class extends Component {
         //We don't delete the first text element
         if ($this->inputs[$index]['type'] == 'text' && $index == 0)
             return;
+        //We always need at least one text after any image or other
+        if ($index > 0 && $this->inputs[$index]['type'] == 'text' && $this->inputs[$index - 1]['type'] != 'text')
+            return;
         //Delete the relevant input
         array_splice($this->inputs, $index, 1);
         //Focus on the previous input
         if ($index > 0)
         $this->dispatch('focus-input', index: $index - 1);
 
+    }
+
+    public function deleteInTextInput($index) {
+        //If we hit backspace on the last character of a text input
+        if ($this->inputs[$index]['content'] == '')
+            $this->removeInput($index);
     }
 
     #[On('open-post-creator')]
@@ -110,15 +119,14 @@ new class extends Component {
 
     public function inputsFromContent($content) : array {
         $inputs = [];
-        $textBuffer = '';
 
         foreach ($content as $block) {
             switch ($block['type']) {
                 case 'text':{
-                    if ($textBuffer == '')
-                        $textBuffer = $block['content'];
-                    else
-                        $textBuffer .= '\n\n' . $block['content'];
+                    $inputs[] = [
+                        'type' => 'text',
+                        'content' => $block['content']
+                    ];
                     break;
                 }
                 case 'image':{
@@ -127,13 +135,6 @@ new class extends Component {
                             'type' => 'text',
                             'content' => ''
                         ];
-                    if ($textBuffer != '') {
-                        $inputs[] = [
-                            'type' => 'text',
-                            'content' => $textBuffer
-                        ];
-                        $textBuffer = '';
-                    }
                     $inputs[] = [
                         'type' => 'image',
                         'content' => null,
@@ -147,10 +148,11 @@ new class extends Component {
         }
         
         //We always end with a text input
-        $inputs[] = [
-            'type' => 'text',
-            'content' => $textBuffer
-        ];
+        if ($inputs[sizeof($inputs) - 1]['type'] != 'text')
+            $inputs[] = [
+                'type' => 'text',
+                'content' => ''
+            ];
 
         return $inputs;
     }
@@ -412,6 +414,7 @@ new class extends Component {
                     <!-- Text input -->
                     <textarea wire:key='input_{{ $loop->index }}' wire:model="inputs.{{ $loop->index }}.content"
                         wire:keydown.enter.prevent='insertInput({{ $loop->index }}, "text")' id="input_{{ $loop->index }}"
+                        wire:keydown.backspace='deleteInTextInput({{ $loop->index }})'
                         @if ($loop->first) placeholder="Partagez vos pensées"  autofocus @endif
                         oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
                         class="block w-full h-10 !border-none !ring-0 resize-none bg-white dark:bg-gray-800 text-black dark:text-white"></textarea>
