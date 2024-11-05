@@ -20,7 +20,6 @@
     
     <livewire:posts.create />
     <livewire:posts.delete />
-    <livewire:posts.edit />
     <livewire:posts.report />
     <livewire:admin.bans />
     <livewire:admin.warnings />

@@ -74,8 +74,8 @@ new class extends Component
             //Essayer de compresser l'image
             $size = Config::get('image.avatar_size');
             $image = Image::read($this->avatar)->cover($size, $size, 'center')->toJpeg();
-            $user->avatar = 'profile-photo/' . Str::random(40) . '.jpg';
-            $image->save('storage/' . $user->avatar);
+            $user->avatar = '/profile-photo/' . Str::random(40) . '.jpg';
+            $image->save('storage' . $user->avatar);
         }
 
         if ($user->isDirty('email')) {
@@ -120,7 +120,7 @@ new class extends Component
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
         <div>
             <!-- Photo de profil -->
-            <x-input-label for="avatar" :value="__('Photo de profil')" class="mb-4"/>
+            <x-input-label for="avatar" value="Photo de profil" class="mb-4"/>
             
             <a x-data x-on:click="$refs.fileInput.click()">
                 <input type="file" wire:model="avatar" x-ref="fileInput" style="display:none">
