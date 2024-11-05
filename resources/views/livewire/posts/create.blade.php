@@ -49,20 +49,34 @@ new class extends Component {
 
     public function insertInput($index, $type) {
         switch ($type) {
+            case 'text':
+                $newInput = ['type' => 'text', 'content' => ''];
+                array_splice($this->inputs, $index + 1, 0, [$newInput]);
+                $this->dispatch('focus-input', index: $index + 1);
+                break;
             case 'image':
                 $newInput = ['type' => 'image', 'content' => null];
                 $newTextInput = ['type' => 'text', 'content' => ''];
-                //If we do it on an empty text, we replace it
-                if (mb_strlen(trim($this->inputs[$index]['content'])) == 0) {
-                    array_splice($this->inputs, $index, 1, [$newInput, $newTextInput]);
-                    $this->dispatch('focus-input', index: $index + 1);
-                }
-                else { //Otherwise, we add a new image input
+                //We add a new image input. If the next one isn't text, we add text after.
+                if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
+                    array_splice($this->inputs, $index + 1, 0, [$newInput]);
+                else
                     array_splice($this->inputs, $index + 1, 0, [$newInput, $newTextInput]);
-                    $this->dispatch('focus-input', index: $index + 2);
-                }
+                $this->dispatch('focus-input', index: $index + 2);
                 break;
         }
+    }
+
+    public function removeInput($index) {
+        //We don't delete the first text element
+        if ($this->inputs[$index]['type'] == 'text' && $index == 0)
+            return;
+        //Delete the relevant input
+        array_splice($this->inputs, $index, 1);
+        //Focus on the previous input
+        if ($index > 0)
+        $this->dispatch('focus-input', index: $index - 1);
+
     }
 
     #[On('open-post-creator')]
@@ -74,9 +88,6 @@ new class extends Component {
         if ($editId >= 0) {
             $original = Post::find($editId);
             $this->inputs = $this->inputsFromContent($original->content);
-            //We always need a text input at the end
-            if ($this->inputs[sizeof($this->inputs) - 1]['type'] != 'text')
-                $this->inputs[] = [ 'type' => 'text', 'content' => '' ];
             $this->tags = $original->tags->map(function ($tag, $key) { return $tag->name; })->toArray();
             if ($original->previous != null) {
                 $this->sharedPostId = $original->previous_id;
@@ -99,17 +110,30 @@ new class extends Component {
 
     public function inputsFromContent($content) : array {
         $inputs = [];
+        $textBuffer = '';
 
         foreach ($content as $block) {
             switch ($block['type']) {
                 case 'text':{
-                    $inputs[] = [
-                        'type' => 'text',
-                        'content' => implode('\n\n', array_map(fn($block) => $block['content'], $content))
-                    ];
+                    if ($textBuffer == '')
+                        $textBuffer = $block['content'];
+                    else
+                        $textBuffer .= '\n\n' . $block['content'];
                     break;
                 }
                 case 'image':{
+                    if ($inputs == [])
+                        $inputs[] = [
+                            'type' => 'text',
+                            'content' => ''
+                        ];
+                    if ($textBuffer != '') {
+                        $inputs[] = [
+                            'type' => 'text',
+                            'content' => $textBuffer
+                        ];
+                        $textBuffer = '';
+                    }
                     $inputs[] = [
                         'type' => 'image',
                         'content' => null,
@@ -117,8 +141,16 @@ new class extends Component {
                     ];
                     break;
                 }
+                default:
+                    break;
             }
         }
+        
+        //We always end with a text input
+        $inputs[] = [
+            'type' => 'text',
+            'content' => $textBuffer
+        ];
 
         return $inputs;
     }
@@ -164,7 +196,7 @@ new class extends Component {
         if (!$this->validateInputs())
             return;
 
-        if ($this->editId) {
+        if ($this->editId >= 0) {
             $this->editPost();
             return;
         }
@@ -374,14 +406,15 @@ new class extends Component {
         <div>
             <div class="flex flex-col rounded-md border-[1px] border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-1">
                 @foreach ($inputs as $input)
-                <div class="group py-1">
+                <div class="group">
                 @switch($input['type'])
                     @case('text')
                     <!-- Text input -->
-                    <textarea wire:key='input_{{ $loop->index }}' wire:model="inputs.{{ $loop->index }}.content" id="input_{{ $loop->index }}"
-                        placeholder="Partagez vos pensées" @if ($loop->first) autofocus @endif
+                    <textarea wire:key='input_{{ $loop->index }}' wire:model="inputs.{{ $loop->index }}.content"
+                        wire:keydown.enter.prevent='insertInput({{ $loop->index }}, "text")' id="input_{{ $loop->index }}"
+                        @if ($loop->first) placeholder="Partagez vos pensées"  autofocus @endif
                         oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
-                        class="block w-full h-9 !border-none !ring-0 rounded-md bg-white dark:bg-gray-800 text-black dark:text-white"></textarea>
+                        class="block w-full h-10 !border-none !ring-0 resize-none bg-white dark:bg-gray-800 text-black dark:text-white"></textarea>
                     <div class="hidden group-hover:flex flex-row">
                         <button wire:click='insertInput({{ $loop->index }}, "image")' type="button" class="mx-2" title="Ajouter une image">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -393,7 +426,7 @@ new class extends Component {
                     @break
                     @case('image')
                     <!-- Image input -->
-                    <div>
+                    <div class="py-1 relative">
                         <a x-data x-on:click="$refs.fileInput.click()" class="w-fit m-auto block">
                             <input type="file" wire:model="inputs.{{ $loop->index }}.content" x-ref="fileInput" style="display:none">
                             
@@ -405,6 +438,16 @@ new class extends Component {
                                 <div class="cursor-pointer mx-auto p-2 rounded-md w-fit text-black dark:text-white border-2 border-blue-400">Cliquez ici pour ajouter une image</div>
                             @endif
                         </a>
+
+                        
+                        <button wire:click='removeInput({{ $loop->index }})' type="button" title="Enlever l'image"
+                            class="absolute float-right top-2 right-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                class="size-6 dark:text-gray-100 hover:text-orange-500 dark:hover:text-yellow-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                                      
+                        </button>
                     
                         <div wire:loading wire:target="input_{{ $loop->index }}" class="dark:text-gray-100">
                             Chargement...
