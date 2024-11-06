@@ -66,8 +66,8 @@ new class extends Component
                                     @endif
                                 @endauth
                             </div>
-                            <p class="text-black dark:text-gray-100">Abonnés : {{ $followingUser->followers()->count() }}</p>
-                            <p class="text-black dark:text-gray-100">Abonnements : {{ $followingUser->followed_users()->count() }}</p>
+                            <a href="/user-followers/{{$followingUser->id}}"><p class="text-black dark:text-gray-100">Abonnés : {{ $followingUser->followers()->count() }}</p></a>
+                            <a href="/user-followers/{{$followingUser->id}}"><p class="text-black dark:text-gray-100">Abonnements : {{ $followingUser->followed_users()->count() }}</p></a>
                         </div>
                     </div>
                     <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
