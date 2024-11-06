@@ -24,7 +24,11 @@ new class extends Component {
     public function mount($targetGroup) {
         $this->enabled = false;
         $this->targetGroup = $targetGroup;
-        $this->isCreator = $targetGroup->creator_id == auth()->id();
+        $this->isCreator = Group::find($this->targetGroup->id)
+            ->memberships()
+            ->where('user_id', Auth::id())
+            ->where('status', 'creator')
+            ->exists();
         $this->loadGroupMembers();
     }
 
@@ -140,6 +144,13 @@ new class extends Component {
         <!-- Liste des membres du groupe -->
         <ul class="mb-4">
             @foreach ($members as $member)
+                @php
+                    $memberCreator = Group::find($this->targetGroup->id)
+                    ->memberships()
+                    ->where('user_id', $member)
+                    ->where('status', 'creator')
+                    ->exists();
+                @endphp
                 <li class="flex justify-between items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2">
                     <span class="flex items-center text-gray-800 dark:text-gray-300">
                         <img src="{{ $member->getAvatar() }}" alt="Profile Image" class="w-16 h-16 rounded-full mr-4 shadow-lg">
