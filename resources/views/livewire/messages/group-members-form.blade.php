@@ -62,6 +62,7 @@ new class extends Component {
         @endif --}}
         
     </div>
+    @script
     <script>
         function toggleMembersMenu() {
             this.dispatchEvent(
@@ -69,5 +70,6 @@ new class extends Component {
             );
         }
     </script>
+    @endscript
 </div>
 
