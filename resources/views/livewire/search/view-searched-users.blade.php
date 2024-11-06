@@ -37,7 +37,7 @@ new class extends Component {
 <div>
     @foreach ($matchedUsers as $matchedUser)
         <div class="max-w-5xl mx-auto px-3 sm:px-8">
-            <div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full">
+            <div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 w-full">
                 <div class="flex items-center justify-between">
                     <!-- Image de profil et détails -->
                     <div class="flex items-center">
@@ -78,14 +78,7 @@ new class extends Component {
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="" title="Bloquer {{$matchedUser->name}} ?" class="flex px-4 py-2 hover:bg-gray-600 items-center">
-                                        <span class="mr-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
-                                            </svg>                                                                                                                                                                                                                              
-                                        </span>
-                                        <span>Bloquer l'utilisateur</span>
-                                    </a>
+                                    <livewire:user.block-user :userId="$user->id" />
                                 </li>
                             </ul>
                         </div>
