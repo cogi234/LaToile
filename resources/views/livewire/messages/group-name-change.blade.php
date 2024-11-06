@@ -40,8 +40,7 @@ new class extends Component {
         $group->save();
         $this->close();
     }
-};
-?>
+}?>
 
 <div id="member_list" class="
     @if ($enabled)
@@ -77,4 +76,3 @@ new class extends Component {
         </button>
     </div>
 </div>
-
