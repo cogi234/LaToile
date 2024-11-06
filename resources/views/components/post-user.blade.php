@@ -78,7 +78,7 @@
     <div class="ml-auto flex flex-row items-start self-start space-x-2">
         @if ($displayEditButton && auth()->user()->id == $user->id)
         <!-- Éditer -->
-        <button value="{{$post->id}}" title="Éditer le post" onclick="event.stopPropagation(); showPostEditor({{$post->id}});"
+        <button value="{{$post->id}}" title="Éditer le post" onclick="event.stopPropagation(); showPostCreator(-1, -1, {{$post->id}});"
             class="like-button flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:blue-red-500 mr-4">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                 stroke="currentColor" class="size-6">

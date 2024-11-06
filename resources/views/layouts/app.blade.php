@@ -15,6 +15,7 @@
         <!-- Scripts -->
         <x-dark-light-mode-script />
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
         <!-- Twemoji -->
         <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
 

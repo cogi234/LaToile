@@ -19,8 +19,10 @@ new class extends Component {
         $this->post = $post;
         $this->responses = $this->post->original_shares()
             ->withCount('tags')
-            ->where('tags_count', '!=', 0)
-            ->where('content', '!=', '[]')
+            ->where(function ($query) {
+                $query->where('tags_count', '!=', 0)
+                ->orWhere('content', '!=', '[]');
+            })
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
@@ -34,8 +36,10 @@ new class extends Component {
         if ($this->moreAvailable) {
             $newResponses = $this->post->original_shares()
                 ->withCount('tags')
-                ->where('tags_count', 0)
-                ->where('content', '[]')
+                ->where(function ($query) {
+                    $query->where('tags_count', '!=', 0)
+                    ->orWhere('content', '!=', '[]');
+                })
                 ->where('created_at', '<', $this->responses->last()->created_at)
                 ->orderBy('created_at', 'desc')
                 ->take(10)
@@ -54,8 +58,10 @@ new class extends Component {
     {
         $this->responses = $this->post->original_shares()
             ->withCount('tags')
-            ->where('tags_count', 0)
-            ->where('content', '[]')
+            ->where(function ($query) {
+                $query->where('tags_count', '!=', 0)
+                ->orWhere('content', '!=', '[]');
+            })
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();

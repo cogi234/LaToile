@@ -42,8 +42,15 @@ return [
 
     /**
      * What size are avatars compressed to?
+     * They are squares
      */
 
      'avatar_size' => 200,
+
+     /**
+      * What maximum square size are images compressed to?
+      */
+ 
+      'max_image_size' => 500,
 
 ];
