@@ -63,6 +63,7 @@ new class extends Component {
                 else
                     array_splice($this->inputs, $index + 1, 0, [$newInput, $newTextInput]);
                 $this->dispatch('focus-input', index: $index + 2);
+                //$this->dispatch('click-input', index: $index + 1);
                 break;
         }
     }
@@ -432,7 +433,7 @@ new class extends Component {
                     <!-- Image input -->
                     <div class="py-1 relative">
                         <a x-data x-on:click="$refs.fileInput.click()" class="w-fit m-auto block">
-                            <input type="file" wire:model="inputs.{{ $loop->index }}.content" x-ref="fileInput" style="display:none">
+                            <input type="file" id="input_{{ $loop->index }}" wire:model="inputs.{{ $loop->index }}.content" x-ref="fileInput" style="display:none">
                             
                             @if ($inputs[$loop->index]['content'] != null)
                                 <img src="{{ $inputs[$loop->index]['content']->temporaryUrl() }}" alt="Photo de profil" class="max-w-full">
@@ -575,6 +576,13 @@ new class extends Component {
         $wire.on('focus-input', (event) => {
             setTimeout(() => {
                 $('#input_' + event.index).focus()
+            }, 100);
+        });
+        
+        //To auto open new file input dialogs
+        $wire.on('click-input', (event) => {
+            setTimeout(() => {
+                $('#input_' + event.index).click()
             }, 100);
         });
     </script>
