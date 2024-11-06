@@ -53,17 +53,25 @@ new class extends Component {
     }
 
     public function updatedSearch() {
-        #Aussi Update le form de création pour exclure soit meme
         if (trim($this->search) === '') {
             $this->users = [];
         } else {
+            $memberIds = $this->members ? $this->members->pluck('id')->toArray() : [];
+
+            $invites = Group::find($this->targetGroup->id)->invites()->get();
+            $inviteIds = $invites ? $invites->pluck('id')->toArray() : [];
+
+            $excludedIds = array_merge($this->selectedUsers, $memberIds, $inviteIds);
+
             $this->users = User::where('name', 'like', '%' . $this->search . '%')
-                ->whereNotIn('id', $this->selectedUsers)
-                ->whereNotIn('id', $this->members)
+                ->whereNotIn('id', $excludedIds)
+                ->where('id', '!=', Auth::id())
                 ->take(10)
                 ->get();
         }
     }
+
+
 
     public function selectUser($userId) {
         if (!in_array($userId, $this->selectedUsers)) {
@@ -145,9 +153,9 @@ new class extends Component {
         <ul class="mb-4">
             @foreach ($members as $member)
                 @php
-                    $memberCreator = Group::find($this->targetGroup->id)
+                    $isMemberCreator = Group::find($this->targetGroup->id)
                     ->memberships()
-                    ->where('user_id', $member)
+                    ->where('user_id', $member->id)
                     ->where('status', 'creator')
                     ->exists();
                 @endphp
@@ -157,8 +165,7 @@ new class extends Component {
                         {{ $member->name }}
                     </span>
                     <span class="text-gray-800 dark:text-gray-300">
-                        Créateur
-                        @if ($member->id == $targetGroup->creator_id)
+                        @if ($isMemberCreator)
                             Créateur
                         @endif
                     </span>
