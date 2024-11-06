@@ -12,7 +12,9 @@ new class extends Component {
     public ?Group $targetGroup = null;
     public ?int $targetGroupId = null;
     public $selectedConversation = [];
-    
+    public $isCreator = true;
+
+
     public $searchQuery = '';
     public $searchResults = [];
 
@@ -295,6 +297,7 @@ new class extends Component {
                                     </svg>
                                 </span>
                             </button>
+                            @if($isCreator)
                             <button type="button" id="viewMembers" onclick="toggleGroupNameMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 p-4 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
                                 Changer le nom du groupe
                                 <span class="ml-2">
@@ -304,6 +307,7 @@ new class extends Component {
                                     </svg>
                                 </span>
                             </button>
+                            @endif
                             <!-- Séparateur -->
                             <hr class="border-gray-300 dark:border-gray-600 my-2">
 
