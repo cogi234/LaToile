@@ -1,3 +1,9 @@
+@php
+    use App\Models\User;
+    $followedUsersCount = User::find($user->id)->followed_users()->count();
+    $followingUsersCount = User::find($user->id)->followers()->count();
+@endphp
+
 <div class="max-w-5xl mx-auto px-3 sm:px-8">
     <div class=" flex items-center text-lg font-semibold text-gray-800 dark:text-white pb-4">
         <span><img src="{{ $user->getAvatar() }}" alt="Profile Image"
@@ -9,10 +15,10 @@
         <div class="tabs p-6 text-gray-900 dark:text-gray-100">
             <!-- Les blocs sont maintenant des liens entièrement cliquables -->
             <a href="javascript:void(0);" class="tab active" id="followed-tab" onclick="showContent('followed')">
-                Abonnements
+                Abonnements ({{$followedUsersCount}})
             </a>
             <a href="javascript:void(0);" class="tab" id="following-tab" onclick="showContent('following')">
-                Abonnés
+                Abonnés ({{$followingUsersCount}})
             </a>
         </div>
     </div>

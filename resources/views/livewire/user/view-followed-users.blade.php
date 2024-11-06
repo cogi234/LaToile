@@ -20,7 +20,6 @@ new class extends Component
     public function loadFollowedUsers()
     {
         $this->followedUsers = User::find($this->userId)->followed_users()
-            // ->where('id', '!=', auth()->id())
             ->take($this->perPage)
             ->get();
 
@@ -30,7 +29,6 @@ new class extends Component
     public function loadMore()
     {
         $additionalUsers = User::find($this->userId)->followed_users()
-            // ->where('id', '!=', auth()->id())
             ->skip(count($this->followedUsers))
             ->take($this->perPage)
             ->get();
