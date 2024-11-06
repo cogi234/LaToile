@@ -12,6 +12,7 @@ new class extends Component {
     public $targetGroup = null;
     public $groupMembersCount = 0;
     public $newMemberEmail = '';
+    public $pageNum = 1;
 
     #[Locked]
     public bool $enabled = false;
@@ -34,7 +35,7 @@ new class extends Component {
 
     public function loadGroupMembers() {
         // Charger les membres actuels du groupe
-        $this->users = Group:: ->get();
+        $this->users = Group::find($this->targetGroup->id)->memberships()->get();
         $this->groupMembersCount = $this->users->count();
     }
 
@@ -58,6 +59,11 @@ new class extends Component {
     public function removeUser($userId) {
         // $this->targetGroup->users()->detach($userId);
         // $this->loadGroupMembers();
+    }
+
+    public function goToPage($pageNum) {
+        $this->pageNum = $pageNum;
+        $this->errorMessage = '';
     }
 };
 ?>
@@ -93,7 +99,11 @@ new class extends Component {
         <ul class="mb-4">
             @foreach ($users as $user)
                 <li class="flex justify-between items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2">
-                    <span class="text-gray-800 dark:text-gray-300">{{ $user->name }} ({{ $user->email }})</span>
+                    <span class="flex items-center text-gray-800 dark:text-gray-300">
+                        <span><img src="{{ $user->getAvatar() }}" alt="Profile Image"
+                        class="w-16 h-16 rounded-full mr-4 shadow-lg"></span> 
+                        {{ $user->name }}
+                    </span>
                     <button wire:click="removeUser({{ $user->id }})" class="text-red-600 dark:text-red-400 hover:text-red-800">
                         Retirer
                     </button>
@@ -101,12 +111,35 @@ new class extends Component {
             @endforeach
         </ul>
 
-        <!-- Formulaire pour ajouter un nouveau membre -->
+        <!-- Bouton pour ajouter un nouveau membre -->
         <div>
-            <input type="email" wire:model="newMemberEmail" placeholder="Email du membre" class="w-full p-2 mb-2 border border-gray-300 rounded">
             <button wire:click="addUser" class="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
                 Ajouter un membre
             </button>
         </div>
+        
+        <!-- Pagination -->
+        <div class="mt-6 flex justify-center">
+            <button wire:click="goToPage(1)" 
+                    class="px-3 py-1 rounded-full 
+                    @if($pageNum === 1) 
+                        bg-gray-500 
+                    @else 
+                        bg-gray-300 
+                    @endif">
+                1
+            </button>
+            <button wire:click="goToPage(2)" 
+                    class="ml-2 px-3 py-1 rounded-full 
+                    @if($pageNum === 2) 
+                        bg-gray-500 
+                    @elseif(count($selectedUsers) > 0) 
+                        bg-gray-300 hover:bg-gray-400 
+                    @else 
+                        bg-gray-300 text-gray-500 cursor-not-allowed 
+                    @endif">
+                2
+            </button>
+        </div>     
     </div>
 </div>
