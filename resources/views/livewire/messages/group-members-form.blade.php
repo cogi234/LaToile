@@ -140,7 +140,7 @@ new class extends Component {
             @endif --}}
 
             <!-- Liste des membres du groupe -->
-            <ul class="mb-4">
+            <ul class="mb-4 overflow-y-auto h-52">
                 @foreach ($members as $member)
                     @php
                         $isMemberCreator = Group::find($this->targetGroup->id)
