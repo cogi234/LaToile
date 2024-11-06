@@ -34,11 +34,6 @@ new class extends Component {
         
         if ($targetGroupId !== null) {
             $this->setSelectedGroup($targetGroupId);
-            $this->isCreator = Group::find($targetGroupId)
-            ->memberships()
-            ->where('user_id', Auth::id())
-            ->where('status', 'creator')
-            ->exists();
         }
     }
 
@@ -51,6 +46,12 @@ new class extends Component {
             session()->flash('error', 'Groupe non trouvé');
             return;
         }
+
+        $this->isCreator = Group::find($targetGroupId)
+            ->memberships()
+            ->where('user_id', Auth::id())
+            ->where('status', 'creator')
+            ->exists();
 
         $this->targetGroupId = $targetGroupId;
         $this->targetGroup = $targetGroup;
