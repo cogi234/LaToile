@@ -8,15 +8,13 @@
                         <!-- Les blocs sont maintenant des liens entièrement cliquables -->
                         <a href="javascript:void(0);" class="tab active" id="posts-tab" onclick="showContent('posts')">
                             Posts 
-                        </a>
-                        @auth
+                        </a>              
                         <a href="javascript:void(0);" class="tab" id="users-tab" onclick="showContent('users')">
                             Utilisateurs
                         </a>
                         <a href="javascript:void(0);" class="tab" id="tags-tab" onclick="showContent('tags')">
                             Tags
                         </a>
-                        @endauth
                     </div>
                 </div>
 
@@ -148,17 +146,15 @@
 
             // Cacher tous les contenus
             document.getElementById('posts-content').style.display = 'none';
-            @auth
             document.getElementById('users-content').style.display = 'none';
             document.getElementById('tags-content').style.display = 'none';
-            @endauth
+
 
             // Enlever la classe active de tous les onglets
             document.getElementById('posts-tab').classList.remove('active');
-            @auth
             document.getElementById('users-tab').classList.remove('active');
             document.getElementById('tags-tab').classList.remove('active');
-            @endauth
+
 
             // Afficher la section sélectionnée et rendre l'onglet actif
             document.getElementById(tab + '-content').style.display = 'block';

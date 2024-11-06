@@ -13,7 +13,7 @@ new class extends Component {
     public function mount($query)
     {
         $this->query = $query;
-        $this->matchedPosts = Post::where('content', 'like', '%' . $this->query . '%')
+        $this->matchedPosts = Post::blockedUserPostCheck()->where('content', 'like', '%' . $this->query . '%')
             ->where('hidden', false)
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -22,7 +22,7 @@ new class extends Component {
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $matchedPosts = Post::where('content', 'like', '%' . $this->query . '%')
+            $matchedPosts = Post::blockedUserPostCheck()->where('content', 'like', '%' . $this->query . '%')
                 ->orderBy('updated_at', 'desc')
                 ->get();
 
@@ -32,6 +32,11 @@ new class extends Component {
     }
 
     public function resetPosts(){
+        
+        $this->matchedPosts = Post::blockedUserPostCheck()->where('content', 'like', '%' . $this->query . '%')
+            ->where('hidden', false)
+            ->orderBy('updated_at', 'desc')
+            ->get();
         // Check if there are more pages to load
         $this->moreAvailable = $this->matchedPosts->isNotEmpty();
     }

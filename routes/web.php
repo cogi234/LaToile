@@ -38,7 +38,6 @@ Route::middleware(['banned'])->group(function () {
 
     //Search
     Route::get('/search', [SearchController::class, 'search'])
-        ->middleware(['auth'])
         ->name('search');
 
     //Messages
@@ -75,6 +74,11 @@ Route::middleware(['banned'])->group(function () {
     Route::view('adminPageMessage', 'adminPageMessage')
     ->middleware(['auth', 'admin'])
     ->name('adminPageMessage');
+
+    // blockedUserList
+    Route::view('blockedUsers', 'blockedUsers')
+        ->middleware(['auth'])
+        ->name('blockedUsers');
 });
 
 

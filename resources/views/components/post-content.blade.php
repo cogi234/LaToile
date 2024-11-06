@@ -1,6 +1,7 @@
 @php
 use Livewire\Volt\Component;
 use Astrotomic\Twemoji\Twemoji;
+use App\Models\Post;
 
 $linkConverter = new class extends Component {
     public function convertUrlToLink($text)
