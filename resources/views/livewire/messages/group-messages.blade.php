@@ -425,8 +425,8 @@ new class extends Component {
                                     </div>
                                     
                                     <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
-                                        class="flex lg:flex-row flex-col max-w-[50%] w-full p-3 rounded-lg bg-gray-300 text-gray-900">
-                                        {{-- lg:max-w-[60%] max-w-[90%] w-auto --}}
+                                        class="flex lg:flex-row flex-col lg:max-w-[40%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                                        {{--  --}}
                                         <!-- Signaler -->
                                         <button title="Signaler le message"
                                             class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
