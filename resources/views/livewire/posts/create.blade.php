@@ -40,12 +40,11 @@ new class extends Component {
     public bool $enabledQueueDialog = false;
 
 
-    public function insertTag(bool $focus = false) {
+    public function insertTag() {
         $index = sizeof($this->tags) - 1;
         if (mb_strlen(trim($this->tags[$index])) > 0 ) {
             array_splice($this->tags, $index + 1, 0, '');
         }
-        $this->dispatch('focus-tag', index: $index + 1);
     }
 
     public function insertInput($index, $type) {
@@ -420,7 +419,7 @@ new class extends Component {
                         @if ($loop->first) placeholder="Partagez vos pensées"  autofocus @endif
                         oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
                         class="block w-full h-10 !border-none !ring-0 resize-none bg-white dark:bg-gray-800 text-black dark:text-white"></textarea>
-                    <div class="hidden group-hover:flex flex-row">
+                    <div class="hidden group-hover:flex group-last:flex flex-row">
                         <button wire:click='insertInput({{ $loop->index }}, "image")' type="button" class="mx-2" title="Ajouter une image">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                 class="size-6 dark:text-gray-100 hover:text-orange-500 dark:hover:text-yellow-400">
@@ -478,8 +477,8 @@ new class extends Component {
                 <p class="text-black dark:text-white">Tags:</p>
                 @foreach ($tags as $tag)
                 <span class="m-1 text-gray-800 dark:text-gray-300">#
-                    <input type="text" wire:model.blur='tags.{{ $loop->index }}' wire:key='tag_{{ $loop->index }}' wire:keydown='insertTag'
-                        wire:keydown.enter='insertTag(true)' id="tag_{{ $loop->index }}" maxlength="32" style="min-width: 5em; width: {{ mb_strlen($tag) }}em"
+                    <input type="text" wire:model.blur='tags.{{ $loop->index }}' wire:key='tag_{{ $loop->index }}' wire:keydown='insertTag(false)'
+                        id="tag_{{ $loop->index }}" maxlength="32" style="min-width: 5em; width: {{ mb_strlen($tag) }}em"
                         class="inline-block ml-[-3px] py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
                         focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300" />
                 </span>
