@@ -35,7 +35,7 @@ new class extends Component {
 
     #[On('close-member-menu')]
     public function close() {
-        $this->reset('enabled');
+        $this->reset('enabled', 'search', 'users', 'pageNum', 'selectedUsers');
     }
 
     public function loadGroupMembers() {
@@ -49,6 +49,7 @@ new class extends Component {
     }
 
     public function updatedSearch() {
+        #Aussi Update le form de création pour exclure soit meme
         if (trim($this->search) === '') {
             $this->users = [];
         } else {
