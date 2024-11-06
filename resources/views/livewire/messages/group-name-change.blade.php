@@ -23,7 +23,7 @@ new class extends Component {
         $this->enabled = true;
     }
 
-    #[On('open-groupName-menu')]
+    #[On('close-groupName-menu')]
     public function close() {
         $this->reset('enabled');
     }
@@ -33,7 +33,7 @@ new class extends Component {
     }
 
 
-}
+};
 ?>
 
 <div id="member_list" class="
@@ -62,12 +62,5 @@ new class extends Component {
         @endif --}}
         
     </div>
-    <script defer>
-        function toggleGroupNameMenu() {
-            this.dispatchEvent(
-                new CustomEvent('open-groupName-menu')
-            );
-        }
-    </script>
 </div>
 

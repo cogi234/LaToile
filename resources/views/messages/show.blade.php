@@ -6,6 +6,24 @@
                 <livewire:messages.private-messages :targetUserId="$targetUserId" />
         @endif
 
+
+        
+    <script>
+        function toggleMembersMenu() {
+            console.log('toggled members');
+            this.dispatchEvent(
+                new CustomEvent('open-member-menu')
+            );
+        }
+        
+        function toggleGroupNameMenu() {
+            console.log('toggled group name');
+            this.dispatchEvent(
+                new CustomEvent('open-groupName-menu')
+            );
+        }
+    </script>
+    
     <style>
         main{
             height: calc(100vh - 4rem);

@@ -23,7 +23,7 @@ new class extends Component {
         $this->enabled = true;
     }
 
-    #[On('open-member-menu')]
+    #[On('close-member-menu')]
     public function close() {
         $this->reset('enabled');
     }
@@ -33,7 +33,7 @@ new class extends Component {
     }
 
 
-}
+};
 ?>
 
 <div id="member_list" class="
@@ -62,14 +62,5 @@ new class extends Component {
         @endif --}}
         
     </div>
-    @script
-    <script>
-        function toggleMembersMenu() {
-            this.dispatchEvent(
-                new CustomEvent('open-member-menu')
-            );
-        }
-    </script>
-    @endscript
 </div>
 
