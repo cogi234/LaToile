@@ -161,7 +161,7 @@ new class extends Component {
                         </span>
                         <span>
                             <!-- Bouton de retrait visible seulement pour le créateur -->
-                            @if ($isCreator)
+                            @if ($isCreator && $member->id !== Auth::id())
                                 <button wire:click="removeUser({{ $member->id }})" class="text-red-600 dark:text-red-400 hover:text-red-800">
                                     Retirer
                                 </button>
