@@ -71,8 +71,6 @@ new class extends Component {
         }
     }
 
-
-
     public function selectUser($userId) {
         if (!in_array($userId, $this->selectedUsers)) {
             $this->selectedUsers[] = $userId;
@@ -80,7 +78,6 @@ new class extends Component {
 
         $this->users = collect($this->users)->filter(fn($user) => $user->id !== $userId);
     }
-
 
     public function deselectUser($userId) {
         $this->selectedUsers = array_values(array_filter($this->selectedUsers, fn($id) => $id !== $userId));
