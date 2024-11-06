@@ -14,7 +14,7 @@ new class extends Component {
     public function mount()
     {
         // Ajoutez une condition pour vérifier si moderator est 0 ou 1
-        $this->posts = Post::where('hidden', false)
+        $this->posts = Post::blockedUserPostCheck()->where('hidden', false)
             ->orderby('id', 'desc')
             ->take(10)
             ->with(['user', 'tags'])
@@ -27,7 +27,7 @@ new class extends Component {
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = Post::where('id', '<', $this->posts->last()->id)
+            $newPosts = Post::blockedUserPostCheck()->where('id', '<', $this->posts->last()->id)
                 ->where('hidden', false)
                 ->orderby('id', 'desc')
                 ->take(10)
@@ -46,7 +46,7 @@ new class extends Component {
     public function resetPosts()
     {
         // Ajoutez la condition de même manière ici
-        $this->posts = Post::where('hidden', false)
+        $this->posts = Post::blockedUserPostCheck()->where('hidden', false)
             ->orderby('id', 'desc')
             ->take(10)
             ->with('user')

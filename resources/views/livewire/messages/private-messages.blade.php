@@ -374,6 +374,8 @@ new class extends Component {
                 //If the user doesn't want to get messages from people they don't follow and they don't follow you, you can't send messages
                 if (!$targetUser->can_get_messages_from_anyone && $targetUser->followed_users()->where('id', Auth::id())->count() == 0)
                     $can_send_messages = false;
+                if(Auth::user()->blocked_users()->where('id', $targetUser->id)->exists() ||Auth::user()->blockers()->where('id', $targetUser->id)->exists() )
+                    $can_send_messages = false;
             @endphp
             @if ($can_send_messages)
             @error('messageLength') <br><div class="text-red-400 font-bold mt-2">{{ $message }}</div> @enderror

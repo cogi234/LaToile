@@ -1,6 +1,7 @@
 @php
 use Livewire\Volt\Component;
 use Astrotomic\Twemoji\Twemoji;
+use App\Models\Post;
 
 $linkConverter = new class extends Component {
 
@@ -20,7 +21,7 @@ $linkConverter = new class extends Component {
 <div {{ $attributes->merge(['class' => "ml-4 mt-4 text-gray-900 dark:text-gray-100"]) }}>
     @foreach ($content as $block)
         @php
-        $post = App\Models\Post::find($block['post_id']);
+        $post = Post::find($block['post_id']);
         if ($post == null) {
             $createdAt = now();
         } else {
