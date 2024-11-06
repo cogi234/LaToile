@@ -112,8 +112,7 @@ new class extends Component {
 
     public function updateSelectedConversation() {
         $this->selectedConversation = GroupMessage::where(function($query) {
-            $query->where('user_id', Auth::id())
-                ->where('group_id', $this->targetGroupId);
+            $query->where('group_id', $this->targetGroupId);
         })->get();
     }
     public function getGroupMembers()
@@ -360,6 +359,8 @@ new class extends Component {
                                 $messageText
                             );
                             $messageText = Twemoji::text($textWithURLS)->svg()->toHTML();
+
+
                         @endphp
 
                         <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
@@ -410,21 +411,35 @@ new class extends Component {
                                 @endif
                             </div>
                             @else
-                            <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
-                                class="flex lg:flex-row flex-col lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
-                                <!-- Signaler -->
-                                <button title="Signaler le message"
-                                    class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
-                                    onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                        stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                                        </svg>
-                                </button>
-                                <!-- Contenu du message -->
-                                <div class="flex flex-row w-fit max-w-[100%] break-words">
-                                    <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                            <div class="flex items-end">
+                                <div>
+                                    <!-- Avatar de l'usager-->
+                                    <div class="mr-3">
+                                        <img src="{{ $message->user->getAvatar() }}" alt="Avatar de {{ $message->user->name }}" class="w-10 h-10 rounded-full shadow-lg">
+                                    </div>
+                                </div>
+                                <div>
+                                    <div>
+                                        <!-- Nom de l'usager-->
+                                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
+                                    </div>
+                                    <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                        class="flex lg:flex-row flex-col lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                                        <!-- Signaler -->
+                                        <button title="Signaler le message"
+                                            class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
+                                            onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                                </svg>
+                                        </button>
+                                        <!-- Contenu du message -->
+                                        <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                            <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             @endif
