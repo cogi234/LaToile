@@ -80,7 +80,7 @@ class Post extends Model
     {
         if ($this->content == null || sizeof($this->content) == 0) {
             //If there's no content, this is a simple share and we just copy the already existing previous content
-            return $this->previousContent;
+            return $this->previous_content;
         }
 
         //If there's content, we combine it with the previous content and a user block

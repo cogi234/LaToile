@@ -112,7 +112,6 @@ new class extends Component {
             }
         } else if ($sharedId >= 0) {
             $previousPost = Post::find($sharedId);
-
             $this->previousContent = $previousPost->createPreviousContent();
         }
     }
