@@ -4,12 +4,16 @@ namespace App\Models;
 
 use App\Events\PostDeleting;
 use App\Notifications\PostShared;
-use DB;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
+
+use function Termwind\terminal;
 
 class Post extends Model
 {
@@ -80,7 +84,7 @@ class Post extends Model
     {
         if ($this->content == null || sizeof($this->content) == 0) {
             //If there's no content, this is a simple share and we just copy the already existing previous content
-            return $this->previousContent;
+            return $this->previous_content;
         }
 
         //If there's content, we combine it with the previous content and a user block
@@ -256,5 +260,23 @@ class Post extends Model
     public function reports() : HasMany
     {
         return $this->hasMany(Report::class);
+    }
+
+    // Scopes
+
+    /**
+     * The scope to if logged dont show post from user you blocked
+     */
+    public function scopeBlockedUserPostCheck(Builder $query): void
+    {
+        if(Auth::check())
+        {
+            $users_list = Auth::user()->blocked_users->merge(Auth::user()->blockers)->map(function($user){
+                return $user->id;
+            })->toArray();
+
+            $query->whereNotIn('user_id',$users_list );
+        }
+
     }
 }

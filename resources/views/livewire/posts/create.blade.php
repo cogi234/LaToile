@@ -40,11 +40,11 @@ new class extends Component {
     public bool $enabledQueueDialog = false;
 
 
-    public function insertTag($index) {
-        if ($index == sizeof($this->tags) - 1 && mb_strlen(trim($this->tags[$index])) > 0 ) {
+    public function insertTag() {
+        $index = sizeof($this->tags) - 1;
+        if (mb_strlen(trim($this->tags[$index])) > 0 ) {
             array_splice($this->tags, $index + 1, 0, '');
         }
-        $this->dispatch('focus-tag', index: sizeof($this->tags) - 1);
     }
 
     public function insertInput($index, $type) {
@@ -63,6 +63,7 @@ new class extends Component {
                 else
                     array_splice($this->inputs, $index + 1, 0, [$newInput, $newTextInput]);
                 $this->dispatch('focus-input', index: $index + 2);
+                //$this->dispatch('click-input', index: $index + 1);
                 break;
         }
     }
@@ -83,6 +84,8 @@ new class extends Component {
     }
 
     public function deleteInTextInput($index) {
+        if (!isset($this->inputs[$index]))
+            return;
         //If we hit backspace on the last character of a text input
         if ($this->inputs[$index]['content'] == '')
             $this->removeInput($index);
@@ -112,7 +115,6 @@ new class extends Component {
             }
         } else if ($sharedId >= 0) {
             $previousPost = Post::find($sharedId);
-
             $this->previousContent = $previousPost->createPreviousContent();
         }
     }
@@ -385,7 +387,7 @@ new class extends Component {
         fixed
     @else
         hidden
-    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll">
+    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll z-50">
     <div
         class="relative top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
 
@@ -402,7 +404,7 @@ new class extends Component {
         </div>
         <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Créer un post</span>
         <!-- Previous content -->
-        <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" class="ml-4" />
+        <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" :$showMoreButtons="{{false}}" class="ml-4" />
 
         <!-- Inputs -->
         <div>
@@ -418,7 +420,7 @@ new class extends Component {
                         @if ($loop->first) placeholder="Partagez vos pensées"  autofocus @endif
                         oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
                         class="block w-full h-10 !border-none !ring-0 resize-none bg-white dark:bg-gray-800 text-black dark:text-white"></textarea>
-                    <div class="hidden group-hover:flex flex-row">
+                    <div class="hidden group-hover:flex group-last:flex flex-row">
                         <button wire:click='insertInput({{ $loop->index }}, "image")' type="button" class="mx-2" title="Ajouter une image">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                 class="size-6 dark:text-gray-100 hover:text-orange-500 dark:hover:text-yellow-400">
@@ -431,7 +433,7 @@ new class extends Component {
                     <!-- Image input -->
                     <div class="py-1 relative">
                         <a x-data x-on:click="$refs.fileInput.click()" class="w-fit m-auto block">
-                            <input type="file" wire:model="inputs.{{ $loop->index }}.content" x-ref="fileInput" style="display:none">
+                            <input type="file" id="input_{{ $loop->index }}" wire:model="inputs.{{ $loop->index }}.content" x-ref="fileInput" style="display:none">
                             
                             @if ($inputs[$loop->index]['content'] != null)
                                 <img src="{{ $inputs[$loop->index]['content']->temporaryUrl() }}" alt="Photo de profil" class="max-w-full">
@@ -476,7 +478,7 @@ new class extends Component {
                 <p class="text-black dark:text-white">Tags:</p>
                 @foreach ($tags as $tag)
                 <span class="m-1 text-gray-800 dark:text-gray-300">#
-                    <input type="text" wire:model.blur='tags.{{ $loop->index }}' wire:key='tag_{{ $loop->index }}' wire:keydown.enter='insertTag({{ $loop->index }})'
+                    <input type="text" wire:model.blur='tags.{{ $loop->index }}' wire:key='tag_{{ $loop->index }}' wire:keydown='insertTag(false)'
                         id="tag_{{ $loop->index }}" maxlength="32" style="min-width: 5em; width: {{ mb_strlen($tag) }}em"
                         class="inline-block ml-[-3px] py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
                         focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300" />
@@ -574,6 +576,13 @@ new class extends Component {
         $wire.on('focus-input', (event) => {
             setTimeout(() => {
                 $('#input_' + event.index).focus()
+            }, 100);
+        });
+        
+        //To auto open new file input dialogs
+        $wire.on('click-input', (event) => {
+            setTimeout(() => {
+                $('#input_' + event.index).click()
             }, 100);
         });
     </script>
