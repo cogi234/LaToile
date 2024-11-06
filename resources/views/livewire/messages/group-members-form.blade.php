@@ -170,14 +170,14 @@ new class extends Component {
                     </li>
                 @endforeach
             </ul>
-
-            <!-- Bouton pour ajouter un nouveau membre, visible pour tous -->
-            <div>
-                <button wire:click="goToPage(2)" class="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
-                    Ajouter un membre
-                </button>
-            </div>
-
+            @if($isCreator)
+                <!-- Bouton pour ajouter un nouveau membre, visible pour tous -->
+                <div>
+                    <button wire:click="goToPage(2)" class="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                        Ajouter un membre
+                    </button>
+                </div>
+            @endif
         @elseif ($pageNum === 2)
             <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Nouveau Message</span>
             <div>

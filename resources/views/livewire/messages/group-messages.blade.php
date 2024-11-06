@@ -12,7 +12,7 @@ new class extends Component {
     public ?Group $targetGroup = null;
     public ?int $targetGroupId = null;
     public $selectedConversation = [];
-    public $isCreator = true;
+    public $isCreator = false;
 
 
     public $searchQuery = '';
@@ -31,9 +31,14 @@ new class extends Component {
         $this->updateGroupConversations();
         $this->loadInvitations();
         $this->onReqOpt = false;
-
+        
         if ($targetGroupId !== null) {
             $this->setSelectedGroup($targetGroupId);
+            $this->isCreator = Group::find($targetGroupId)
+            ->memberships()
+            ->where('user_id', Auth::id())
+            ->where('status', 'creator')
+            ->exists();
         }
     }
 

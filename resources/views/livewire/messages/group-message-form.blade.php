@@ -38,6 +38,7 @@ new class extends Component {
         } else {
             $this->users = User::where('name', 'like', '%' . $this->search . '%')
                 ->whereNotIn('id', $this->selectedUsers)
+                ->where('id', '!=', Auth::id())
                 ->take(10)
                 ->get();
         }
