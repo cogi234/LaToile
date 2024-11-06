@@ -40,11 +40,12 @@ new class extends Component {
     public bool $enabledQueueDialog = false;
 
 
-    public function insertTag($index) {
-        if ($index == sizeof($this->tags) - 1 && mb_strlen(trim($this->tags[$index])) > 0 ) {
+    public function insertTag(bool $focus = false) {
+        $index = sizeof($this->tags) - 1;
+        if (mb_strlen(trim($this->tags[$index])) > 0 ) {
             array_splice($this->tags, $index + 1, 0, '');
         }
-        $this->dispatch('focus-tag', index: sizeof($this->tags) - 1);
+        $this->dispatch('focus-tag', index: $index + 1);
     }
 
     public function insertInput($index, $type) {
@@ -83,6 +84,8 @@ new class extends Component {
     }
 
     public function deleteInTextInput($index) {
+        if (!isset($this->inputs[$index]))
+            return;
         //If we hit backspace on the last character of a text input
         if ($this->inputs[$index]['content'] == '')
             $this->removeInput($index);
@@ -475,8 +478,8 @@ new class extends Component {
                 <p class="text-black dark:text-white">Tags:</p>
                 @foreach ($tags as $tag)
                 <span class="m-1 text-gray-800 dark:text-gray-300">#
-                    <input type="text" wire:model.blur='tags.{{ $loop->index }}' wire:key='tag_{{ $loop->index }}' wire:keydown.enter='insertTag({{ $loop->index }})'
-                        id="tag_{{ $loop->index }}" maxlength="32" style="min-width: 5em; width: {{ mb_strlen($tag) }}em"
+                    <input type="text" wire:model.blur='tags.{{ $loop->index }}' wire:key='tag_{{ $loop->index }}' wire:keydown='insertTag'
+                        wire:keydown.enter='insertTag(true)' id="tag_{{ $loop->index }}" maxlength="32" style="min-width: 5em; width: {{ mb_strlen($tag) }}em"
                         class="inline-block ml-[-3px] py-0 px-1 min-w-10 border-gray-600 focus:border-indigo-300 focus:ring focus:ring-indigo-200 
                         focus:ring-opacity-50 rounded-md shadow-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-300" />
                 </span>
