@@ -10,12 +10,15 @@ use App\Models\Group;
 new class extends Component {
     public $users = [];
     public $errorMessage = '';
+    public $targetGroup = null;
+    public $groupMembersCount = 0;
 
     #[Locked]
     public bool $enabled = false;
 
-    public function mount() {
+    public function mount($targetGroup) {
         $this->enabled = false;
+        $this->targetGroup = $targetGroup;
     }
 
     #[On('open-member-menu')]
@@ -60,6 +63,7 @@ new class extends Component {
                 {{ $errorMessage }}
             </div>
         @endif --}}
+        <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Membres du groupe ({{$groupMembersCount}})</span>
         
     </div>
 </div>

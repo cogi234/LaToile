@@ -1,21 +1,22 @@
 <?php
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 use Livewire\Volt\Component;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
-use App\Models\User;
 use App\Models\Group;
 
 new class extends Component {
     public $groupName = '';
     public $errorMessage = '';
+    public $targetGroup = null;
 
     #[Locked]
     public bool $enabled = false;
 
-    public function mount() {
+    public function mount($targetGroup) {
         $this->enabled = false;
+        $this->$targetGroup = $targetGroup;
+        $this->groupName = $targetGroup->name;
     }
 
     #[On('open-groupName-menu')]
@@ -28,11 +29,17 @@ new class extends Component {
         $this->reset('enabled');
     }
 
-    public function addUsers() {
-        
+    public function changeName() {
+        if ($this->groupName == null || strlen(trim($this->groupName)) <= 0 || strlen(trim($this->groupName)) > 50) {
+            $this->addError('groupNameLength', 'Votre nom de groupe est trop court ou trop long. (1-50)');
+            return;
+        }
+
+        $group = Group::find($this->targetGroup->id);
+        $group->name = trim($this->groupName);
+        $group->save();
+        $this->close();
     }
-
-
 };
 ?>
 
@@ -60,7 +67,14 @@ new class extends Component {
                 {{ $errorMessage }}
             </div>
         @endif --}}
-        
+        <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Changer le nom du groupe</span>
+        <div>
+            <input wire:model='groupName' type="text" id="newNameBar" placeholder="{{$targetGroup->name}}" 
+                class="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <button wire:click='changeName' class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+            Changer de nom
+        </button>
     </div>
 </div>
 

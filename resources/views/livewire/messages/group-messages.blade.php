@@ -319,9 +319,9 @@ new class extends Component {
                     </x-dropdown>
                     
                     <!-- Nom du Groupe -->
-                    <livewire:messages.group-name-change wire:key='groupName'/>
+                    <livewire:messages.group-name-change :targetGroup="$targetGroup" wire:key='groupName'/>
                     <!-- Membres du groupe -->
-                    <livewire:messages.group-members-form wire:key='groupMembers'/>
+                    <livewire:messages.group-members-form :targetGroup="$targetGroup" wire:key='groupMembers'/>
                 </div>
             </div>
             <!-- Zone de discussion -->
