@@ -13,6 +13,12 @@
             );
         }
         
+        function toggleInvitesMenu() {
+            this.dispatchEvent(
+                new CustomEvent('open-invite-menu')
+            );
+        }
+
         function toggleGroupNameMenu() {
             this.dispatchEvent(
                 new CustomEvent('open-groupName-menu')

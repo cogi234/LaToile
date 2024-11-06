@@ -11,7 +11,6 @@ new class extends Component {
     public $errorMessage = '';
     public $targetGroup = null;
     public $groupMembersCount = 0;
-    public $newMemberEmail = '';
     public $pageNum = 1;
     public $isCreator = false;
 

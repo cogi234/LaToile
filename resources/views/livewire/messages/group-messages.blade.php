@@ -304,6 +304,16 @@ new class extends Component {
                                 </span>
                             </button>
                             @if($isCreator)
+                            <button wire:key='btnInvitesMenu' type="button" id="viewInvites" onclick="toggleInvitesMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 p-4 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                                Voir les invitations
+                                <span class="ml-2">
+                                    <!-- SVG flèche droite -->
+                                    <svg class="w-4 h-4 text-gray-800 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0L13.707 9.293a1 1 0 010 1.414l-5 5a1 1 0 11-1.414-1.414L11.586 10 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                            </button>
+
                             <button type="button" id="viewMembers" onclick="toggleGroupNameMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 p-4 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
                                 Changer le nom du groupe
                                 <span class="ml-2">
@@ -328,6 +338,8 @@ new class extends Component {
                     <livewire:messages.group-name-change :targetGroup="$targetGroup" wire:key='groupName'/>
                     <!-- Membres du groupe -->
                     <livewire:messages.group-members-form :targetGroup="$targetGroup" wire:key='groupMembers'/>
+                    <!-- Invitations au groupe -->
+                    <livewire:messages.group-invites-form :targetGroup="$targetGroup" wire:key='groupInvites'/>
                 </div>
             </div>
             <!-- Zone de discussion -->
