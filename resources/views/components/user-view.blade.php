@@ -55,7 +55,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <livewire:user.block-user :userId="$user->id" />
+                                    @auth
+                                    <livewire:user.block-user :userId="$user->id" />  
+                                    @endauth                                   
                                 </li>
                             </ul>
                         </div>

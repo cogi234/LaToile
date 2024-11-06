@@ -38,7 +38,6 @@ Route::middleware(['banned'])->group(function () {
 
     //Search
     Route::get('/search', [SearchController::class, 'search'])
-        ->middleware(['auth'])
         ->name('search');
 
     //Messages
