@@ -61,6 +61,9 @@ new class extends Component {
                         <p class="text-black dark:text-gray-100">Abonnés : {{ $matchedUser->followers()->count() }}</p>
                         <p class="text-black dark:text-gray-100">Abonnements : {{
                             $matchedUser->followed_users()->count() }}</p>
+                        @if (Auth::Check())
+                        <livewire:user.blocked-user-check id="{{ $matchedUser->id }}" />
+                        @endif
                     </div>
                 </div>
                 <div
@@ -92,7 +95,7 @@ new class extends Component {
                             </li>
                             <li>
                                 @auth
-                             <livewire:user.block-user :userId="$matchedUser->id" />
+                                <livewire:user.block-user :userId="$matchedUser->id" />
                                 @endauth
                             </li>
                         </ul>
