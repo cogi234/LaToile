@@ -12,18 +12,6 @@ use App\Models\QueuedPost;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\Config;
 
-$validImageTypes = [
-    'image/jpeg',
-    'image/gif',
-    'image/png'
-];
-
-$validVideoTypes = [
-    'video/mp4',
-    'video/webm',
-    'video/ogg'
-];
-
 new class extends Component {
     use WithFileUploads;
 
@@ -50,6 +38,19 @@ new class extends Component {
     public bool $enabled = false;
     #[Locked]
     public bool $enabledQueueDialog = false;
+    #[Locked]
+    public $validImageTypes = [
+        'image/jpeg',
+        'image/gif',
+        'image/png'
+    ];
+    #[Locked]
+    public $validVideoTypes = [
+        'video/mp4',
+        'video/webm',
+        'video/ogg'
+    ];
+    
 
 
     public function insertTag() {
@@ -167,7 +168,7 @@ new class extends Component {
                     ];
                     break;
                 }
-                case 'image':{
+                case 'video':{
                     if ($inputs == [])
                         $inputs[] = [
                             'type' => 'text',
@@ -218,8 +219,10 @@ new class extends Component {
                         $image = Image::read($input['content'])->scaleDown($maxImageSize, $maxImageSize)->toJpeg();
                         $imageBlock['url'] = '/files/' . Str::random(40) . '.jpg';
                         $image->save('storage' . $imageBlock['url']);
-                        $content[] = $imageBlock;
+                    } else if ($input['url'] != null) {
+                        $imageBlock['url'] = $input['url'];
                     }
+                    $content[] = $imageBlock;
                     break;
                 }
                 case 'video':{
@@ -229,11 +232,14 @@ new class extends Component {
                     // Si une video est téléchargée, la sauvegarder
                     if ($input['content'] != null) {
                         //Essayer de compresser l'image
-                        $image = Image::read($input['content'])->scaleDown($maxImageSize, $maxImageSize)->toJpeg();
-                        $imageBlock['url'] = '/files/' . Str::random(40) . '.jpg';
-                        $image->save('storage' . $imageBlock['url']);
-                        $content[] = $imageBlock;
+                        $video = $input['content'];
+                        $videoBlock['url'] = $video->store('files');
+                        $videoBlock['mime'] = $video->getMimeType();
+                    } else if ($input['url'] != null) {
+                        $videoBlock['url'] = $input['url'];
+                        $videoBlock['mime'] = $input['mime'];
                     }
+                    $content[] = $videoBlock;
                     break;
                 }
             }
@@ -250,7 +256,6 @@ new class extends Component {
     public function publish() {
         if (!$this->validateInputs())
             return;
-
         if ($this->editId >= 0) {
             $this->editPost();
             return;
@@ -392,8 +397,8 @@ new class extends Component {
     }
 
     public function validateInputs() : bool {
+        $result = true;
         $this->resetValidation();
-
         //Post length validation
         $textLength = 0;
         $mediaCount = 0;
@@ -406,16 +411,16 @@ new class extends Component {
         if ($this->sharedPostId < 0 && $textLength == 0 && $mediaCount == 0) {
             //If we are not sharing a post, we need some text to post
             $this->addError('input', 'Il est impossible de publier un post vide!');
-            return false;
+            $result = false;
         }
         if ($textLength > 0 && $textLength < 5 && $mediaCount == 0) {
             //If we are posting something, the text needs to be at least 5 characters long
             $this->addError('input', 'Il est impossible de publier un post avec moins de 5 caractères!');
-            return false;
+            $result = false;
         }
         if ($textLength > 8000) {
             $this->addError('input', 'Il est impossible de publier un post avec plus de 8000 caractères!');
-            return false;
+            $result = false;
         }
 
         //Single input validation
@@ -428,18 +433,22 @@ new class extends Component {
                 case 'image':{
                     if (isset($input['content'])) {
                         //It needs to be a supported image type
-                        if (!in_array($input['content']->getMimeType(), $validImageTypes))
+                        if (!in_array($input['content']->getMimeType(), $this->validImageTypes)) {
                             $this->addError('input', 'Une des images n\'est pas un format supporté! (JPEG, GIF, PNG)');
-                            return false;
+                            $result = false;
+                        }
                     }
+                    break;
                 }
                 case 'video':{
                     if (isset($input['content'])) {
                         //It needs to be a supported video type
-                        if (!in_array($input['content']->getMimeType(), $validVideoTypes))
+                        if (!in_array($input['content']->getMimeType(), $this->validVideoTypes)) {
                             $this->addError('input', 'Une des vidéos n\'est pas un format supporté! (MP4, WebM, Ogg)');
-                            return false;
+                            $result = false;
+                        }
                     }
+                    break;
                 }
             }
         }
@@ -447,15 +456,15 @@ new class extends Component {
         foreach ($this->tags as $tag) {
             if (!is_string($tag)){
                 $this->addError('tags', 'Un des tag n\'est pas du texte!');
-                return false;
+                $result = false;
             }
             if (mb_strlen($tag) > 32){
                 $this->addError('tags', 'Un des tag est trop long!');
-                return false;
+                $result = false;
             }
         }
-
-        return true;
+        
+        return $result;
     }
 
 }; ?>
@@ -482,7 +491,7 @@ new class extends Component {
         </div>
         <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Créer un post</span>
         <!-- Previous content -->
-        <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" :$showMoreButtons="{{false}}" class="ml-4" />
+        <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" :showMoreButtons="false" class="ml-4" />
 
         <!-- Inputs -->
         <div>
@@ -517,7 +526,7 @@ new class extends Component {
                     <!-- Image input -->
                     <div class="py-1 relative">
                         <a x-data x-on:click="$refs.fileInput.click()" class="w-fit m-auto block">
-                            <input type="file" id="input_{{ $loop->index }}" wire:model="inputs.{{ $loop->index }}.content" x-ref="fileInput" style="display:none">
+                            <input type="file" id="input_{{ $loop->index }}" wire:model="inputs.{{ $loop->index }}.content" x-ref="fileInput" class="hidden">
                             
                             @if ($inputs[$loop->index]['content'] != null)
                                 <img src="{{ $inputs[$loop->index]['content']->temporaryUrl() }}" alt="Photo de profil" class="max-w-full">
@@ -537,7 +546,7 @@ new class extends Component {
                             </svg>
                         </button>
                     
-                        <div wire:loading wire:target="input_{{ $loop->index }}" class="dark:text-gray-100">
+                        <div wire:loading wire:target="inputs.{{ $loop->index }}.content" class="dark:text-gray-100 text-center w-full">
                             Chargement...
                         </div>
                     </div>
@@ -546,7 +555,7 @@ new class extends Component {
                     <!-- Video input -->
                     <div class="py-1 relative">
                         <a x-data x-on:click="$refs.fileInput.click()" class="w-fit m-auto block">
-                            <input type="file" id="input_{{ $loop->index }}" wire:model.live="inputs.{{ $loop->index }}.content" x-ref="fileInput">
+                            <input type="file" id="input_{{ $loop->index }}" wire:model="inputs.{{ $loop->index }}.content" x-ref="fileInput" class="hidden">
                             
                             @if ($inputs[$loop->index]['content'] != null)
                                 <video class="max-w-full" controls>
@@ -570,7 +579,7 @@ new class extends Component {
                             </svg> 
                         </button>
                     
-                        <div wire:loading wire:target="input_{{ $loop->index }}" class="dark:text-gray-100">
+                        <div wire:loading wire:target="inputs.{{ $loop->index }}.content" class="dark:text-gray-100 text-center w-full">
                             Chargement...
                         </div>
                     </div>
