@@ -1,5 +1,5 @@
 <div id="post-{{ $post->id }}" onclick="window.location.href = '/post/{{ $post->id }}'" {{ $attributes->merge(['class'
-    => "cursor-pointer post bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:dark:bg-gray-700/60 overflow-hidden
+    => "group cursor-pointer post bg-white hover:bg-gray-50 dark:bg-gray-800 hover:dark:bg-[#2B3544] overflow-hidden
     shadow-sm rounded-lg mb-4 md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0"]) }}>
     <!-- L'utilisateur qui a publier le post -->
     <x-post-user
@@ -40,7 +40,7 @@
             <x-post-content :postId="$post->id" :content="$post->content" />
 
             <!-- Fade effect overlay -->
-            <div x-show="!showFullContent && tooTall" class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white dark:from-gray-800 pointer-events-none z-10"></div>
+            <div x-show="!showFullContent && tooTall" class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white group-hover:from-gray-50 dark:from-gray-800 group-hover:dark:from-[#2B3544] pointer-events-none z-10"></div>
         </div>
         <!-- Full-width button with no background -->
         <button x-show="!showFullContent && tooTall" onclick="event.stopPropagation()" @click="showFullContent = true" class="text-gray-500 dark:text-gray-400 hover:underline mt-2" x-cloak>
