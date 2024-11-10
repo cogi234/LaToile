@@ -15,8 +15,6 @@ $linkConverter = new class extends Component {
         return Twemoji::text($textWithURLS)->svg()->toHTML();
     }
 };
-
-$showMoreButtons = true;
 @endphp
 
 <div {{ $attributes->merge(['class' => "ml-4 mt-4 text-gray-900 dark:text-gray-100"]) }}>
@@ -51,6 +49,11 @@ $showMoreButtons = true;
                 <video class="max-w-full rounded-md mx-auto my-2" controls>
                     <source src="{{ $block['url'] }}" type="{{ $block['mime'] }}">
                 </video>
+            @break
+            @case('audio')
+                <audio class="max-w-full rounded-md mx-auto my-2" controls>
+                    <source src="{{ $block['url'] }}" type="{{ $block['mime'] }}">
+                </audio>
             @break
         @endswitch
     @endforeach

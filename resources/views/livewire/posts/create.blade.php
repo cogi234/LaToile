@@ -50,6 +50,12 @@ new class extends Component {
         'video/webm',
         'video/ogg'
     ];
+    #[Locked]
+    public $validAudioTypes = [
+        'audio/mpeg',
+        'audio/wav',
+        'audio/ogg'
+    ];
     
 
 
