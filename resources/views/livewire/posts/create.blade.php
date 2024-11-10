@@ -233,7 +233,7 @@ new class extends Component {
                     if ($input['content'] != null) {
                         //Essayer de compresser l'image
                         $video = $input['content'];
-                        $videoBlock['url'] = $video->store('files');
+                        $videoBlock['url'] = '/' . $video->store('public/files');
                         $videoBlock['mime'] = $video->getMimeType();
                     } else if ($input['url'] != null) {
                         $videoBlock['url'] = $input['url'];
