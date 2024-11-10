@@ -465,7 +465,7 @@ new class extends Component {
         fixed
     @else
         hidden
-    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll">
+    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll z-50">
     <div
         class="relative top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
 
@@ -482,7 +482,7 @@ new class extends Component {
         </div>
         <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Créer un post</span>
         <!-- Previous content -->
-        <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" class="ml-4" />
+        <x-post-content :content="$previousContent" postId="{{ $this->sharedPostId }}" :$showMoreButtons="{{false}}" class="ml-4" />
 
         <!-- Inputs -->
         <div>

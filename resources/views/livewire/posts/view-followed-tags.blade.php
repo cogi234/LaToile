@@ -16,7 +16,7 @@ new class extends Component {
         $followedTagIds = User::find(Auth::id())->followed_tags()->pluck('id');
 
         // Fetch posts that have any of the followed tags
-        $this->posts = Post::whereHas('tags', function ($query) use ($followedTagIds) {
+        $this->posts = Post::blockedUserPostCheck()->whereHas('tags', function ($query) use ($followedTagIds) {
                 $query->whereIn('tags.id', $followedTagIds);
             })
             ->orderby('id', 'desc')
@@ -35,7 +35,7 @@ new class extends Component {
             $followedTagIds = User::find(Auth::id())->followed_tags()->pluck('id');
 
             // Fetch more posts that have any of the followed tags
-            $newPosts = Post::whereHas('tags', function ($query) use ($followedTagIds) {
+            $newPosts = Post::blockedUserPostCheck()->whereHas('tags', function ($query) use ($followedTagIds) {
                     $query->whereIn('tags.id', $followedTagIds);
                 })
                 ->where('id', '<', $this->posts->last()->id)
@@ -59,7 +59,7 @@ new class extends Component {
         $followedTagIds = User::find(Auth::id())->followed_tags()->pluck('id');
 
         // Reset the post list with posts that have any of the followed tags
-        $this->posts = Post::whereHas('tags', function ($query) use ($followedTagIds) {
+        $this->posts = Post::blockedUserPostCheck()->whereHas('tags', function ($query) use ($followedTagIds) {
                 $query->whereIn('tags.id', $followedTagIds);
             })
             ->orderby('id', 'desc')

@@ -4,12 +4,14 @@ namespace App\Models;
 
 use App\Events\PostDeleting;
 use App\Notifications\PostShared;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 class Post extends Model
 {
@@ -256,5 +258,23 @@ class Post extends Model
     public function reports() : HasMany
     {
         return $this->hasMany(Report::class);
+    }
+
+    // Scopes
+
+    /**
+     * The scope to if logged dont show post from user you blocked
+     */
+    public function scopeBlockedUserPostCheck(Builder $query): void
+    {
+        if(Auth::check())
+        {
+            $users_list = Auth::user()->blocked_users->merge(Auth::user()->blockers)->map(function($user){
+                return $user->id;
+            })->toArray();
+
+            $query->whereNotIn('user_id',$users_list );
+        }
+
     }
 }

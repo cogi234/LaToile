@@ -15,7 +15,7 @@ class ViewSpecificUser extends Component
     {
         $this->userId = $id;
 
-        $this->posts = Post::where('user_id', $this->userId)
+        $this->posts = Post::blockedUserPostCheck()->where('user_id', $this->userId)
             ->orderby('id', 'desc')->take(10)->with('user')->get();
 
         // Vérifie s'il y a plus de posts à charger
@@ -25,7 +25,7 @@ class ViewSpecificUser extends Component
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = Post::where('user_id', $this->userId)
+            $newPosts = Post::blockedUserPostCheck()->where('user_id', $this->userId)
                 ->where('id', '<', $this->posts->last()->id)
                 ->orderby('id', 'desc')->take(10)->with('user')->get();
 

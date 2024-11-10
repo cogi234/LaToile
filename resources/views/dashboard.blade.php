@@ -1,11 +1,6 @@
 <x-app-layout>
     <div class="py-6">
         <div class="max-w-5xl mx-auto px-3 sm:px-8">
-            <!-- Post forms -->
-            @auth
-            <x-post-forms />
-            @endauth
-
             <!-- Ajout des onglets -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5 mt-14 xl:mt-0">
                 <div class="tabs p-6 text-gray-900 dark:text-gray-100">
@@ -40,6 +35,10 @@
                     @endauth
                 </div>
             </div>
+            <!-- Post forms -->
+            @auth
+            <x-post-forms />
+            @endauth
         </div>
     </div>
 
