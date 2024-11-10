@@ -10,25 +10,45 @@
         displayDeleteButton="{{ true }}"
         main="true"/>
 
-    <div>
-        @if ($post->previous_content != null)
-        <!-- Le contenu des posts precedents dans la chaine de partage -->
-        <x-post-content :content="$post->previous_content" :postId="$post->id" />
-        @endif
-
-        <!-- Contenu du post -->
-        <div class="ml-4 text-gray-900 dark:text-gray-100">
-            @if ($post->previous_content != null && $post->content != null)
-            <hr class="mb-2" />
-            <x-post-user 
-            :key="$post->id" 
-            :user="$post->user" 
-            :post="$post"
-            displayEditButton="{{ false }}"
-            displayDeleteButton="{{ false }}"/>
+    <div x-data="{ showFullContent: false, tooTall: true }">
+        <div class="block relative" x-cloak x-bind:class="(!showFullContent && tooTall) ? 'overflow-hidden max-h-[200px]' : ''"
+            x-init="
+                setTimeout(function () {
+                    tooTall = $el.clientHeight > 300;
+                }, 100);
+                $nextTick(() => {
+                    tooTall = $el.clientHeight > 300;
+                });
+            ">
+            @if ($post->previous_content != null)
+            <!-- Le contenu des posts precedents dans la chaine de partage -->
+            <x-post-content :content="$post->previous_content" :postId="$post->id" />
             @endif
+
+            <!-- Contenu du post -->
+            <div class="ml-4 text-gray-900 dark:text-gray-100">
+                @if ($post->previous_content != null && $post->content != null)
+                <hr class="mb-2" />
+                <x-post-user 
+                :key="$post->id" 
+                :user="$post->user" 
+                :post="$post"
+                displayEditButton="{{ false }}"
+                displayDeleteButton="{{ false }}"/>
+                @endif
+            </div>
+            <x-post-content :postId="$post->id" :content="$post->content" />
+
+            <!-- Fade effect overlay -->
+            <div x-show="!showFullContent && tooTall" class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white dark:from-gray-800 pointer-events-none z-10"></div>
         </div>
-        <x-post-content :postId="$post->id" :content="$post->content" />
+        <!-- Full-width button with no background -->
+        <button x-show="!showFullContent && tooTall" onclick="event.stopPropagation()" @click="showFullContent = true" class="text-gray-500 dark:text-gray-400 hover:underline mt-2" x-cloak>
+            ... Voir la suite
+        </button>
+        <button x-show="showFullContent && tooTall" onclick="event.stopPropagation()" @click="showFullContent = false" class="text-gray-500 dark:text-gray-400 hover:underline" x-cloak>
+            ... Moins
+        </button>
     </div>
 
     <!-- Tags -->
