@@ -79,7 +79,7 @@
             <livewire:posts.like id="{{ $post->id }}" :key="'like_' . $post->id" />
 
             <!-- Commentaire -->
-            <button title="Voir les commentaires"
+            <button title="Commenter"
                 class="repost-button flex items-center text-gray-600 dark:text-gray-400 hover:text-blue-400 dark:hover:text-blue-500 mr-4"
                 onclick="showPostCreator({{$post->id}}); event.stopPropagation()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
