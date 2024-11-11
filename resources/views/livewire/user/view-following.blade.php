@@ -64,7 +64,7 @@ new class extends Component
                                     @endif
                                 @endauth
                             </div>
-                            <a href="/user-followers/{{$followingUser->id}}"><p class="text-black dark:text-gray-100">Abonnés : {{ $followingUser->followers()->count() }}</p></a>
+                            <a href="/followers/{{$followingUser->id}}"><p class="text-black dark:text-gray-100">Abonnés : {{ $followingUser->followers()->count() }}</p></a>
                             <a href="/user-followers/{{$followingUser->id}}"><p class="text-black dark:text-gray-100">Abonnements : {{ $followingUser->followed_users()->count() }}</p></a>
                         </div>
                     </div>

@@ -23,8 +23,8 @@ Route::middleware(['banned'])->group(function () {
         ->middleware(['auth'])
         ->name('profile');
     Route::get('/user/{id}', [UserController::class, 'show']);
-    Route::get('/user-followers/{id}', [UserController::class, 'showFollowers']);
-    Route::get('/user-followings/{id}', [UserController::class, 'showFollowings']);
+    Route::get('/followers/{id}', [UserController::class, 'showFollowers']);
+    Route::get('/followings/{id}', [UserController::class, 'showFollowings']);
 
     //Posts
     Route::get('/post/{id}', [PostController::class, 'show']);
