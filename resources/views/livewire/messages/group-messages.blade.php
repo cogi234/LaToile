@@ -356,7 +356,7 @@ new class extends Component {
                             $currentTimeZone = 'America/Toronto';
                             $timeFormat = 'Y-m-d H:i';
                             $dateFormat = 'Y-m-d'; // Format pour vérifier les changements de jour
-                            $messageDate = $message->updated_at->setTimezone($currentTimeZone)->format($dateFormat);
+                            $messageDate = $message->created_at->setTimezone($currentTimeZone)->format($dateFormat);
 
                             $messageText = $message->message;
                             $textWithURLS = preg_replace(
@@ -370,7 +370,7 @@ new class extends Component {
                         <!-- Ligne de séparation si une nouvelle journée commence -->
                         @if ($lastMessageDate !== $messageDate)
                             <div class="text-center text-gray-500 my-4">
-                                <span>{{ \Carbon\Carbon::parse($message->updated_at)->locale('fr')->isoFormat('LL') }}</span>
+                                <span>{{ \Carbon\Carbon::parse($message->created_at)->locale('fr')->isoFormat('LL') }}</span>
                             </div>
                             @php
                                 $lastMessageDate = $messageDate; // Mettre à jour la date du dernier message
@@ -397,7 +397,7 @@ new class extends Component {
                                     </div>
                                     <div>
                                         <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
-                                        <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                        <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
                                             class="flex lg:flex-row flex-col lg:max-w-[40%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
                                             <div class="flex flex-row w-fit max-w-[100%] break-words">
                                                 <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
