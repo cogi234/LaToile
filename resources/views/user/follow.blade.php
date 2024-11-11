@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="py-6">
-        <x-follow-view :user="$user" />
+        <x-follow-view :user="$user" :viewFollowers="$viewFollowers"/>
     </div>
     <style>
         .tabs {
@@ -55,6 +55,16 @@
             background-color: rgba(255, 255, 255, 0.2);
             border-radius: 4px;
         }
+
+        .content-section {
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+
+        .content-section[style*="display: block"] {
+            opacity: 1;
+        }
+
     </style>
 
     <script>
@@ -72,23 +82,64 @@
             }
         }
 
-        function showContent(tab) {
-            //Envoyer l'event pour reset le contenu des tabs
-            this.dispatchEvent(
-                new Event('reset-post-views')
-            );
+        // function showContent(tab) {
+        //     //Envoyer l'event pour reset le contenu des tabs
+        //     this.dispatchEvent(
+        //         new Event('reset-post-views')
+        //     );
 
-            // Cacher tous les contenus
-            document.getElementById('followed-content').style.display = 'none';
-            document.getElementById('following-content').style.display = 'none';
+        //     // Cacher tous les contenus
+        //     document.getElementById('followed-content').style.display = 'none';
+        //     document.getElementById('following-content').style.display = 'none';
 
-            // Enlever la classe active de tous les onglets
-            document.getElementById('followed-tab').classList.remove('active');
-            document.getElementById('following-tab').classList.remove('active');
+        //     // Enlever la classe active de tous les onglets
+        //     document.getElementById('followed-tab').classList.remove('active');
+        //     document.getElementById('following-tab').classList.remove('active');
 
-            // Afficher la section sélectionnée et rendre l'onglet actif
-            document.getElementById(tab + '-content').style.display = 'block';
-            document.getElementById(tab + '-tab').classList.add('active');
+        //     // Afficher la section sélectionnée et rendre l'onglet actif
+        //     document.getElementById(tab + '-content').style.display = 'block';
+        //     document.getElementById(tab + '-tab').classList.add('active');
+        // }
+        function showContent(tabName) {
+            const tabs = document.querySelectorAll('.content-section');
+            const activeTab = document.querySelector(`#${tabName}-content`);
+
+            // Masquer tous les contenus
+            tabs.forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // Afficher le contenu actif
+            activeTab.classList.remove('hidden');
+            activeTab.classList.add('active');
+
+            // Mettre à jour l'état des onglets
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(`${tabName}-tab`).classList.add('active');
         }
+
+        function showContent(tabName) {
+            const tabs = document.querySelectorAll('.content-section');
+            const activeTab = document.querySelector(`#${tabName}-content`);
+
+            // Masquer tous les contenus
+            tabs.forEach(tab => {
+                tab.style.display = 'none';
+            });
+
+            // Afficher le contenu actif
+            activeTab.style.display = 'block';
+
+            // Mettre à jour l'état des onglets
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
     </script>
 </x-app-layout>
