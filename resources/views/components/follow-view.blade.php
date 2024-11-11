@@ -14,15 +14,15 @@
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5">
         <div class="tabs p-6 text-gray-900 dark:text-gray-100">
             <!-- Les blocs sont maintenant des liens entièrement cliquables -->
-            <a href="javascript:void(0);" class="tab active" id="followed-tab" onclick="showContent('followed')">
+            <a href="/user-followers/{{$user->id}}" class="tab active" id="followed-tab" onclick="showContent('followed')">
                 Abonnements ({{$followedUsersCount}})
             </a>
-            <a href="javascript:void(0);" class="tab" id="following-tab" onclick="showContent('following')">
+            <a href="/user-followings/{{$user->id}}" class="tab" id="following-tab" onclick="showContent('following')">
                 Abonnés ({{$followingUsersCount}})
             </a>
         </div>
     </div>
-
+    
     <!-- Contenu associé aux onglets -->
     <div class="bg-transparent overflow-hidden">
         <div class="text-gray-900 dark:text-gray-100">
@@ -35,3 +35,4 @@
         </div>
     </div>
 </div>
+{{-- href="javascript:void(0);" --}}

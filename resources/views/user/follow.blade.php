@@ -86,9 +86,18 @@
             document.getElementById('followed-tab').classList.remove('active');
             document.getElementById('following-tab').classList.remove('active');
 
-            // Afficher la section sélectionnée et rendre l'onglet actif
+
             document.getElementById(tab + '-content').style.display = 'block';
             document.getElementById(tab + '-tab').classList.add('active');
+            // Afficher la section sélectionnée et rendre l'onglet actif
+            // if($viewFollowers){
+            //     document.getElementById(tab + '-content').style.display = 'block';
+            //     document.getElementById(tab + '-tab').classList.add('active');
+            // }
+            // else{
+            //     document.getElementById(tab + '-content').style.display = 'block';
+            //     document.getElementById(tab + '-tab').classList.add('active');
+            // }
         }
     </script>
 </x-app-layout>
