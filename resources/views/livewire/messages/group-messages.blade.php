@@ -381,7 +381,7 @@ new class extends Component {
                             <!-- Contenu du message -->
                             @if($isCurrentUserMessage)
                             <!-- (Votre contenu existant pour les messages de l'utilisateur actuel) -->
-                                <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
                                     id="message_{{ $message->id }}" wire:click.stop
                                     class="lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-blue-500 text-white">
                                     <!-- (Contenu du message pour l'utilisateur actuel) -->
