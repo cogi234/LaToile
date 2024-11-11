@@ -16,16 +16,14 @@ class UserController extends Controller
     public function showFollowers(int $id)
     {
         return view('user.follow',[
-            'user' => User::findOrFail($id),
-            'viewFollowers' => true
+            'user' => User::findOrFail($id)
         ]);
     }
 
     public function showFollowings(int $id)
     {
         return view('user.follow',[
-            'user' => User::findOrFail($id),
-            'viewFollowers' => false
+            'user' => User::findOrFail($id)
         ]);
     }
 }
