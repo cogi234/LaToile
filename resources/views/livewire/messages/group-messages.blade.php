@@ -347,6 +347,76 @@ new class extends Component {
             <!-- Zone de discussion -->
             <div id="discussion" class="flex-1 p-4">
                 @if ($selectedConversation)
+                    @php
+                        $lastMessageDate = null; // Variable pour suivre le dernier jour
+                    @endphp
+                    @foreach ($selectedConversation as $message)
+                        @php
+                            $isCurrentUserMessage = $message->user_id == Auth::id();
+                            $currentTimeZone = 'America/Toronto';
+                            $timeFormat = 'Y-m-d H:i';
+                            $dateFormat = 'Y-m-d'; // Format pour vérifier les changements de jour
+                            $messageDate = $message->updated_at->setTimezone($currentTimeZone)->format($dateFormat);
+
+                            $messageText = $message->message;
+                            $textWithURLS = preg_replace(
+                                '/(https?:\/\/[^\s]+)/',
+                                '<a href="$1" target="_blank" rel="noopener noreferrer" class="hover:underline">$1</a>',
+                                $messageText
+                            );
+                            $messageText = Twemoji::text($textWithURLS)->svg()->toHTML();
+                        @endphp
+
+                        <!-- Ligne de séparation si une nouvelle journée commence -->
+                        @if ($lastMessageDate !== $messageDate)
+                            <div class="text-center text-gray-500 my-4">
+                                <span>{{ \Carbon\Carbon::parse($message->updated_at)->locale('fr')->isoFormat('LL') }}</span>
+                            </div>
+                            @php
+                                $lastMessageDate = $messageDate; // Mettre à jour la date du dernier message
+                            @endphp
+                        @endif
+
+                        <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
+                            <!-- Contenu du message -->
+                            @if($isCurrentUserMessage)
+                            <!-- (Votre contenu existant pour les messages de l'utilisateur actuel) -->
+                                <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                    id="message_{{ $message->id }}" wire:click.stop
+                                    class="lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-blue-500 text-white">
+                                    <!-- (Contenu du message pour l'utilisateur actuel) -->
+                                    <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                        <p class="mr-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                                    </div>
+                                </div>
+                            @else
+                            <!-- Affichage pour les autres utilisateurs -->
+                                <div class="flex items-end">
+                                    <div class="mr-3">
+                                        <img src="{{ $message->user->getAvatar() }}" alt="Avatar de {{ $message->user->name }}" class="w-10 h-10 rounded-full shadow-lg">
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
+                                        <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                            class="flex lg:flex-row flex-col lg:max-w-[40%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                                            <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                                <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                @else
+                    <div class="flex items-center justify-center h-full">
+                        <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
+                    </div>
+                @endif
+            </div>
+
+            {{-- <div id="discussion" class="flex-1 p-4">
+                @if ($selectedConversation)
                     @foreach ($selectedConversation as $message)
                         @php
                             $isCurrentUserMessage = $message->user_id == Auth::id();
@@ -451,10 +521,11 @@ new class extends Component {
                         <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
                     </div>
                 @endif
-            </div>
+            </div> --}}
             
+
+
             <!-- Barre de message -->
-            
             <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
                 @error('messageLength') <br><div class="text-red-400 font-bold mt-2">{{ $message }}</div> @enderror
                 <form wire:submit.prevent="send" class="flex items-center">
