@@ -17,8 +17,20 @@
                             @endif
                         @endauth
                     </div>
-                    <a href="/user-followers/{{$user->id}}"><p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p></a>
-                    <a href="/user-followings/{{$user->id}}"><p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p></a>
+                    <div class="flex space-x-4 mt-2">
+                        <!-- Lien vers les abonnés -->
+                        <a href="/user-followers/{{$user->id}}" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                            <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
+                                Abonnés : {{ $user->followers()->count() }}
+                            </p>
+                        </a>
+                        <!-- Lien vers les abonnements -->
+                        <a href="/user-followings/{{$user->id}}" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                            <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
+                                Abonnements : {{ $user->followed_users()->count() }}
+                            </p>
+                        </a>
+                    </div>
                 </div>
             </div>
 

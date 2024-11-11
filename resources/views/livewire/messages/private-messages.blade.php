@@ -225,7 +225,7 @@ new class extends Component {
             </div>
             <div class="p-4">
                 <!-- Conteneur avec le contour et les styles -->
-                <div class="flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2 focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <div class="flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2">
                     <!-- Icône de recherche -->
                     <div class="pointer-events-none flex items-center">
                         <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
@@ -235,7 +235,7 @@ new class extends Component {
                     </div>
                     <!-- Champ de recherche -->
                     <input type="text" name="query" id="searchBar"
-                        class="block w-full pl-2 bg-transparent focus:outline-none text-gray-700 dark:text-gray-300 rounded-full"
+                        class="block w-full pl-2 bg-transparent focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full"
                         placeholder="Rechercher des Messages Directs"/>
                 </div>
             </div>
