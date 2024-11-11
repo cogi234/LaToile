@@ -14,10 +14,10 @@
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5">
         <div class="tabs p-6 text-gray-900 dark:text-gray-100">
             <!-- Les blocs sont maintenant des liens entièrement cliquables -->
-            <a href="/user-followers/{{$user->id}}" class="tab active" id="followers-tab" onclick="showContent('followers')">
+            <a href="javascript:void(0);" class="tab active" id="followers-tab" onclick="showContent('followers')">
                 Abonnements ({{$followersCount}})
             </a>
-            <a href="/user-followings/{{$user->id}}" class="tab" id="following-tab" onclick="showContent('following')">
+            <a href="javascript:void(0);" class="tab" id="following-tab" onclick="showContent('following')">
                 Abonnés ({{$followingCount}})
             </a>
         </div>
@@ -36,3 +36,4 @@
     </div>
 </div>
 {{-- href="javascript:void(0);" --}}
+{{-- href="/user-followers/{{$user->id}}" --}}

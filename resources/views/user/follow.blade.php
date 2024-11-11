@@ -88,15 +88,16 @@
 
             document.getElementById(tab + '-content').style.display = 'block';
             document.getElementById(tab + '-tab').classList.add('active');
+
             // Afficher la section sélectionnée et rendre l'onglet actif
-            if($viewFollowers){
-                document.getElementById(tab + '-content').style.display = 'block';
-                document.getElementById(tab + '-tab').classList.add('active');
-            }
-            else{
-                document.getElementById(tab + '-content').style.display = 'block';
-                document.getElementById(tab + '-tab').classList.add('active');
-            }
+            // if($viewFollowers){
+            //     document.getElementById(followers + '-content').style.display = 'block';
+            //     document.getElementById(followers + '-tab').classList.add('active');
+            // }
+            // else{
+            //     document.getElementById(following + '-content').style.display = 'block';
+            //     document.getElementById(following + '-tab').classList.add('active');
+            // }
         }
     </script>
 </x-app-layout>
