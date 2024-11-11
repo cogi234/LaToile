@@ -91,12 +91,11 @@
 
             // Afficher la section sélectionnée et rendre l'onglet actif
             // if($viewFollowers){
-            //     document.getElementById(followers + '-content').style.display = 'block';
-            //     document.getElementById(followers + '-tab').classList.add('active');
-            // }
-            // else{
-            //     document.getElementById(following + '-content').style.display = 'block';
-            //     document.getElementById(following + '-tab').classList.add('active');
+            //     document.getElementById('followers-content').style.display = 'block';
+            //     document.getElementById('followers-tab').classList.add('active');
+            // } else {
+            //     document.getElementById('following-content').style.display = 'block';
+            //     document.getElementById('following-tab').classList.add('active');
             // }
         }
     </script>

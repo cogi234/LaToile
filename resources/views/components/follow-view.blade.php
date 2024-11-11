@@ -26,12 +26,16 @@
     <!-- Contenu associé aux onglets -->
     <div class="bg-transparent overflow-hidden">
         <div class="text-gray-900 dark:text-gray-100">
-            <div id="followers-content" class="content-section" style="display: block;">
-                <livewire:user.view-followers :userId="$user->id" wire:key='followersComponent'/>
-            </div>
-            <div id="following-content" class="content-section" style="display: none;">
-                <livewire:user.view-following :userId="$user->id" wire:key='followingComponent'/>
-            </div>
+            @if ($followersCount > 0)
+                <div id="followers-content" class="content-section" style="display: block;">
+                    <livewire:user.view-followers :userId="$user->id" wire:key='followersComponent'/>
+                </div>
+            @endif
+            @if ($followingCount > 0)
+                <div id="following-content" class="content-section" style="display: none;">
+                    <livewire:user.view-following :userId="$user->id" wire:key='followingComponent'/>
+                </div>
+            @endif
         </div>
     </div>
 </div>
