@@ -144,7 +144,7 @@ new class extends Component
                 @elseif ($avatarPath)
                     <img src="{{ $avatarPath }}" alt="Photo actuelle" height="200" width="200">
                 @else
-                    <img src="{{ Storage::url('images/no-avatar.png') }}" alt="Photo par défaut" height="200" width="200">
+                    <img src="{{ 'images/no-avatar.png' }}" alt="Photo par défaut" height="200" width="200">
                 @endif
             </a>
             <div wire:loading wire:target="avatar" class="dark:text-gray-100">Chargement...</div>
@@ -161,7 +161,7 @@ new class extends Component
                 @elseif ($backgroundPath)
                     <img src="{{ $backgroundPath }}" alt="Fond actuel" height="200" width="300">
                 @else
-                    <img src="{{ Storage::url('images/No-background.png') }}" alt="Fond par défaut" height="200" width="300">
+                    <img src="{{ 'images/No-background.png' }}" alt="Fond par défaut" height="200" width="300">
                 @endif
             </a>
             <div wire:loading wire:target="background" class="dark:text-gray-100">Chargement...</div>
