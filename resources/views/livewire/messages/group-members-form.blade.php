@@ -136,7 +136,7 @@ new class extends Component {
             @endif --}}
 
             <!-- Liste des membres du groupe -->
-            <ul class="mb-4 overflow-y-auto h-52">
+            <ul class="mb-4 overflow-y-auto h-52 pr-3">
                 @foreach ($members as $member)
                     @php
                         $isMemberCreator = Group::find($this->targetGroup->id)
@@ -144,9 +144,9 @@ new class extends Component {
                         ->where('user_id', $member->id)
                         ->where('status', 'creator')
                         ->exists();
-                        
+                        $isConnectedUser = $member->id == Auth::id();
                     @endphp
-                    <li class="grid grid-cols-[1fr,3fr,1fr] justify-items-center items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2">
+                    <li class="grid grid-cols-[1fr,3fr,1fr] justify-items-center items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2 @if($isConnectedUser) border-2 border-amber-400 @endif">
                         <span class="flex items-center text-gray-800 dark:text-gray-300">
                             <img src="{{ $member->getAvatar() }}" alt="Profile Image" class="w-16 h-16 rounded-full mr-4 shadow-lg">
                             {{ $member->name }}
