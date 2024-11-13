@@ -43,7 +43,7 @@ new class extends Component
         </svg>   
         
         <button wire:click="toggleBlock" class="btn {{ $isBlocked ? 'btn-danger' : 'btn-warning' }}">
-            {{ $isBlocked ? 'Débloquer utilisateur' : ' Bloquer utilisateur' }}
+            {{ $isBlocked ? 'Débloqué utilisateur' : ' Bloqué utilisateur' }}
         </button>  
     </span>
 </div>
