@@ -25,9 +25,11 @@ new class extends Component
         if ($authUser->blocked_users->contains($this->userId)) {
             $authUser->blocked_users()->detach($this->userId);
             $this->isBlocked = false;
+            $this->dispatch('blocked-change');
         } else {
             $authUser->blocked_users()->attach($this->userId);
             $this->isBlocked = true;
+            $this->dispatch('blocked-change');
         }
     }
 
@@ -41,7 +43,7 @@ new class extends Component
         </svg>   
         
         <button wire:click="toggleBlock" class="btn {{ $isBlocked ? 'btn-danger' : 'btn-warning' }}">
-            {{ $isBlocked ? 'Débloquer utilisateur' : ' Bloquer utilisateur' }}
+            {{ $isBlocked ? 'Débloqué utilisateur' : ' Bloqué utilisateur' }}
         </button>  
     </span>
 </div>

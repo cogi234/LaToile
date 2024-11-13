@@ -15,6 +15,7 @@ return new class extends Migration
             $table->text("avatar")->nullable();
             $table->text("bio")->nullable();
             $table->boolean("moderator")->default(false);
+            $table->text(column: "profile_background")->nullable();
         });
 
         Schema::create("followed_users", function (Blueprint $table) {
