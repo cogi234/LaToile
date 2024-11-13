@@ -43,16 +43,18 @@ $linkConverter = new class extends Component {
                 </p>
             @break
             @case('image')
-                <img src="{{ $block['url'] }}" alt="[Image non fonctionnelle]" class="max-w-full rounded-md mx-auto my-2">
+                <img src="{{ $block['url'] }}" alt="[Image non fonctionnelle]" onclick="event.stopPropagation()" class="max-w-full rounded-md mx-auto my-2">
             @break
             @case('video')
                 <video class="max-w-full rounded-md mx-auto my-2" controls>
-                    <source src="{{ $block['url'] }}" type="{{ $block['mime'] }}">
+                    <source src="{{ $block['url'] }}" type="{{ $block['mime'] }}" onclick="event.stopPropagation()">
+                    [Vidéo non fonctionnelle]
                 </video>
             @break
             @case('audio')
                 <audio class="max-w-full rounded-md mx-auto my-2" controls>
-                    <source src="{{ $block['url'] }}" type="{{ $block['mime'] }}">
+                    <source src="{{ $block['url'] }}" type="{{ $block['mime'] }}" onclick="event.stopPropagation()">
+                    [Audio non fonctionnel]
                 </audio>
             @break
         @endswitch
