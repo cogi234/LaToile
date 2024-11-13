@@ -36,7 +36,6 @@
                     @if (Auth::Check())
                            <livewire:user.blocked-user-check id="{{ $user->id }}" />
                         @endif
-                </div>       
             </div>
 
             {{-- Éditer profil --}}
