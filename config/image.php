@@ -53,4 +53,12 @@ return [
  
       'max_image_size' => 500,
 
+
+      /**
+      * What maximum square size are images compressed to?
+      */
+ 
+      'background_size' => 2048,
+      
+
 ];
