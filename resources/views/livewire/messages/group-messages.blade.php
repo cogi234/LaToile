@@ -394,7 +394,7 @@ new class extends Component {
                                         <!-- Zone d'édition -->
                                         <div>
                                             <div class="mt-2">
-                                                <textarea maxlength="2000" minlength="1"
+                                                <textarea id="editArea" maxlength="2000" minlength="1"
                                                     wire:model="editMessageContent" 
                                                     wire:keydown.enter="saveEdit" 
                                                     wire:keydown.escape="stopEditing"

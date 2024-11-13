@@ -209,7 +209,7 @@ new class extends Component {
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Conversations</h3>
             </div>
             <!-- Search Bar -->
-            <div class="p-4" >
+            {{-- <div class="p-4" >
                 <div class="flex">
                     <div class="inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
@@ -222,12 +222,26 @@ new class extends Component {
                         class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
                         placeholder="Rechercher des Messages Directs"/>
                 </div>
-            </div>
+            </div> --}}
             <div class="p-4">
+                <!-- Conteneur avec le contour et les styles -->
+                <div id="search-container" class="flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2">
+                    <!-- Icône de recherche -->
+                    <div class="pointer-events-none flex items-center pr-2">
+                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
+                        </svg>
+                    </div>
+                    <!-- Champ de recherche -->
+                    <input wire:model='searchQuery' type="text" name="query" id="searchBar" class="block w-full pl-2 bg-transparent border-none focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full" placeholder="Rechercher des Messages Directs"/>
+                </div>
+            </div>
+            
+            {{-- <div class="p-4">
                 <!-- Conteneur avec le contour et les styles -->
                 <div class="flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2">
                     <!-- Icône de recherche -->
-                    <div class="pointer-events-none flex items-center">
+                    <div class="pointer-events-none flex items-center pr-2">
                         <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
@@ -235,10 +249,10 @@ new class extends Component {
                     </div>
                     <!-- Champ de recherche -->
                     <input type="text" name="query" id="searchBar"
-                        class="block w-full pl-2 bg-transparent focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full"
+                        class="block w-full pl-2 bg-transparent border-none focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full"
                         placeholder="Rechercher des Messages Directs"/>
                 </div>
-            </div>
+            </div> --}}
             
             <!-- List of Conversations -->
             <div>
@@ -438,7 +452,12 @@ new class extends Component {
         </p>
     </div>
     @endif
-
+    <style>
+        .focus-bg-white {
+            background-color: white;
+            border: 3px solid #2563eb;
+        }
+    </style>
     @script
     <script>
         $wire.on('updateSelectedConversation', () => {
@@ -450,6 +469,15 @@ new class extends Component {
             }, 100);
             
         });
+
+        document.getElementById('searchBar').addEventListener('focus', function() {
+            document.getElementById('search-container').classList.add('focus-bg-white');
+        });
+
+        document.getElementById('searchBar').addEventListener('blur', function() {
+            document.getElementById('search-container').classList.remove('focus-bg-white');
+        });
+
     </script>
     @endscript
 </div>

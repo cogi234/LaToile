@@ -144,6 +144,7 @@ new class extends Component {
                         ->where('user_id', $member->id)
                         ->where('status', 'creator')
                         ->exists();
+                        
                     @endphp
                     <li class="grid grid-cols-[1fr,3fr,1fr] justify-items-center items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2">
                         <span class="flex items-center text-gray-800 dark:text-gray-300">
