@@ -38,6 +38,7 @@ new class extends Component {
         } else {
             $this->users = User::where('name', 'like', '%' . $this->search . '%')
                 ->whereNotIn('id', $this->selectedUsers)
+                ->where('id', '!=', Auth::id())
                 ->take(10)
                 ->get();
         }
@@ -117,7 +118,7 @@ new class extends Component {
         @endif --}}
 
         @if($pageNum === 1)
-            <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Nouveau Message</span>
+            <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Nouvelle Conversation</span>
             <div>
                 <!-- Barre de recherche -->
                 <input type="text" id="searchUserBar" placeholder="Rechercher des utilisateurs..." 
