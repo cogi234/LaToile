@@ -54,7 +54,7 @@ new class extends Component
     public function mount(): void
     {
         if (Auth::user()->avatar != null && Auth::user()->avatar != '') {
-            $this->avatarPath = Auth::user()->avatar;
+            $this->avatarPath = Auth::user()->getAvatar();
         }
 
         if (Auth::user()->profile_background != null && Auth::user()->profile_background != '') {
