@@ -16,12 +16,26 @@
                         @endif
                         @endauth
                     </div>
-                    <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
-                    <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p>
+                    <div class="flex space-x-4 mt-2">
+                        <!-- Lien vers les abonnements -->
+                        <a href="/followings/{{$user->id}}" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                            <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
+                                Abonnements : {{ $user->followed_users()->count() }}
+                            </p>
+                        </a>
+                        <!-- Lien vers les abonnés -->
+                        <a href="/followers/{{$user->id}}" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                            <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
+                                Abonnés : {{ $user->followers()->count() }}
+                            </p>
+                        </a>
+                    </div>
+                </div>
+                    {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
+                    <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p> --}}
                     @if (Auth::Check())
                            <livewire:user.blocked-user-check id="{{ $user->id }}" />
                         @endif
-                </div>       
             </div>
 
             {{-- Éditer profil --}}
@@ -78,7 +92,21 @@
         </div>
         {{-- Biographie + Modérateur? --}}
         <div class="mt-4">
-            <p class="text-gray-600 dark:text-gray-300">{{ $user->bio ?? '' }}</p>
+            <div class="flex flex-col">
+                <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
+                    <p > {{ $user->bio ?? '' }} </p>
+                </div> 
+                <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
+                    <p> {{ $user->bio ?? '' }} </p> 
+                </div>
+                @if ($user->bio != '')
+                <button id="toggle-bio" onclick="toggleBio()" class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-blue-500 text-white rounded hover:bg-blue-700"> 
+                    <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> 
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+                    </svg> 
+                </button>
+                @endif
+            </div>
             @if($user->moderator)
             <div class="flex flex-row items-center">
                 <p class="text-green-500 font-bold">Modérateur</p>
@@ -133,6 +161,24 @@
         background-color: rgba(255, 255, 255, 0.2);
         border-radius: 4px;
     }
+    
+    .bio-reduite p { 
+        overflow: hidden; 
+        text-overflow: 
+        ellipsis; display: 
+        -webkit-box; 
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical; 
+        white-space: pre-wrap;
+    }
+
+    .bio-complete p {
+        white-space: pre-wrap;
+    }
+
+    .hidden { 
+        display: none; 
+    }
 </style>
 
 <script>
@@ -149,4 +195,23 @@
             }
         }
     }
-</script>
+    function toggleBio() { 
+        var bioReduite = document.getElementById("bio-reduite"); 
+        var bioComplete = document.getElementById("bio-complete"); 
+        var toggleButton = document.getElementById("toggle-bio"); 
+        var iconBio = document.getElementById("icon-bio"); 
+        if (bioReduite.classList.contains("hidden")) { 
+            bioReduite.classList.remove("hidden"); 
+            bioComplete.classList.add("hidden"); 
+            iconBio.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" /> </svg>`; 
+        } 
+        else { 
+            bioReduite.classList.add("hidden"); 
+            bioComplete.classList.remove("hidden"); 
+            iconBio.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
+                                </svg> `; 
+        } 
+    }
+</script>  

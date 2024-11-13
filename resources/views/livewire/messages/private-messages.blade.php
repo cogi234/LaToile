@@ -209,21 +209,51 @@ new class extends Component {
                 <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Conversations</h3>
             </div>
             <!-- Search Bar -->
-            <div class="p-4" >
-                <div class="relative">
-                    <input type="text" name="query" id="searchBar"
-                        class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
-                        placeholder="Rechercher des Messages Directs"/>
-            
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            {{-- <div class="p-4" >
+                <div class="flex">
+                    <div class="inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
                         </svg>
                     </div>
+
+                    <input type="text" name="query" id="searchBar"
+                        class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
+                        placeholder="Rechercher des Messages Directs"/>
+                </div>
+            </div> --}}
+            <div class="p-4">
+                <!-- Conteneur avec le contour et les styles -->
+                <div id="search-container" class="flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2">
+                    <!-- Icône de recherche -->
+                    <div class="pointer-events-none flex items-center pr-2">
+                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
+                        </svg>
+                    </div>
+                    <!-- Champ de recherche -->
+                    <input wire:model='searchQuery' type="text" name="query" id="searchBar" class="block w-full pl-2 bg-transparent border-none focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full" placeholder="Rechercher des Messages Directs"/>
                 </div>
             </div>
-
+            
+            {{-- <div class="p-4">
+                <!-- Conteneur avec le contour et les styles -->
+                <div class="flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2">
+                    <!-- Icône de recherche -->
+                    <div class="pointer-events-none flex items-center pr-2">
+                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
+                        </svg>
+                    </div>
+                    <!-- Champ de recherche -->
+                    <input type="text" name="query" id="searchBar"
+                        class="block w-full pl-2 bg-transparent border-none focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full"
+                        placeholder="Rechercher des Messages Directs"/>
+                </div>
+            </div> --}}
+            
             <!-- List of Conversations -->
             <div>
                 @if($targetUserId !== null && !in_array($targetUserId, $uniqueSenderIds))
@@ -274,8 +304,185 @@ new class extends Component {
                 </div>
             </a>
         </div>
+        
         <!-- Zone de discussion -->
+        @php
+            $previousDate = null;
+        @endphp
+
         <div id="discussion" class="flex-1 p-4">
+            @if ($selectedConversation)
+                @foreach ($selectedConversation as $message)
+                    @php
+                        $isCurrentUserMessage = $message->sender_id == Auth::id();
+                        $currentTimeZone = 'America/Toronto';
+                        $timeFormat = 'Y-m-d H:i';
+                        $messageText = $message->message;
+                        $textWithURLS = preg_replace(
+                            '/(https?:\/\/[^\s]+)/',
+                            '<a href="$1" target="_blank" rel="noopener noreferrer" class="hover:underline">$1</a>',
+                            $messageText
+                        );
+                        $messageText = Twemoji::text($textWithURLS)->svg()->toHTML();
+
+                        // Format de la date du message
+                        $messageDate = $message->created_at->setTimezone($currentTimeZone)->format('Y-m-d');
+                    @endphp
+
+                    <!-- Ajouter un séparateur de date si nécessaire -->
+                    @if ($previousDate !== $messageDate)
+                        <div class="text-center text-gray-500 my-4">
+                            {{ \Carbon\Carbon::parse($message->created_at)->locale('fr')->isoFormat('LL') }}
+                        </div>
+                        @php
+                            $previousDate = $messageDate;
+                        @endphp
+                    @endif
+
+                    <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
+                        <!-- Conteneur du message -->
+                        @if($isCurrentUserMessage)
+                        <!-- Bouton Modifier -->
+                        <button type="button" title="Modifier le message" wire:click.stop='startEditing({{ $message->id }})'>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 mr-2 stroke-gray-400 hover:stroke-gray-700 dark:hover:stroke-gray-200">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                            </svg>                              
+                        </button>
+                        <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                            id="message_{{ $message->id }}" wire:click.stop
+                            class="lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-blue-500 text-white"
+                            >
+
+                            @if ($message->id == $editingMessageId)
+                            <!-- Zone d'édition -->
+                            <div>
+                                <div class="mt-2">
+                                    <textarea maxlength="2000" minlength="1"
+                                        wire:model="editMessageContent" 
+                                        wire:keydown.enter="saveEdit" 
+                                        wire:keydown.escape="stopEditing"
+                                        class="p-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white h-10 min-h-10 rounded">
+                                    </textarea>
+                                    @error('editMessageLength') <div class="bg-red-500 px-2 text-white font-bold rounded mt-2">{{ $message }}</div> @enderror
+                                    <div class="flex lg:flex-row w-full flex-col justify-end lg:space-x-2 mt-2">
+                                        <!-- Bouton Enregistrer (Éditer) -->
+                                        <button type="button" title="Enregistrer les modifications" wire:click.stop='saveEdit'
+                                            class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white lg:mb-0 mb-2 rounded flex items-center transition duration-150 ease-in-out">
+                                            <i class="fas fa-save mr-2"></i>
+                                            <span class="mr-2"> Enregistrer </span>
+                                        </button>
+
+                                        <!-- Bouton Supprimer -->
+                                        <button type="button" title="Supprimer le message" wire:click.stop='deleteMessage'
+                                            class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded flex items-center">
+                                            <i class="fas fa-trash mr-2"></i>
+                                            <span class="mr-2">Supprimer</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            @else
+                            <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                <p class="mr-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                            </div>
+                            @endif
+                        </div>
+                        @else
+                        <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                            class="flex lg:flex-row flex-col lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                            <!-- Signaler -->
+                            <button title="Signaler le message"
+                                class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
+                                onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                </svg>
+                            </button>
+                            <!-- Contenu du message -->
+                            <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                @endforeach
+            @else
+                <div class="flex items-center justify-center h-full">
+                    <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
+                </div>
+            @endif
+        </div>
+
+        <!-- Barre de message -->
+        <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
+            @php
+                $can_send_messages = true;
+                //If the user doesn't want to get messages from people they don't follow and they don't follow you, you can't send messages
+                if (!$targetUser->can_get_messages_from_anyone && $targetUser->followed_users()->where('id', Auth::id())->count() == 0)
+                    $can_send_messages = false;
+                if(Auth::user()->blocked_users()->where('id', $targetUser->id)->exists() ||Auth::user()->blockers()->where('id', $targetUser->id)->exists() )
+                    $can_send_messages = false;
+            @endphp
+            @if ($can_send_messages)
+            @error('messageLength') <br><div class="text-red-400 font-bold mt-2">{{ $message }}</div> @enderror
+            <form wire:submit.prevent="send" class="flex items-center">
+                <!-- Champ de texte pour écrire le message -->
+                <input type="text" wire:model="messageContent" id="privateMessagePostTextInput" placeholder="Écrire un message..." maxlength="2000" minlength="1"
+                    class="flex-1 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"/>
+                <!-- Bouton d'envoi avec une icône d'avion en papier -->
+                <button type="submit" title="Envoyer le message" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v6l16-8-16-8v6l10 2-10 2z" />
+                    </svg>
+                </button>
+            </form>
+            @else
+            <p class="dark:text-gray-200">
+                Vous ne pouvez pas envoyer de messages à cette personne
+            </p>
+            @endif
+        </div>                
+    </div>
+    @else
+    <div class="p-4">
+        <p class="text-gray-500 dark:text-gray-300">
+            Sélectionner un usager pour voir vos conversations
+        </p>
+    </div>
+    @endif
+    <style>
+        .focus-bg-white {
+            background-color: white;
+            border: 3px solid #2563eb;
+        }
+    </style>
+    @script
+    <script>
+        $wire.on('updateSelectedConversation', () => {
+            setTimeout(() => {
+                let element = document.querySelector("#message_area");
+                if (element && element.children[1].children.length > 2){
+                    element.children[1].children[element.children[1].children.length - 1].scrollIntoView();
+                }
+            }, 100);
+            
+        });
+
+        document.getElementById('searchBar').addEventListener('focus', function() {
+            document.getElementById('search-container').classList.add('focus-bg-white');
+        });
+
+        document.getElementById('searchBar').addEventListener('blur', function() {
+            document.getElementById('search-container').classList.remove('focus-bg-white');
+        });
+
+    </script>
+    @endscript
+</div>
+
+{{-- <div id="discussion" class="flex-1 p-4">
             @if ($selectedConversation)
                 @foreach ($selectedConversation as $message)
                     @php
@@ -365,57 +572,4 @@ new class extends Component {
                     <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
                 </div>
             @endif
-        </div>
-        
-        <!-- Barre de message -->
-        <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
-            @php
-                $can_send_messages = true;
-                //If the user doesn't want to get messages from people they don't follow and they don't follow you, you can't send messages
-                if (!$targetUser->can_get_messages_from_anyone && $targetUser->followed_users()->where('id', Auth::id())->count() == 0)
-                    $can_send_messages = false;
-                if(Auth::user()->blocked_users()->where('id', $targetUser->id)->exists() ||Auth::user()->blockers()->where('id', $targetUser->id)->exists() )
-                    $can_send_messages = false;
-            @endphp
-            @if ($can_send_messages)
-            @error('messageLength') <br><div class="text-red-400 font-bold mt-2">{{ $message }}</div> @enderror
-            <form wire:submit.prevent="send" class="flex items-center">
-                <!-- Champ de texte pour écrire le message -->
-                <input type="text" wire:model="messageContent" id="privateMessagePostTextInput" placeholder="Écrire un message..." maxlength="2000" minlength="1"
-                    class="flex-1 px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"/>
-                <!-- Bouton d'envoi avec une icône d'avion en papier -->
-                <button type="submit" title="Envoyer le message" class="ml-2 p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v6l16-8-16-8v6l10 2-10 2z" />
-                    </svg>
-                </button>
-            </form>
-            @else
-            <p class="dark:text-gray-200">
-                Vous ne pouvez pas envoyer de messages à cette personne
-            </p>
-            @endif
-        </div>                
-    </div>
-    @else
-    <div class="p-4">
-        <p class="text-gray-500 dark:text-gray-300">
-            Sélectionner un usager pour voir vos conversations
-        </p>
-    </div>
-    @endif
-
-    @script
-    <script>
-        $wire.on('updateSelectedConversation', () => {
-            setTimeout(() => {
-                let element = document.querySelector("#message_area");
-                if (element && element.children[1].children.length > 2){
-                    element.children[1].children[element.children[1].children.length - 1].scrollIntoView();
-                }
-            }, 100);
-            
-        });
-    </script>
-    @endscript
-</div>
+        </div> --}}
