@@ -11,6 +11,7 @@ use Livewire\Attributes\Locked;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 
 new class extends Component
 {
@@ -58,7 +59,7 @@ new class extends Component
         }
 
         if (Auth::user()->profile_background != null && Auth::user()->profile_background != '') {
-            $this->backgroundPath = Auth::user()->profile_background;
+            $this->backgroundPath = Storage::url(Auth::user()->profile_background);
         }
 
         $this->name = Auth::user()->name;
