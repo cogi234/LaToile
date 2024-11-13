@@ -158,6 +158,8 @@ new class extends Component {
             $previousPost = Post::find($sharedId);
             $this->previousContent = $previousPost->createPreviousContent();
         }
+        if (sizeof($this->tags) == 0)
+            $this->tags = [''];
     }
 
     public function inputsFromContent($content) : array {
