@@ -82,14 +82,14 @@ new class extends Component
             $size = Config::get('image.avatar_size');
             $image = Image::read($this->avatar)->cover($size, $size, 'center')->toJpeg();
             $user->avatar = 'profile-photo/' . Str::random(40) . '.jpg';
-            $image->save('storage' . $user->avatar);
+            $image->save('storage/' . $user->avatar);
         }
         if ($this->background) {
             $size = Config::get('image.background_size'); // Define an appropriate size
             $image = Image::read($this->background)->scaleDown($size, $size)->toJpeg();
             $backgroundFileName = Str::random(40) . '.jpg';  // Generate a random filename for the background image
             $backgroundPath = 'profile-background/' . $backgroundFileName;  // Define the path for the background image
-            $image->save('storage' . $backgroundPath);  // Save the image in the storage folder
+            $image->save('storage/' . $backgroundPath);  // Save the image in the storage folder
             $user->profile_background = $backgroundPath;  // Store the path in the database
         }
 
