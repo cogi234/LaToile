@@ -11,6 +11,7 @@ use Livewire\Attributes\Locked;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 
 new class extends Component
 {
@@ -54,11 +55,11 @@ new class extends Component
     public function mount(): void
     {
         if (Auth::user()->avatar != null && Auth::user()->avatar != '') {
-            $this->avatarPath = Auth::user()->avatar;
+            $this->avatarPath = Auth::user()->getAvatar();
         }
 
         if (Auth::user()->profile_background != null && Auth::user()->profile_background != '') {
-            $this->backgroundPath = Auth::user()->profile_background;
+            $this->backgroundPath = Storage::url(Auth::user()->profile_background);
         }
 
         $this->name = Auth::user()->name;
@@ -82,14 +83,14 @@ new class extends Component
             $size = Config::get('image.avatar_size');
             $image = Image::read($this->avatar)->cover($size, $size, 'center')->toJpeg();
             $user->avatar = 'profile-photo/' . Str::random(40) . '.jpg';
-            $image->save('storage' . $user->avatar);
+            $image->save('storage/' . $user->avatar);
         }
         if ($this->background) {
             $size = Config::get('image.background_size'); // Define an appropriate size
             $image = Image::read($this->background)->scaleDown($size, $size)->toJpeg();
             $backgroundFileName = Str::random(40) . '.jpg';  // Generate a random filename for the background image
             $backgroundPath = 'profile-background/' . $backgroundFileName;  // Define the path for the background image
-            $image->save(public_path('storage' . $backgroundPath));  // Save the image in the storage folder
+            $image->save('storage/' . $backgroundPath);  // Save the image in the storage folder
             $user->profile_background = $backgroundPath;  // Store the path in the database
         }
 
@@ -144,7 +145,7 @@ new class extends Component
                 @elseif ($avatarPath)
                     <img src="{{ $avatarPath }}" alt="Photo actuelle" height="200" width="200">
                 @else
-                    <img src="images/no-avatar.png" alt="Photo par défaut" height="200" width="200">
+                    <img src="{{ 'images/no-avatar.png' }}" alt="Photo par défaut" height="200" width="200">
                 @endif
             </a>
             <div wire:loading wire:target="avatar" class="dark:text-gray-100">Chargement...</div>
@@ -161,7 +162,7 @@ new class extends Component
                 @elseif ($backgroundPath)
                     <img src="{{ $backgroundPath }}" alt="Fond actuel" height="200" width="300">
                 @else
-                    <img src="images/No-background.jpg" alt="Fond par défaut" height="200" width="300">
+                    <img src="{{ 'images/no-background.png' }}" alt="Fond par défaut" height="200" width="300">
                 @endif
             </a>
             <div wire:loading wire:target="background" class="dark:text-gray-100">Chargement...</div>
