@@ -17,6 +17,12 @@ new class extends Component {
     public function mount(Post $post)
     {
         $this->post = $post;
+        dump($this->post->original_shares()
+            ->withCount('tags as tags_count')
+            ->where(function ($query) {
+                $query->where('tags_count', '!=', 0)
+                ->orWhere('content', '!=', '[]');
+            }));
         $this->responses = $this->post->original_shares()
             ->withCount('tags as tags_count')
             ->where(function ($query) {
@@ -26,12 +32,6 @@ new class extends Component {
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
-        dump($this->post->original_shares()
-            ->withCount('tags')
-            ->where(function ($query) {
-                $query->where('tags_count', '!=', 0)
-                ->orWhere('content', '!=', '[]');
-            }));
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->responses->count() == 10;
