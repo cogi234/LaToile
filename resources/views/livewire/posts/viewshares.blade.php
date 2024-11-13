@@ -18,7 +18,7 @@ new class extends Component {
     {
         $this->post = $post;
         $this->shares = $this->post->original_shares()
-            ->withCount('tags')
+            ->withCount('tags as tags_count')
             ->where('tags_count', 0)
             ->where('content', '[]')
             ->orderBy('created_at', 'desc')

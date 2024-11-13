@@ -18,7 +18,7 @@ new class extends Component {
     {
         $this->post = $post;
         $this->responses = $this->post->original_shares()
-            ->withCount('tags')
+            ->withCount('tags as tags_count')
             ->where(function ($query) {
                 $query->where('tags_count', '!=', 0)
                 ->orWhere('content', '!=', '[]');
@@ -26,6 +26,12 @@ new class extends Component {
             ->orderBy('created_at', 'desc')
             ->take(10)
             ->get();
+        dump($this->post->original_shares()
+            ->withCount('tags')
+            ->where(function ($query) {
+                $query->where('tags_count', '!=', 0)
+                ->orWhere('content', '!=', '[]');
+            }));
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->responses->count() == 10;
