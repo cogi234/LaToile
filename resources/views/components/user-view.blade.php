@@ -34,8 +34,8 @@
                     {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
                     <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p> --}}
                     @if (Auth::Check())
-                           <livewire:user.blocked-user-check id="{{ $user->id }}" />
-                        @endif
+                        <livewire:user.blocked-user-check id="{{ $user->id }}" />
+                    @endif
             </div>
 
             {{-- Éditer profil --}}
