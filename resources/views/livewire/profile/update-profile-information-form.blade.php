@@ -161,7 +161,7 @@ new class extends Component
                 @elseif ($backgroundPath)
                     <img src="{{ $backgroundPath }}" alt="Fond actuel" height="200" width="300">
                 @else
-                    <img src="{{ 'images/No-background.png' }}" alt="Fond par défaut" height="200" width="300">
+                    <img src="{{ 'images/no-background.png' }}" alt="Fond par défaut" height="200" width="300">
                 @endif
             </a>
             <div wire:loading wire:target="background" class="dark:text-gray-100">Chargement...</div>
