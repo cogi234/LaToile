@@ -79,7 +79,7 @@
         </div>
         {{-- Biographie + Modérateur? --}}
         <div class="mt-4">
-            <p class="text-gray-600 dark:text-gray-300">{{ $user->bio ?? '' }}</p>
+            <p class="text-gray-600 dark:text-gray-300" style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; white-space: pre-wrap;">{{ $user->bio ?? '' }}</p>
             @if($user->moderator)
             <div class="flex flex-row items-center">
                 <p class="text-green-500 font-bold">Modérateur</p>
