@@ -427,16 +427,25 @@ new class extends Component {
                                 </div>
                             @else
                                 <!-- Affichage pour les autres utilisateurs -->
-                                <div class="flex items-end">
+                                <div class="flex items-end max-w-[60%]">
                                     <div class="mr-3">
                                         <img src="{{ $message->user->getAvatar() }}" alt="Avatar de {{ $message->user->name }}" class="w-10 h-10 rounded-full shadow-lg">
                                     </div>
-                                    <div>
+                                    {{-- <div>
                                         <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
                                         <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
                                             class="flex lg:flex-row flex-col lg:max-w-[40%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
                                             <div class="flex flex-row w-fit max-w-[100%] break-words">
                                                 <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                                            </div>
+                                        </div>
+                                    </div> --}}
+                                    <div>
+                                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
+                                        <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                            class="flex-1 flex-wrap p-3 rounded-lg bg-gray-300 text-gray-900">
+                                            <div class="flex flex-row flex-wrap break-words">
+                                                <p class="ml-2 break-words">{!! $messageText !!}</p>
                                             </div>
                                         </div>
                                     </div>
