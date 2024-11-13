@@ -84,7 +84,7 @@
                     <p > {{ $user->bio ?? '' }} </p>
                 </div> 
                 <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
-                    <p style="white-space: pre-wrap;"> {{ $user->bio ?? '' }} </p> 
+                    <p> {{ $user->bio ?? '' }} </p> 
                 </div>
                 <button id="toggle-bio" onclick="toggleBio()" class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-blue-500 text-white rounded hover:bg-blue-700"> 
                     <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> 
@@ -156,7 +156,11 @@
         -webkit-box-orient: vertical; 
         white-space: pre-wrap;
     }
-    
+
+    .bio-complete p{
+        white-space: pre-wrap;
+    }
+
     .hidden { 
         display: none; 
     }
