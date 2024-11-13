@@ -427,8 +427,8 @@ new class extends Component {
                                 </div>
                             @else
                                 <!-- Affichage pour les autres utilisateurs -->
-                                <div class="flex items-end max-w-[60%]">
-                                    <div class="mr-3">
+                                <div class="flex items-end max-w-[50%]">
+                                    <div class="mr-3 w-fit h-fit">
                                         <img src="{{ $message->user->getAvatar() }}" alt="Avatar de {{ $message->user->name }}" class="w-10 h-10 rounded-full shadow-lg">
                                     </div>
                                     {{-- <div>
@@ -440,7 +440,7 @@ new class extends Component {
                                             </div>
                                         </div>
                                     </div> --}}
-                                    <div>
+                                    <div class="overflow-hidden">
                                         <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
                                         <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
                                             class="flex-1 flex-wrap p-3 rounded-lg bg-gray-300 text-gray-900">
