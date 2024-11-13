@@ -2,8 +2,11 @@
 
 use Livewire\Volt\Component;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Validate;
 use App\Models\Group;
 use App\Models\GroupMessage;
+use App\Notifications\MessageReceived;
+use Astrotomic\Twemoji\Twemoji;
 
 new class extends Component {
     public $groupMessages = [];
@@ -12,7 +15,9 @@ new class extends Component {
     public ?Group $targetGroup = null;
     public ?int $targetGroupId = null;
     public $selectedConversation = [];
-    
+    public $isCreator = false;
+
+
     public $searchQuery = '';
     public $searchResults = [];
 
@@ -29,7 +34,7 @@ new class extends Component {
         $this->updateGroupConversations();
         $this->loadInvitations();
         $this->onReqOpt = false;
-
+        
         if ($targetGroupId !== null) {
             $this->setSelectedGroup($targetGroupId);
         }
@@ -44,6 +49,12 @@ new class extends Component {
             session()->flash('error', 'Groupe non trouvé');
             return;
         }
+
+        $this->isCreator = Group::find($targetGroupId)
+            ->memberships()
+            ->where('user_id', Auth::id())
+            ->where('status', 'creator')
+            ->exists();
 
         $this->targetGroupId = $targetGroupId;
         $this->targetGroup = $targetGroup;
@@ -101,8 +112,7 @@ new class extends Component {
 
     public function updateSelectedConversation() {
         $this->selectedConversation = GroupMessage::where(function($query) {
-            $query->where('user_id', Auth::id())
-                ->where('group_id', $this->targetGroupId);
+            $query->where('group_id', $this->targetGroupId);
         })->get();
     }
     public function getGroupMembers()
@@ -162,7 +172,7 @@ new class extends Component {
         }
 
         $message = GroupMessage::find($this->editingMessageId);
-        if ($message && $message->sender_id == Auth::id()) {
+        if ($message && $message->user_id == Auth::id()) {
             $message->message = trim($this->editMessageContent);
             $message->save();
         }
@@ -187,7 +197,7 @@ new class extends Component {
         
         <!-- Board pour changer avec messages de groupe + création -->
         <livewire:messages.messageBoard :isGroup='true' wire:key='messageBoardComponent' />
-        @if($groups->isEmpty() && $targetGroupId == null)
+        @if($groups->isEmpty() && $targetGroupId == null && $invites->isEmpty())
         <div class="p-4">
             <p class="text-gray-500 dark:text-gray-300">
                 Bienvenue à votre messagerie de groupes.
@@ -279,14 +289,14 @@ new class extends Component {
                     <!-- Menu déroulant avec les options -->
                     <x-dropdown width="w-64">
                         <x-slot name="trigger">
-                            <button class="text-gray-500 dark:text-gray-300" onclick="toggleOptionsMenu()">
+                            <button class="text-gray-500 dark:text-gray-300">
                                 &#x2026;
                             </button>
                         </x-slot>
     
                         <x-slot name="content">
                             <!-- Option pour voir les membres du groupe -->
-                            <button type="button" id="viewMembers" onclick="toggleMembersMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                            <button wire:key='btnMembersMenu' type="button" id="viewMembers" onclick="toggleMembersMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 p-4 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
                                 Voir les membres
                                 <span class="ml-2">
                                     <!-- SVG flèche droite -->
@@ -295,23 +305,162 @@ new class extends Component {
                                     </svg>
                                 </span>
                             </button>
+                            @if($isCreator)
+                            <button wire:key='btnInvitesMenu' type="button" id="viewInvites" onclick="toggleInvitesMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 p-4 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                                Voir les invitations
+                                <span class="ml-2">
+                                    <!-- SVG flèche droite -->
+                                    <svg class="w-4 h-4 text-gray-800 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0L13.707 9.293a1 1 0 010 1.414l-5 5a1 1 0 11-1.414-1.414L11.586 10 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                            </button>
 
+                            <button type="button" id="viewMembers" onclick="toggleGroupNameMenu()" class="flex justify-between items-center w-full btn btn-primary py-1 p-4 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded">
+                                Changer le nom du groupe
+                                <span class="ml-2">
+                                    <!-- SVG flèche droite -->
+                                    <svg class="w-4 h-4 text-gray-800 dark:text-gray-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M7.293 4.293a1 1 0 011.414 0L13.707 9.293a1 1 0 010 1.414l-5 5a1 1 0 11-1.414-1.414L11.586 10 7.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                            </button>
+                            @endif
                             <!-- Séparateur -->
                             <hr class="border-gray-300 dark:border-gray-600 my-2">
 
                             <!-- Option pour quitter le groupe -->
-                            <button wire:click="leaveGroup({{ $targetGroup->id }})" class="block text-left w-full py-1 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-600 rounded">
+                            <button wire:click="leaveGroup({{ $targetGroup->id }})" class="block text-left w-full py-1 p-4 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-600 rounded">
                                 Quitter le groupe
                             </button>
                         </x-slot>
                     </x-dropdown>
-    
+                    
+                    <!-- Nom du Groupe -->
+                    <livewire:messages.group-name-change :targetGroup="$targetGroup" wire:key='groupName'/>
                     <!-- Membres du groupe -->
-                    <livewire:messages.group-members-form />
+                    <livewire:messages.group-members-form :targetGroup="$targetGroup" wire:key='groupMembers'/>
+                    <!-- Invitations au groupe -->
+                    <livewire:messages.group-invites-form :targetGroup="$targetGroup" wire:key='groupInvites'/>
                 </div>
             </div>
             <!-- Zone de discussion -->
             <div id="discussion" class="flex-1 p-4">
+                @if ($selectedConversation)
+                    @php
+                        $lastMessageDate = null; // Variable pour suivre le dernier jour
+                    @endphp
+                    @foreach ($selectedConversation as $message)
+                        @php
+                            $isCurrentUserMessage = $message->user_id == Auth::id();
+                            $currentTimeZone = 'America/Toronto';
+                            $timeFormat = 'Y-m-d H:i';
+                            $dateFormat = 'Y-m-d'; // Format pour vérifier les changements de jour
+                            $messageDate = $message->created_at->setTimezone($currentTimeZone)->format($dateFormat);
+
+                            $messageText = $message->message;
+                            $textWithURLS = preg_replace(
+                                '/(https?:\/\/[^\s]+)/',
+                                '<a href="$1" target="_blank" rel="noopener noreferrer" class="hover:underline">$1</a>',
+                                $messageText
+                            );
+                            $messageText = Twemoji::text($textWithURLS)->svg()->toHTML();
+                        @endphp
+
+                        <!-- Ligne de séparation si une nouvelle journée commence -->
+                        @if ($lastMessageDate !== $messageDate)
+                            <div class="text-center text-gray-500 my-4">
+                                <span>{{ \Carbon\Carbon::parse($message->created_at)->locale('fr')->isoFormat('LL') }}</span>
+                            </div>
+                            @php
+                                $lastMessageDate = $messageDate; // Mettre à jour la date du dernier message
+                            @endphp
+                        @endif
+
+                        <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
+                            <!-- Contenu du message -->
+                            @if($isCurrentUserMessage)
+                                <!-- Bouton Modifier -->
+                                <button type="button" title="Modifier le message" wire:click.stop='startEditing({{ $message->id }})'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 mr-2 stroke-gray-400 hover:stroke-gray-700 dark:hover:stroke-gray-200">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>                              
+                                </button>
+                                <!-- (Votre contenu existant pour les messages de l'utilisateur actuel) -->
+                                <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                    id="message_{{ $message->id }}" wire:click.stop
+                                    class="lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-blue-500 text-white">
+                                    @if ($message->id == $editingMessageId)
+                                        <!-- Zone d'édition -->
+                                        <div>
+                                            <div class="mt-2">
+                                                <textarea id="editArea" maxlength="2000" minlength="1"
+                                                    wire:model="editMessageContent" 
+                                                    wire:keydown.enter="saveEdit" 
+                                                    wire:keydown.escape="stopEditing"
+                                                    class="p-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white h-10 min-h-10 rounded">
+                                                </textarea>
+                                                @error('editMessageLength') <div class="bg-red-500 px-2 text-white font-bold rounded mt-2">{{ $message }}</div> @enderror
+                                                <div class="flex lg:flex-row w-full flex-col justify-end lg:space-x-2 mt-2">
+                                                    <!-- Bouton Enregistrer (Éditer) -->
+                                                    <button type="button" title="Enregistrer les modifications" wire:click.stop='saveEdit'
+                                                        class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white lg:mb-0 mb-2 rounded flex items-center transition duration-150 ease-in-out">
+                                                        <i class="fas fa-save mr-2"></i>
+                                                        <span class="mr-2"> Enregistrer </span>
+                                                    </button>
+
+                                                    <!-- Bouton Supprimer -->
+                                                    <button type="button" title="Supprimer le message" wire:click.stop='deleteMessage'
+                                                        class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded flex items-center">
+                                                        <i class="fas fa-trash mr-2"></i>
+                                                        <span class="mr-2">Supprimer</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <!-- (Contenu du message pour l'utilisateur actuel) -->
+                                        <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                            <p class="mr-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            @else
+                                <!-- Affichage pour les autres utilisateurs -->
+                                <div class="flex items-end max-w-[60%]">
+                                    <div class="mr-3">
+                                        <img src="{{ $message->user->getAvatar() }}" alt="Avatar de {{ $message->user->name }}" class="w-10 h-10 rounded-full shadow-lg">
+                                    </div>
+                                    {{-- <div>
+                                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
+                                        <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                            class="flex lg:flex-row flex-col lg:max-w-[40%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                                            <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                                <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                                            </div>
+                                        </div>
+                                    </div> --}}
+                                    <div>
+                                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
+                                        <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                            class="flex-1 flex-wrap p-3 rounded-lg bg-gray-300 text-gray-900">
+                                            <div class="flex flex-row flex-wrap break-words">
+                                                <p class="ml-2 break-words">{!! $messageText !!}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                @else
+                    <div class="flex items-center justify-center h-full">
+                        <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
+                    </div>
+                @endif
+            </div>
+
+            {{-- <div id="discussion" class="flex-1 p-4">
                 @if ($selectedConversation)
                     @foreach ($selectedConversation as $message)
                         @php
@@ -325,6 +474,8 @@ new class extends Component {
                                 $messageText
                             );
                             $messageText = Twemoji::text($textWithURLS)->svg()->toHTML();
+
+
                         @endphp
 
                         <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
@@ -375,21 +526,36 @@ new class extends Component {
                                 @endif
                             </div>
                             @else
-                            <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
-                                class="flex lg:flex-row flex-col lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
-                                <!-- Signaler -->
-                                <button title="Signaler le message"
-                                    class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
-                                    onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                        stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                                        </svg>
-                                </button>
-                                <!-- Contenu du message -->
-                                <div class="flex flex-row w-fit max-w-[100%] break-words">
-                                    <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                            <div class="flex items-end">
+                                <div>
+                                    <!-- Avatar de l'usager-->
+                                    <div class="mr-3">
+                                        <img src="{{ $message->user->getAvatar() }}" alt="Avatar de {{ $message->user->name }}" class="w-10 h-10 rounded-full shadow-lg">
+                                    </div>
+                                </div>
+                                <div>
+                                    <div>
+                                        <!-- Nom de l'usager-->
+                                        <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
+                                    </div>
+                                    
+                                    <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
+                                        class="flex lg:flex-row flex-col lg:max-w-[40%] max-w-[90%] w-auto p-3 rounded-lg bg-gray-300 text-gray-900">
+                                        <!-- Signaler -->
+                                        <button title="Signaler le message"
+                                            class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
+                                            onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                                </svg>
+                                        </button>
+                                        <!-- Contenu du message -->
+                                        <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                            <p class="ml-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             @endif
@@ -400,10 +566,11 @@ new class extends Component {
                         <p class="text-gray-500 dark:text-gray-300">Sélectionnez une conversation pour commencer</p>
                     </div>
                 @endif
-            </div>
+            </div> --}}
             
+
+
             <!-- Barre de message -->
-            
             <div id="messageBar" class="p-4 bg-gray-100 dark:bg-gray-700 border-t dark:border-gray-600">
                 @error('messageLength') <br><div class="text-red-400 font-bold mt-2">{{ $message }}</div> @enderror
                 <form wire:submit.prevent="send" class="flex items-center">
@@ -427,4 +594,18 @@ new class extends Component {
             </p>
         </div>
     @endif
+
+    @script
+    <script>
+        $wire.on('updateSelectedConversation', () => {
+            setTimeout(() => {
+                let element = document.querySelector("#message_area");
+                if (element && element.children[1].children.length > 2){
+                    element.children[1].children[element.children[1].children.length - 1].scrollIntoView();
+                }
+            }, 100);
+            
+        });
+    </script>
+    @endscript
 </div>

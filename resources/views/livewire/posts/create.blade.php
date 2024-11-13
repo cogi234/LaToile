@@ -74,7 +74,7 @@ new class extends Component {
                 $this->dispatch('focus-input', index: $index + 1);
                 break;
             case 'image':
-                $newInput = ['type' => 'image', 'content' => null];
+                $newInput = ['type' => 'image', 'content' => null, 'url' => null];
                 $newTextInput = ['type' => 'text', 'content' => ''];
                 //We add a new image input. If the next one isn't text, we add text after.
                 if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
@@ -85,7 +85,7 @@ new class extends Component {
                 //$this->dispatch('click-input', index: $index + 1);
                 break;
             case 'video':
-                $newInput = ['type' => 'video', 'content' => null];
+                $newInput = ['type' => 'video', 'content' => null, 'url' => null];
                 $newTextInput = ['type' => 'text', 'content' => ''];
                 //We add a new video input. If the next one isn't text, we add text after.
                 if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
@@ -96,7 +96,7 @@ new class extends Component {
                 //$this->dispatch('click-input', index: $index + 1);
                 break;
             case 'audio':
-                $newInput = ['type' => 'audio', 'content' => null];
+                $newInput = ['type' => 'audio', 'content' => null, 'url' => null];
                 $newTextInput = ['type' => 'text', 'content' => ''];
                 //We add a new audio input. If the next one isn't text, we add text after.
                 if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
@@ -158,6 +158,8 @@ new class extends Component {
             $previousPost = Post::find($sharedId);
             $this->previousContent = $previousPost->createPreviousContent();
         }
+    
+        $this->tags[] = '';
     }
 
     public function inputsFromContent($content) : array {
@@ -250,10 +252,11 @@ new class extends Component {
                         $image = Image::read($input['content'])->scaleDown($maxImageSize, $maxImageSize)->toJpeg();
                         $imageBlock['url'] = '/files/' . Str::random(40) . '.jpg';
                         $image->save('storage' . $imageBlock['url']);
+                        $content[] = $imageBlock;
                     } else if ($input['url'] != null) {
                         $imageBlock['url'] = $input['url'];
+                        $content[] = $imageBlock;
                     }
-                    $content[] = $imageBlock;
                     break;
                 }
                 case 'video':{
@@ -265,11 +268,12 @@ new class extends Component {
                         $video = $input['content'];
                         $videoBlock['url'] = substr($video->store('public/files'), 6);
                         $videoBlock['mime'] = $video->getMimeType();
+                        $content[] = $videoBlock;
                     } else if ($input['url'] != null) {
                         $videoBlock['url'] = $input['url'];
                         $videoBlock['mime'] = $input['mime'];
+                        $content[] = $videoBlock;
                     }
-                    $content[] = $videoBlock;
                     break;
                 }
                 case 'audio':{
@@ -281,11 +285,12 @@ new class extends Component {
                         $audio = $input['content'];
                         $audioBlock['url'] = substr($audio->store('public/files'), 6);
                         $audioBlock['mime'] = $audio->getMimeType();
+                        $content[] = $audioBlock;
                     } else if ($input['url'] != null) {
                         $audioBlock['url'] = $input['url'];
                         $audioBlock['mime'] = $input['mime'];
+                        $content[] = $audioBlock;
                     }
-                    $content[] = $audioBlock;
                     break;
                 }
             }

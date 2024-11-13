@@ -19,13 +19,12 @@ new class extends Component {
         $this->post = $post;
         $this->responses = $this->post->original_shares()
             ->withCount('tags')
-            ->where(function ($query) {
-                $query->where('tags_count', '!=', 0)
-                ->orWhere('content', '!=', '[]');
-            })
             ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
+            ->take(50)
+            ->get()
+            ->filter(function ($post) {
+                return $post->tags_count > 0 || sizeof($post->content) > 0;
+            });
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->responses->count() == 10;
@@ -36,14 +35,13 @@ new class extends Component {
         if ($this->moreAvailable) {
             $newResponses = $this->post->original_shares()
                 ->withCount('tags')
-                ->where(function ($query) {
-                    $query->where('tags_count', '!=', 0)
-                    ->orWhere('content', '!=', '[]');
-                })
                 ->where('created_at', '<', $this->responses->last()->created_at)
                 ->orderBy('created_at', 'desc')
-                ->take(10)
-                ->get();
+                ->take(50)
+                ->get()
+                ->filter(function ($post) {
+                    return $post->tags_count > 0 || sizeof($post->content) > 0;
+                });
 
             // Merge the new responses with the existing ones
             $this->responses = $this->responses->concat($newResponses);
@@ -58,13 +56,12 @@ new class extends Component {
     {
         $this->responses = $this->post->original_shares()
             ->withCount('tags')
-            ->where(function ($query) {
-                $query->where('tags_count', '!=', 0)
-                ->orWhere('content', '!=', '[]');
-            })
             ->orderBy('created_at', 'desc')
-            ->take(10)
-            ->get();
+            ->take(50)
+            ->get()
+            ->filter(function ($post) {
+                return $post->tags_count > 0 || sizeof($post->content) > 0;
+            });
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->responses->count() == 10;

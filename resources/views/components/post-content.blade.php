@@ -2,6 +2,8 @@
 use Livewire\Volt\Component;
 use Astrotomic\Twemoji\Twemoji;
 use App\Models\Post;
+use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 $linkConverter = new class extends Component {
     public function convertUrlToLink($text)
@@ -20,7 +22,7 @@ $linkConverter = new class extends Component {
 <div {{ $attributes->merge(['class' => "ml-4 mt-4 text-gray-900 dark:text-gray-100"]) }}>
     @foreach ($content as $block)
         @php
-        $post = App\Models\Post::find($block['post_id']);
+        $post = Post::find($block['post_id']);
         if ($post == null) {
             $createdAt = now();
         } else {
@@ -31,7 +33,7 @@ $linkConverter = new class extends Component {
         @switch($block['type'])
             @case('user')
                 @php
-                $user = App\Models\User::find($block['id']);
+                $user = User::find($block['id']);
                 @endphp
                 <hr class="mb-2" />
                 <x-post-user :user="$user" :post="$post" displayEditButton="{{ false }}" displayDeleteButton="{{ false }}"
@@ -43,16 +45,18 @@ $linkConverter = new class extends Component {
                 </p>
             @break
             @case('image')
-                <img src="{{ $block['url'] }}" alt="[Image non fonctionnelle]" class="max-w-full rounded-md mx-auto my-2">
+                <img src="{{ Storage::url($block['url']) }}" alt="[Image non fonctionnelle]" onclick="event.stopPropagation()" class="max-w-full rounded-md mx-auto my-2">
             @break
             @case('video')
                 <video class="max-w-full rounded-md mx-auto my-2" controls>
-                    <source src="{{ $block['url'] }}" type="{{ $block['mime'] }}">
+                    <source src="{{ Storage::url($block['url']) }}" type="{{ $block['mime'] }}" onclick="event.stopPropagation()">
+                    [Vidéo non fonctionnelle]
                 </video>
             @break
             @case('audio')
                 <audio class="max-w-full rounded-md mx-auto my-2" controls>
-                    <source src="{{ $block['url'] }}" type="{{ $block['mime'] }}">
+                    <source src="{{ Storage::url($block['url']) }}" type="{{ $block['mime'] }}" onclick="event.stopPropagation()">
+                    [Audio non fonctionnel]
                 </audio>
             @break
         @endswitch

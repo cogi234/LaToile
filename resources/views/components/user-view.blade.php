@@ -1,73 +1,112 @@
-<div class="max-w-5xl mx-auto px-3 sm:px-8 mt-10 2xl:mt-0">
-    <div
-        class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
+<div class="max-w-5xl mx-auto pt-5 px-3 sm:px-8 mt-10 2xl:mt-0">
+    <div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
         <div class="flex sm:items-center items-start sm:flex-row flex-col sm:pt-0 pt-4">
             <!-- Image de profil -->
             <div class="flex flex-row">
-                <img src="{{ $user->getAvatar() }}" alt="Profile Image"
-                    class="w-20 h-20 rounded-full mr-4 shadow-lg">
+                <img src="{{ $user->getAvatar() }}" alt="Profile Image" class="w-20 h-20 rounded-full mr-4 shadow-lg">
+
 
                 {{-- Nom et Abonnés / Abonnement --}}
                 <div class="mr-2">
                     <div class="flex flex-row">
                         <h2 class="text-xl font-semibold text-black dark:text-gray-100 mr-2">{{ $user->name }}</h2>
-                        @auth
-                            @if (auth()->user()->id !== $user->id)
-                            <livewire:user.follow id="{{ $user->id }}" />
-                            @endif
+                        @auth                     
+                        @if (auth()->user()->id !== $user->id)
+                        <livewire:user.follow id="{{ $user->id }}" />
+                        @endif
                         @endauth
                     </div>
-                    <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
-                    <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p>
+                    <div class="flex space-x-4 mt-2">
+                        <!-- Lien vers les abonnements -->
+                        <a href="/followings/{{$user->id}}" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                            <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
+                                Abonnements : {{ $user->followed_users()->count() }}
+                            </p>
+                        </a>
+                        <!-- Lien vers les abonnés -->
+                        <a href="/followers/{{$user->id}}" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                            <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
+                                Abonnés : {{ $user->followers()->count() }}
+                            </p>
+                        </a>
+                    </div>
                 </div>
+                    {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
+                    <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p> --}}
+                    @if (Auth::Check())
+                           <livewire:user.blocked-user-check id="{{ $user->id }}" />
+                        @endif
             </div>
 
             {{-- Éditer profil --}}
             @auth
-                @if (auth()->user()->id == $user->id)
-                    <x-primary-button :href="route('profile')" wire:navigate
-                        class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start !bg-slate-500/90 hover:!bg-slate-700/90 dark:!bg-slate-400/50 dark:hover:!bg-slate-500 dark:!text-gray-100 transition duration-300 ease-in-out">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-4 mr-2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
-                        </svg>
+            @if (auth()->user()->id == $user->id)
+            <x-primary-button :href="route('profile')" wire:navigate
+                class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start !bg-slate-500/90 hover:!bg-slate-700/90 dark:!bg-slate-400/50 dark:hover:!bg-slate-500 dark:!text-gray-100 transition duration-300 ease-in-out">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-4 mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                </svg>
 
-                        Éditer le profil
-                    </x-primary-button>
-                @else
-                    <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
-                        <button onclick="toggleDropdown()" title="Plus d'actions..." class="focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7 text-gray-800 hover:text-gray-950 dark:text-gray-100 dark:hover:text-gray-300">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>                                                        
-                        </button>
-                        <div id="dropdownMenu" class="hidden absolute top-32 right-72 bg-gray-700 dark:bg-gray-900 rounded-md shadow-lg z-50 max-h-48 overflow-auto">
-                            <ul class="py-1 text-sm min-h-fit text-gray-200">
-                                <li>
-                                    <a href="{{ url('messages/user/' . $user->id) }}" title="Envoyer un message à {{$user->name}} ?" class="flex px-4 py-2 hover:bg-gray-600 items-center">
-                                        <span class="mr-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                                            </svg>                                                                                                                                                                                  
-                                        </span>
-                                        <span>Envoyer un message</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    @auth
-                                    <livewire:user.block-user :userId="$user->id" />  
-                                    @endauth                                   
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                @endif
+                Éditer le profil
+            </x-primary-button>
+            @else
+            <div
+                class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
+                <button onclick="toggleDropdown()" title="Plus d'actions..." class="focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-7 text-gray-800 hover:text-gray-950 dark:text-gray-100 dark:hover:text-gray-300">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                </button>
+                <div id="dropdownMenu"
+                    class="hidden absolute top-32 right-72 bg-gray-700 dark:bg-gray-900 rounded-md shadow-lg z-50 max-h-48 overflow-auto">
+                    <ul class="py-1 text-sm min-h-fit text-gray-200">
+                        <li>
+                            <a href="{{ url('messages/user/' . $user->id) }}"
+                                title="Envoyer un message à {{$user->name}} ?"
+                                class="flex px-4 py-2 hover:bg-gray-600 items-center">
+                                <span class="mr-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                                    </svg>
+                                </span>
+                                <span>Envoyer un message</span>
+                            </a>
+                        </li>
+                        <li>
+                            @auth
+                            <livewire:user.block-user :userId="$user->id" />
+                            @endauth
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            @endif
             @endauth
         </div>
         {{-- Biographie + Modérateur? --}}
         <div class="mt-4">
-            <p class="text-gray-600 dark:text-gray-300">{{ $user->bio ?? '' }}</p>
+            <div class="flex flex-col">
+                <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
+                    <p > {{ $user->bio ?? '' }} </p>
+                </div> 
+                <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
+                    <p> {{ $user->bio ?? '' }} </p> 
+                </div>
+                @if ($user->bio != '')
+                <button id="toggle-bio" onclick="toggleBio()" class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-blue-500 text-white rounded hover:bg-blue-700"> 
+                    <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> 
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+                    </svg> 
+                </button>
+                @endif
+            </div>
             @if($user->moderator)
             <div class="flex flex-row items-center">
                 <p class="text-green-500 font-bold">Modérateur</p>
@@ -84,9 +123,9 @@
             <div class="flex flex-row items-center">
                 <span class="text-red-500 font-bold mr-1">Banni</span>
                 <div title="Banni">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" 
-                    stroke="currentColor" class="size-4 text-red-500 mr-1">
-                        <path stroke-linecap="round" stroke-linejoin="round" 
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="size-4 text-red-500 mr-1">
+                        <path stroke-linecap="round" stroke-linejoin="round"
                             d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
                     </svg>
                 </div>
@@ -122,6 +161,24 @@
         background-color: rgba(255, 255, 255, 0.2);
         border-radius: 4px;
     }
+    
+    .bio-reduite p { 
+        overflow: hidden; 
+        text-overflow: 
+        ellipsis; display: 
+        -webkit-box; 
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical; 
+        white-space: pre-wrap;
+    }
+
+    .bio-complete p {
+        white-space: pre-wrap;
+    }
+
+    .hidden { 
+        display: none; 
+    }
 </style>
 
 <script>
@@ -138,4 +195,23 @@
             }
         }
     }
-</script>
+    function toggleBio() { 
+        var bioReduite = document.getElementById("bio-reduite"); 
+        var bioComplete = document.getElementById("bio-complete"); 
+        var toggleButton = document.getElementById("toggle-bio"); 
+        var iconBio = document.getElementById("icon-bio"); 
+        if (bioReduite.classList.contains("hidden")) { 
+            bioReduite.classList.remove("hidden"); 
+            bioComplete.classList.add("hidden"); 
+            iconBio.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" /> </svg>`; 
+        } 
+        else { 
+            bioReduite.classList.add("hidden"); 
+            bioComplete.classList.remove("hidden"); 
+            iconBio.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
+                                </svg> `; 
+        } 
+    }
+</script>  
