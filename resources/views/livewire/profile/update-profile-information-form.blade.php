@@ -89,7 +89,7 @@ new class extends Component
             $image = Image::read($this->background)->scaleDown($size, $size)->toJpeg();
             $backgroundFileName = Str::random(40) . '.jpg';  // Generate a random filename for the background image
             $backgroundPath = 'profile-background/' . $backgroundFileName;  // Define the path for the background image
-            $image->save(public_path('storage' . $backgroundPath));  // Save the image in the storage folder
+            $image->save('storage' . $backgroundPath);  // Save the image in the storage folder
             $user->profile_background = $backgroundPath;  // Store the path in the database
         }
 
