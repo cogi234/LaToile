@@ -172,7 +172,7 @@ new class extends Component {
         }
 
         $message = GroupMessage::find($this->editingMessageId);
-        if ($message && $message->sender_id == Auth::id()) {
+        if ($message && $message->user_id == Auth::id()) {
             $message->message = trim($this->editMessageContent);
             $message->save();
         }
@@ -380,17 +380,53 @@ new class extends Component {
                         <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
                             <!-- Contenu du message -->
                             @if($isCurrentUserMessage)
-                            <!-- (Votre contenu existant pour les messages de l'utilisateur actuel) -->
+                                <!-- Bouton Modifier -->
+                                <button type="button" title="Modifier le message" wire:click.stop='startEditing({{ $message->id }})'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 mr-2 stroke-gray-400 hover:stroke-gray-700 dark:hover:stroke-gray-200">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>                              
+                                </button>
+                                <!-- (Votre contenu existant pour les messages de l'utilisateur actuel) -->
                                 <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
                                     id="message_{{ $message->id }}" wire:click.stop
                                     class="lg:max-w-[60%] max-w-[90%] w-auto p-3 rounded-lg bg-blue-500 text-white">
-                                    <!-- (Contenu du message pour l'utilisateur actuel) -->
-                                    <div class="flex flex-row w-fit max-w-[100%] break-words">
-                                        <p class="mr-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
-                                    </div>
+                                    @if ($message->id == $editingMessageId)
+                                        <!-- Zone d'édition -->
+                                        <div>
+                                            <div class="mt-2">
+                                                <textarea maxlength="2000" minlength="1"
+                                                    wire:model="editMessageContent" 
+                                                    wire:keydown.enter="saveEdit" 
+                                                    wire:keydown.escape="stopEditing"
+                                                    class="p-2 block w-full border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 shadow-sm bg-white dark:bg-gray-800 text-black dark:text-white h-10 min-h-10 rounded">
+                                                </textarea>
+                                                @error('editMessageLength') <div class="bg-red-500 px-2 text-white font-bold rounded mt-2">{{ $message }}</div> @enderror
+                                                <div class="flex lg:flex-row w-full flex-col justify-end lg:space-x-2 mt-2">
+                                                    <!-- Bouton Enregistrer (Éditer) -->
+                                                    <button type="button" title="Enregistrer les modifications" wire:click.stop='saveEdit'
+                                                        class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white lg:mb-0 mb-2 rounded flex items-center transition duration-150 ease-in-out">
+                                                        <i class="fas fa-save mr-2"></i>
+                                                        <span class="mr-2"> Enregistrer </span>
+                                                    </button>
+
+                                                    <!-- Bouton Supprimer -->
+                                                    <button type="button" title="Supprimer le message" wire:click.stop='deleteMessage'
+                                                        class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded flex items-center">
+                                                        <i class="fas fa-trash mr-2"></i>
+                                                        <span class="mr-2">Supprimer</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <!-- (Contenu du message pour l'utilisateur actuel) -->
+                                        <div class="flex flex-row w-fit max-w-[100%] break-words">
+                                            <p class="mr-2 w-fit max-w-[100%] break-words">{!! $messageText !!}</p>
+                                        </div>
+                                    @endif
                                 </div>
                             @else
-                            <!-- Affichage pour les autres utilisateurs -->
+                                <!-- Affichage pour les autres utilisateurs -->
                                 <div class="flex items-end">
                                     <div class="mr-3">
                                         <img src="{{ $message->user->getAvatar() }}" alt="Avatar de {{ $message->user->name }}" class="w-10 h-10 rounded-full shadow-lg">
@@ -549,4 +585,18 @@ new class extends Component {
             </p>
         </div>
     @endif
+
+    @script
+    <script>
+        $wire.on('updateSelectedConversation', () => {
+            setTimeout(() => {
+                let element = document.querySelector("#message_area");
+                if (element && element.children[1].children.length > 2){
+                    element.children[1].children[element.children[1].children.length - 1].scrollIntoView();
+                }
+            }, 100);
+            
+        });
+    </script>
+    @endscript
 </div>
