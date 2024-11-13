@@ -79,18 +79,19 @@
         </div>
         {{-- Biographie + Modérateur? --}}
         <div class="mt-4">
-            <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
-                <p style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; white-space: pre-wrap;"> {{ $user->bio ?? '' }} </p>
+            <div class="flex flex-col">
+                <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
+                    <p > {{ $user->bio ?? '' }} </p>
                 </div> 
-            <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
-                <p style="white-space: pre-wrap;"> {{ $user->bio ?? '' }} </p> 
-            </div> 
-            <button id="toggle-bio" onclick="toggleBio()" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"> 
-                <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> 
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
-                </svg> 
-            </button>
-            {{-- <p class="text-gray-600 dark:text-gray-300" style="overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; white-space: pre-wrap;">{{ $user->bio ?? '' }}</p> --}}
+                <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
+                    <p style="white-space: pre-wrap;"> {{ $user->bio ?? '' }} </p> 
+                </div>
+                <button id="toggle-bio" onclick="toggleBio()" class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-blue-500 text-white rounded hover:bg-blue-700"> 
+                    <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> 
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+                    </svg> 
+                </button>
+            </div>
             @if($user->moderator)
             <div class="flex flex-row items-center">
                 <p class="text-green-500 font-bold">Modérateur</p>
@@ -150,10 +151,12 @@
         overflow: hidden; 
         text-overflow: 
         ellipsis; display: 
-        -webkit-box; -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical; white-space: pre-wrap;
-    } 
-
+        -webkit-box; 
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical; 
+        white-space: pre-wrap;
+    }
+    
     .hidden { 
         display: none; 
     }
