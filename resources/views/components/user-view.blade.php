@@ -31,11 +31,11 @@
                         </a>
                     </div>
                     <div class="flex space-x-4 mt-2">
-                        <a href="/followers/{{$user->id}}" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                        <button onclick="toggleFollowedTagsMenu()" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
                             <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
                                 Tags
                             </p>
-                        </a>
+                        </button>
                         <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags'/>
                     </div>
                 </div>

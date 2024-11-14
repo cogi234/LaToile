@@ -67,13 +67,11 @@ new class extends Component {
             @endforeach
         </ul>
     </div>
-    @script
-        <script>
-            function toggleFollowedTagsMenu() {
-                this.dispatchEvent(
-                    new CustomEvent('open-fTags-menu')
-                );
-            }
-        </script>
-    @endscript
+    <script>
+        function toggleFollowedTagsMenu() {
+            this.dispatchEvent(
+                new CustomEvent('open-fTags-menu')
+            );
+        }
+    </script>
 </div>
