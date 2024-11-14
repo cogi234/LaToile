@@ -14,11 +14,14 @@
         public function mount()
         {
             //Get the ids of all users we follow
-            $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
+            $followedUserIds = User::with('followed_users')
+                ->find(Auth::id())
+                ->followed_users()->pluck('id');
 
-            $posts = Post::blockedUserPostCheck()->where('hidden', false)
-                ->whereIn('user_id', $followedUserIds);
-
+            $posts = Post::blockedUserPostCheck()
+                ->whereIn('user_id', $followedUserIds)
+                ->where('hidden', false);
+            
             if ($this->filterOption === 'newest') {
                 $posts->orderBy('id', 'desc');
             } else {
@@ -38,27 +41,26 @@
         {
             if ($this->moreAvailable) {
                 //Get the ids of all users we follow
-                $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
+                $followedUserIds = User::with('followed_users')
+                    ->find(Auth::id())
+                    ->followed_users()
+                    ->pluck('id');
 
-                $posts = Post::blockedUserPostCheck()->where('hidden', false)
+                $newPosts = Post::blockedUserPostCheck()
                     ->whereIn('user_id', $followedUserIds)
-                    ->where('id', '<', $this->posts->last()->id);
-
-                // Applique le tri en fonction de filterOption
+                    ->where('id', '<', $this->posts->last()->id)
+                    ->where('hidden', false);
+                
                 if ($this->filterOption === 'newest') {
-                    $posts->orderBy('id', 'desc')
-                        ->where('id', '<', $this->posts->last()->id);
-                    
-                    $newPosts = $posts->take(10)->with(['user', 'tags'])->get();
+                    $newPosts->orderBy('id', 'desc');
                 } else {
-                    $posts->withCount('likes')
-                        ->orderBy('likes_count', 'desc')  // Trie par le nombre de likes
-                        ->orderBy('id', 'desc')  // En cas d'égalité, trie par id (plus récent)
-                        ->where('id', '<', $this->posts->last()->id); // Filtre pour obtenir les posts plus anciens
-
-                    // Si aucun post avec des likes n'est trouvé, alors passez au tri par date
-                    $newPosts = $posts->take(10)->with(['user', 'tags'])->get();
+                    // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                    $newPosts->withCount('likes')
+                        ->orderBy('likes_count', 'desc')
+                        ->orderBy('id', 'desc');
                 }
+
+                $newPosts = $newPosts->take(10)->with(['user', 'tags'])->get();
 
                 // Merge the new posts with the existing ones
                 $this->posts = $this->posts->concat($newPosts);
@@ -73,9 +75,10 @@
             //Get the ids of all users we follow
             $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
 
-            $posts = Post::blockedUserPostCheck()->where('hidden', false)
-                ->whereIn('user_id', $followedUserIds);
-
+            $posts = Post::blockedUserPostCheck()
+                ->whereIn('user_id', $followedUserIds)
+                ->where('hidden', false);
+           
             if ($this->filterOption === 'newest') {
                 $posts->orderBy('id', 'desc');
             } else {
@@ -84,18 +87,18 @@
                     ->orderBy('likes_count', 'desc')
                     ->orderBy('id', 'desc');
             }
-
-            $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
+            
+            $this->posts = $posts->take(10)->with(['user'])->get();
 
             // Check if there are more pages to load
             $this->moreAvailable = $this->posts->isNotEmpty();
         }
 
-        #[On('set-filter-option')]
+        #[On('set-filter-followedUsers-option')]
         public function setFilterOption($option)
         {
             $this->filterOption = $option;
-            logger($this->filterOption);
+            $this->resetPosts();
         }
     }; ?>
 
@@ -116,4 +119,17 @@
         @else
             <div class="dark:text-gray-300 text-center">Il n'y a plus de post à voir, revenez plus tard.</div>
         @endif
+
+        <script>
+            function applyFilterFollowedUsers(filter = 'newest') {
+                //Envoyer l'event pour activer le post editor{
+                this.dispatchEvent(
+                    new CustomEvent('set-filter-followedUsers-option', {
+                        detail: {
+                            option: filter
+                        }
+                    })
+                );
+            }
+        </script>
     </div>
