@@ -125,7 +125,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             
             const lastFilter = localStorage.getItem('lastFilter') || 'newest'; // 'newest' par défaut
-            applyFilter(lastFilter);
+            applyNewFilter(lastFilter);
             // Charger l'onglet sélectionné précédemment
             const lastTab = localStorage.getItem('lastTab') || 'all'; // 'all' par défaut
             let currentTab = lastTab;
