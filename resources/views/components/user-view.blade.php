@@ -36,6 +36,7 @@
                                 Tags
                             </p>
                         </a>
+                        <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags'/>
                     </div>
                 </div>
                     {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>

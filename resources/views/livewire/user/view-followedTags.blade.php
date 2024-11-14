@@ -4,44 +4,37 @@ use Livewire\Volt\Component;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
 use App\Models\User;
-use App\Models\Group;
 
 new class extends Component {
-    public $invites = [];
-    public $targetGroup = null;
-    public $groupInvitesCount = 0;
+    public $followedtags = [];
+    public $userId = null;
 
     #[Locked]
     public bool $enabled = false;
 
-    public function mount($targetGroup) {
+    public function mount($userId) {
         $this->enabled = false;
-        $this->targetGroup = $targetGroup;
-        $this->loadGroupInvites();
+        $this->userId = $userId;
+        $this->loadFollowedTags();
     }
 
-    #[On('open-invite-menu')]
+    #[On('open-fTags-menu')]
     public function open() {
         $this->enabled = true;
     }
 
-    #[On('close-invite-menu')]
+    #[On('close-fTags-menu')]
     public function close() {
         $this->reset('enabled');
     }
 
-    public function loadGroupInvites() {
-        // Charger les invitations actuels au groupe
-        $this->invites = Group::find($this->targetGroup->id)->invites()->get();
-        if($this->invites){
-            $this->groupInvitesCount = $this->invites->count();
-        }else {
-            $this->groupInvitesCount = 0;
-        }
+    public function loadFollowedTags() {
+        // Charger les tags qui l'usager suit
+        $this->followedtags = User::find($this->userId)->followed_tags()->get();
     }
 }?>
 
-<div id="member_list" class="
+<div id="fTags_list" class="
     @if ($enabled)
         fixed
     @else
@@ -58,15 +51,17 @@ new class extends Component {
             </button>
         </div>
         
-        <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Invitations au groupe ({{ $groupInvitesCount }})</span>
+        <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Tags suivis</span>
 
-        <!-- Liste des invitations au groupe -->
+        <!-- Liste des tags followed -->
         <ul class="mb-4 overflow-y-auto h-52">
-            @foreach ($invites as $invite)
+            @foreach ($followedtags as $followedtag)
+                @php
+                    
+                @endphp
                 <li class="grid grid-cols-[1fr,3fr,1fr] justify-items-center items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2">
                     <span class="flex items-center text-gray-800 dark:text-gray-300">
-                        <img src="{{ $invite->getAvatar() }}" alt="Profile Image" class="w-16 h-16 rounded-full mr-4 shadow-lg">
-                        {{ $invite->name }}
+                        {{ $followedtag->name }}
                     </span>
                 </li>
             @endforeach
@@ -76,7 +71,7 @@ new class extends Component {
         <script>
             function toggleFollowedTagsMenu() {
                 this.dispatchEvent(
-                    new CustomEvent('open-F-menu')
+                    new CustomEvent('open-fTags-menu')
                 );
             }
         </script>
