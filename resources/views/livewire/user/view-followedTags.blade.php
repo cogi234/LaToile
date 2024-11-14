@@ -56,13 +56,11 @@ new class extends Component {
         <!-- Liste des tags followed -->
         <ul class="mb-4 overflow-y-auto h-52">
             @foreach ($followedtags as $followedtag)
-                @php
-                    
-                @endphp
-                <li class="grid grid-cols-[1fr,3fr,1fr] justify-items-center items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2">
+                <li class="flex justify-between mr-4 items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2">
                     <span class="flex items-center text-gray-800 dark:text-gray-300">
                         # {{ $followedtag->name }}
                     </span>
+                    <div class="text-6xl text-center p-1 m-1 rounded-md dark:bg-gray-900 dark:text-gray-400"> <livewire:tags.follow :tagId="$followedtag->id" :key="$followedtag->id" />  </div>
                 </li>
             @endforeach
         </ul>
