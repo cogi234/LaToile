@@ -10,19 +10,29 @@ new class extends Component {
     public $posts;
     public $moreAvailable = true;
 
+    public $filterOption = 'newest';
+
     public function mount()
     {
         // Get the ids of all tags the authenticated user follows
         $followedTagIds = User::find(Auth::id())->followed_tags()->pluck('id');
 
         // Fetch posts that have any of the followed tags
-        $this->posts = Post::blockedUserPostCheck()->whereHas('tags', function ($query) use ($followedTagIds) {
+        $posts = Post::blockedUserPostCheck()->whereHas('tags', function ($query) use ($followedTagIds) {
                 $query->whereIn('tags.id', $followedTagIds);
             })
-            ->orderby('id', 'desc')
-            ->take(10)
-            ->with(['user', 'tags'])
-            ->get();
+            ->where('hidden', false);
+        
+        if ($this->filterOption === 'newest') {
+            $posts->orderBy('id', 'desc');
+        } else {
+            // Utilise une jointure pour compter les likes et trier par le nombre de likes
+            $posts->withCount('likes')
+                ->orderBy('likes_count', 'desc')
+                ->orderBy('id', 'desc');
+        }
+
+        $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
@@ -39,10 +49,18 @@ new class extends Component {
                     $query->whereIn('tags.id', $followedTagIds);
                 })
                 ->where('id', '<', $this->posts->last()->id)
-                ->orderby('id', 'desc')
-                ->take(10)
-                ->with(['user', 'tags'])
-                ->get();
+                ->where('hidden', false);
+            
+            if ($this->filterOption === 'newest') {
+                $newPosts->orderBy('id', 'desc');
+            } else {
+                // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                $newPosts->withCount('likes')
+                    ->orderBy('likes_count', 'desc')
+                    ->orderBy('id', 'desc');
+            }
+
+            $newPosts = $newPosts->take(10)->with(['user', 'tags'])->get();
 
             // Merge the new posts with the existing ones
             $this->posts = $this->posts->concat($newPosts);
@@ -59,16 +77,31 @@ new class extends Component {
         $followedTagIds = User::find(Auth::id())->followed_tags()->pluck('id');
 
         // Reset the post list with posts that have any of the followed tags
-        $this->posts = Post::blockedUserPostCheck()->whereHas('tags', function ($query) use ($followedTagIds) {
+        $posts = Post::blockedUserPostCheck()->whereHas('tags', function ($query) use ($followedTagIds) {
                 $query->whereIn('tags.id', $followedTagIds);
             })
-            ->orderby('id', 'desc')
-            ->take(10)
-            ->with(['user', 'tags'])
-            ->get();
+            ->where('hidden', false);
+
+        if ($this->filterOption === 'newest') {
+            $posts->orderBy('id', 'desc');
+        } else {
+            // Utilise une jointure pour compter les likes et trier par le nombre de likes
+            $posts->withCount('likes')
+                ->orderBy('likes_count', 'desc')
+                ->orderBy('id', 'desc');
+        }
+
+        $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->isNotEmpty();
+    }
+
+    #[On('set-filter-followedTags-option')]
+    public function setFilterOption($option)
+    {
+        $this->filterOption = $option;
+        $this->resetPosts();
     }
 };
  ?>
@@ -90,4 +123,17 @@ new class extends Component {
         @else
             <div class="dark:text-gray-300 text-center">Il n'y a plus de post à voir, revenez plus tard.</div>
         @endif
+
+        <script>
+            function applyFilterFollowedTags(filter = 'newest') {
+                //Envoyer l'event pour activer le post editor{
+                this.dispatchEvent(
+                    new CustomEvent('set-filter-followedTags-option', {
+                        detail: {
+                            option: filter
+                        }
+                    })
+                );
+            }
+        </script>
     </div>

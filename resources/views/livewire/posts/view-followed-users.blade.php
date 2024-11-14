@@ -9,13 +9,29 @@
         public $posts;
         public $moreAvailable = true;
 
+        public $filterOption = 'newest';
+
         public function mount()
         {
             //Get the ids of all users we follow
-            $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
+            $followedUserIds = User::with('followed_users')
+                ->find(Auth::id())
+                ->followed_users()->pluck('id');
 
-            $this->posts = Post::blockedUserPostCheck()->whereIn('user_id', $followedUserIds)
-                ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+            $posts = Post::blockedUserPostCheck()
+                ->whereIn('user_id', $followedUserIds)
+                ->where('hidden', false);
+            
+            if ($this->filterOption === 'newest') {
+                $posts->orderBy('id', 'desc');
+            } else {
+                // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                $posts->withCount('likes')
+                    ->orderBy('likes_count', 'desc')
+                    ->orderBy('id', 'desc');
+            }
+
+            $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
 
             // Check if there are more pages to load
             $this->moreAvailable = $this->posts->count() == 10;
@@ -25,10 +41,26 @@
         {
             if ($this->moreAvailable) {
                 //Get the ids of all users we follow
-                $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
+                $followedUserIds = User::with('followed_users')
+                    ->find(Auth::id())
+                    ->followed_users()
+                    ->pluck('id');
 
-                $newPosts = Post::blockedUserPostCheck()->whereIn('user_id', $followedUserIds)->where('id', '<', $this->posts->last()->id)
-                    ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+                $newPosts = Post::blockedUserPostCheck()
+                    ->whereIn('user_id', $followedUserIds)
+                    ->where('id', '<', $this->posts->last()->id)
+                    ->where('hidden', false);
+                
+                if ($this->filterOption === 'newest') {
+                    $newPosts->orderBy('id', 'desc');
+                } else {
+                    // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                    $newPosts->withCount('likes')
+                        ->orderBy('likes_count', 'desc')
+                        ->orderBy('id', 'desc');
+                }
+
+                $newPosts = $newPosts->take(10)->with(['user', 'tags'])->get();
 
                 // Merge the new posts with the existing ones
                 $this->posts = $this->posts->concat($newPosts);
@@ -43,11 +75,30 @@
             //Get the ids of all users we follow
             $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
 
-            $this->posts = Post::blockedUserPostCheck()->whereIn('user_id', $followedUserIds)
-                ->orderby('id', 'desc')->take(10)->with('user')->get();
+            $posts = Post::blockedUserPostCheck()
+                ->whereIn('user_id', $followedUserIds)
+                ->where('hidden', false);
+            
+            if ($this->filterOption === 'newest') {
+                $posts->orderBy('id', 'desc');
+            } else {
+                // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                $posts->withCount('likes')
+                    ->orderBy('likes_count', 'desc')
+                    ->orderBy('id', 'desc');
+            }
+
+            $this->posts = $posts->take(10)->with(['user'])->get();
 
             // Check if there are more pages to load
             $this->moreAvailable = $this->posts->isNotEmpty();
+        }
+
+        #[On('set-filter-followedUsers-option')]
+        public function setFilterOption($option)
+        {
+            $this->filterOption = $option;
+            $this->resetPosts();
         }
     }; ?>
 
@@ -68,4 +119,17 @@
         @else
             <div class="dark:text-gray-300 text-center">Il n'y a plus de post à voir, revenez plus tard.</div>
         @endif
+
+        <script>
+            function applyFilterFollowedUsers(filter = 'newest') {
+                //Envoyer l'event pour activer le post editor{
+                this.dispatchEvent(
+                    new CustomEvent('set-filter-followedUsers-option', {
+                        detail: {
+                            option: filter
+                        }
+                    })
+                );
+            }
+        </script>
     </div>
