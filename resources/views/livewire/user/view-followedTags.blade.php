@@ -57,9 +57,11 @@ new class extends Component {
         <ul class="mb-4 overflow-y-auto h-52">
             @foreach ($followedtags as $followedtag)
                 <li class="flex justify-between mr-4 items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2">
-                    <span class="flex items-center text-gray-800 dark:text-gray-300">
-                        # {{ $followedtag->name }}
-                    </span>
+                    <a href="/tag/{{ $followedtag->id }}" title="{{ $followedtag->name }}">
+                        <span class="flex items-center text-gray-800 dark:text-gray-300">
+                            # {{ $followedtag->name }}
+                        </span>
+                    </a>
                     <div class="text-6xl text-center p-1 m-1 rounded-md dark:text-gray-400"> <livewire:tags.follow :tagId="$followedtag->id" :key="$followedtag->id" />  </div>
                 </li>
             @endforeach
