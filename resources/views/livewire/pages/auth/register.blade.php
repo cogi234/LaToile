@@ -28,9 +28,15 @@ new #[Layout('layouts.guest')] class extends Component
 
         $validated['password'] = Hash::make($validated['password']);
 
-        event(new Registered($user = User::create($validated)));
+        $user = User::create($validated);
+
+        event(new Registered($user));
 
         Auth::login($user);
+        
+        Auth::user()->sendEmailVerificationNotification();
+
+        Session::flash('status', 'verification-link-sent');
 
         $this->redirect(route('dashboard', absolute: false), navigate: true);
     }
