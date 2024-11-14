@@ -20,16 +20,17 @@
             </div>
 
             <!-- Tab and Filter Bar -->
-            <div class="bg-white w-full lg:max-w-[50%] justify-self-center dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:mb-5">
+            <div
+                class="bg-white w-full lg:max-w-[50%] justify-self-center dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:mb-5">
                 <div class="flex flex-col sm:flex-row p-2 sm:p-3 justify-self-center text-gray-900 dark:text-gray-100">
-                    <a href="javascript:void(0);" 
-                        class="text-black dark:text-gray-100 dark:hover:bg-blue-100/20 hover:bg-gray-200 cursor-pointer px-4 py-3 font-bold text-center no-underline flex-grow rounded-lg transition-all duration-300 ease-in-out activeFilter" 
-                        id="newest-tab" onclick="applyFilter('newest')">
+                    <a href="javascript:void(0);"
+                        class="text-black dark:text-gray-100 dark:hover:bg-blue-100/20 hover:bg-gray-200 cursor-pointer px-4 py-3 font-bold text-center no-underline flex-grow rounded-lg transition-all duration-300 ease-in-out activeFilter"
+                        id="newest-tab" onclick="applyNewFilter('newest'); applyFilterType('newest');">
                         Les plus récents d'abord
                     </a>
-                    <a href="javascript:void(0);" 
+                    <a href="javascript:void(0);"
                         class="text-black dark:text-gray-100 dark:hover:bg-blue-100/20 hover:bg-gray-200 cursor-pointer px-4 py-3 font-bold text-center no-underline flex-grow rounded-lg transition-all duration-300 ease-in-out"
-                        id="popular-tab" onclick="applyFilter('popular')">
+                        id="popular-tab" onclick="applyNewFilter('popular'); applyFilterType('popular');">
                         Les plus populaires d'abord
                     </a>
                 </div>
@@ -120,23 +121,21 @@
     </style>
 
     <script>
+        let currentTab = 'all';
         document.addEventListener('DOMContentLoaded', function() {
             
             const lastFilter = localStorage.getItem('lastFilter') || 'newest'; // 'newest' par défaut
             applyFilter(lastFilter);
             // Charger l'onglet sélectionné précédemment
             const lastTab = localStorage.getItem('lastTab') || 'all'; // 'all' par défaut
+            let currentTab = lastTab;
             showContent(lastTab);
         });
 
         function showContent(tab) {
             // Enregistrer l'onglet actif dans localStorage
             localStorage.setItem('lastTab', tab);
-
-            // Envoyer l'event pour reset le contenu des tabs
-            this.dispatchEvent(
-                new Event('reset-post-views')
-            );
+            currentTab = tab;
 
             // Cacher tous les contenus
             document.getElementById('all-content').style.display = 'none';
@@ -156,32 +155,28 @@
             document.getElementById(tab + '-content').style.display = 'block';
             document.getElementById(tab + '-tab').classList.add('active');
         }
+        
+        function applyNewFilter(filter) {
+            // Save filter to localStorage
+            localStorage.setItem('lastFilter', filter);
 
-        let filterTimeout;
-        function applyFilter(filter) {
-            clearTimeout(filterTimeout);
+            // Reset Active Class
+            document.getElementById('newest-tab').classList.remove('activeFilter');
+            document.getElementById('popular-tab').classList.remove('activeFilter');
 
-            filterTimeout = setTimeout(() => {
-                // Save filter to localStorage
-                localStorage.setItem('lastFilter', filter);
+            // Add Active Class to Selected Tab
+            document.getElementById(filter + '-tab').classList.add('activeFilter');
+        }
 
-                // Reset Active Class
-                document.getElementById('newest-tab').classList.remove('activeFilter');
-                document.getElementById('popular-tab').classList.remove('activeFilter');
-
-                // Add Active Class to Selected Tab
-                document.getElementById(filter + '-tab').classList.add('activeFilter');
-
-                // Envoyer l'event pour reset le contenu des tabs
-                const filterEvent = new CustomEvent('set-filter-option', {
-                    detail: { option: filter }
-                });
-
-                this.dispatchEvent(filterEvent);
-                this.dispatchEvent(
-                    new Event('reset-post-views')
-                );
-            }, 200); // 200ms de délai
+        // Fonction pour appliquer le filtre "Les plus récents"
+        function applyFilterType(filterType) {
+            if (currentTab === 'all') {
+                applyFilterViewAll(filterType);
+            } else if (currentTab === 'abonnements') {
+                applyFilterFollowedUsers(filterType);
+            } else if (currentTab === 'tags') {
+                applyFilterFollowedTags(filterType);
+            }
         }
     </script>
 </x-app-layout>

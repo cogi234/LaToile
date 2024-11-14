@@ -2,33 +2,29 @@
 
 use Livewire\Volt\Component;
 use App\Models\Post;
+use App\Models\User;
 use Livewire\Attributes\On; 
-use Livewire\Attributes\Locked;
 
 new class extends Component {
-    #[Locked]
     public $posts;
-    #[Locked]
     public $moreAvailable = true;
 
     public $filterOption = 'newest';
 
     public function mount()
     {
-        // Vérifiez la valeur de filterOption pour définir l'ordre
-        $posts = Post::blockedUserPostCheck() 
-            ->with(['user', 'tags']);
-
+        $posts = Post::blockedUserPostCheck()
+            ->where('hidden', false);
+        
         if ($this->filterOption === 'newest') {
             $posts->orderBy('id', 'desc');
         } else {
             // Utilise une jointure pour compter les likes et trier par le nombre de likes
             $posts->withCount('likes')
-                ->orderBy('likes_count', 'desc')
-                ->orderBy('id', 'desc');
+                ->orderBy('likes_count', 'desc');
         }
 
-        $this->posts = $posts->take(10)->get();
+        $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
@@ -37,67 +33,59 @@ new class extends Component {
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            // Recommence la requête pour récupérer les posts suivants
-            $posts = Post::blockedUserPostCheck()
-                ->where('hidden', false)
-                ->with(['user', 'tags']);
-
-            // Applique le tri en fonction de filterOption
+            $newPosts = Post::blockedUserPostCheck()
+                ->where('id', '<', $this->posts->last()->id)
+                ->where('hidden', false);
+            
             if ($this->filterOption === 'newest') {
-                $posts->orderBy('id', 'desc')
-                    ->where('id', '<', $this->posts->last()->id);
-                
-                $newPosts = $posts->take(10)->get();
+                $newPosts->orderBy('id', 'desc');
             } else {
-                $posts->withCount('likes')
-                    ->orderBy('likes_count', 'desc')  // Trie par le nombre de likes
-                    ->orderBy('id', 'desc')  // En cas d'égalité, trie par id (plus récent)
-                    ->where('id', '<', $this->posts->last()->id); // Filtre pour obtenir les posts plus anciens
-
-                // Si aucun post avec des likes n'est trouvé, alors passez au tri par date
-                $newPosts = $posts->take(10)->get();
+                // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                $newPosts->withCount('likes')
+                    ->orderBy('likes_count', 'desc');
             }
 
-            // Fusionne les nouveaux posts avec les posts existants
-            $this->posts = $this->posts->concat($newPosts);
+            $newPosts = $newPosts->take(10)->with(['user', 'tags'])->get();
+
+            // Merge the new posts with the existing ones
+            //$this->posts = $this->posts->concat($newPosts); // Puis qu'il y a un bug tant que je le règle pas je préfère utiliser "merge" qui as un comportement qui break moins.
+            $this->posts = $this->posts->merge($newPosts);
+
+            $this->posts->load(['user', 'tags']);
 
             // Vérifie s'il y a plus de pages à charger
             $this->moreAvailable = $newPosts->count() == 10;
         }
     }
-    
+
     #[On('reset-post-views')]
-    public function resetPosts()
-    {
+    public function resetPosts(){
         // Ajoutez la condition de même manière ici
-        // Vérifiez la valeur de filterOption pour définir l'ordre
-        $posts = Post::blockedUserPostCheck()->where('hidden', false)
-            ->with(['user', 'tags']);
+        $posts = Post::blockedUserPostCheck()->where('hidden', false);
 
-        if ($this->filterOption === 'newest') {
-            $posts->orderBy('id', 'desc');
-        } else {
-            // Utilise une jointure pour compter les likes et trier par le nombre de likes
-            $posts->withCount('likes')
-                ->orderBy('likes_count', 'desc')
-                ->orderBy('id', 'desc');
-        }
+            if ($this->filterOption === 'newest') {
+                $posts->orderBy('id', 'desc');
+            } else {
+                // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                $posts->withCount('likes')
+                    ->orderBy('likes_count', 'desc');
+            }
 
-        $this->posts = $posts->take(10)->get();
+        $this->posts = $posts->take(10)->with('user')->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
     }
 
-    #[On('set-filter-option')]
+    #[On('set-filter-viewall-option')]
     public function setFilterOption($option)
     {
         $this->filterOption = $option;
+        $this->resetPosts();
     }
-};
-?>
+}; ?>
 
-<!-- Show more button -->
+<!-- Blade Template -->
 <div>
     @foreach ($posts as $post)
         <x-post-view :post="$post" wire:key='post_{{ $post->id }}' />
@@ -108,10 +96,23 @@ new class extends Component {
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-3">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
-              
+            
             Charger plus de posts
         </x-primary-button>
     @else
         <div class="dark:text-gray-300 text-center">Il n'y a plus de post à voir, revenez plus tard.</div>
     @endif
+
+    <script>
+        function applyFilterViewAll(filter = 'newest') {
+            //Envoyer l'event pour activer le post editor{
+            this.dispatchEvent(
+                new CustomEvent('set-filter-viewall-option', {
+                    detail: {
+                        option: filter
+                    }
+                })
+            );
+        }
+    </script>
 </div>
