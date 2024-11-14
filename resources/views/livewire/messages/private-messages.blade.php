@@ -223,9 +223,9 @@ new class extends Component {
                         placeholder="Rechercher des Messages Directs"/>
                 </div>
             </div> --}}
-            <div class="p-4">
+            <div class="p-4" x-data="{ focus: false}">
                 <!-- Conteneur avec le contour et les styles -->
-                <div id="search-container" class="flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2">
+                <div id="search-container" :class="focus ? 'focus-bg-white' : ''"  class="flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2">
                     <!-- Icône de recherche -->
                     <div class="pointer-events-none flex items-center pr-2">
                         <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -233,7 +233,7 @@ new class extends Component {
                         </svg>
                     </div>
                     <!-- Champ de recherche -->
-                    <input wire:model='searchQuery' type="text" name="query" id="searchBar" class="block w-full pl-2 bg-transparent border-none focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full" placeholder="Rechercher des Messages Directs"/>
+                    <input x-on:focus="focus = true" x-on:blur="focus = false; $el.classList.remove('--tw-ring-color', '--tw-ring-shadow')" wire:model='searchQuery' type="text" name="query" id="searchBar" :class="focus ? '' : 'border-transparent focus:border-transparent focus:ring-0'" class="block w-full pl-2 bg-transparent border-none focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full" placeholder="Rechercher des Messages Directs"/>
                 </div>
             </div>
             
@@ -465,6 +465,9 @@ new class extends Component {
             background-color: white;
             border: 3px solid #2563eb;
         }
+        #searchBar {
+            @apply focus:outline:none;
+        }
     </style>
     @script
     <script>
@@ -478,14 +481,20 @@ new class extends Component {
             
         });
 
-        document.getElementById('searchBar').addEventListener('focus', function() {
-            document.getElementById('search-container').classList.add('focus-bg-white');
-        });
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchBar');
+            
+            if (searchInput) {
+                searchInput.addEventListener('focus', () => {
+                    // Vous pouvez ajouter ou laisser les styles que vous souhaitez quand l'input est focus.
+                });
 
-        document.getElementById('searchBar').addEventListener('blur', function() {
-            document.getElementById('search-container').classList.remove('focus-bg-white');
+                searchInput.addEventListener('blur', () => {
+                    // Retire les classes quand l'input perd le focus
+                    searchInput.classList.remove('--tw-ring-color', '--tw-ring-shadow');
+                });
+            }
         });
-
     </script>
     @endscript
 </div>
