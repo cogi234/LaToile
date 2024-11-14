@@ -438,8 +438,8 @@ new class extends Component {
                                     <div class="max-w-full">
                                         <div class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">{{ $message->user->name }}</div>
                                         <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
-                                            class="p-3 rounded-lg bg-gray-300 text-gray-900 flex flex-nowrap items-center">
-                                            <div class="hidden group-hover:block">
+                                            class="p-3 rounded-lg bg-gray-300 text-gray-900 flex flex-nowrap justify-center items-center">
+                                            <div class="hidden group-hover:block pl-4">
                                                 <button title="Signaler le message"
                                                     class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
                                                     onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
@@ -450,7 +450,7 @@ new class extends Component {
                                                     </svg>
                                                 </button>
                                             </div>
-                                            <div class="break-words w-full">
+                                            <div class="break-words w-full pr-4">
                                                 <p class="break-words">{!! $messageText !!}</p>
                                             </div>
                                         </div>
