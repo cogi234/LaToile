@@ -9,13 +9,26 @@
         public $posts;
         public $moreAvailable = true;
 
+        public $filterOption = 'newest';
+
         public function mount()
         {
             //Get the ids of all users we follow
             $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
 
-            $this->posts = Post::blockedUserPostCheck()->whereIn('user_id', $followedUserIds)
-                ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+            $posts = Post::blockedUserPostCheck()->where('hidden', false)
+                ->whereIn('user_id', $followedUserIds);
+
+            if ($this->filterOption === 'newest') {
+                $posts->orderBy('id', 'desc');
+            } else {
+                // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                $posts->withCount('likes')
+                    ->orderBy('likes_count', 'desc')
+                    ->orderBy('id', 'desc');
+            }
+
+            $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
 
             // Check if there are more pages to load
             $this->moreAvailable = $this->posts->count() == 10;
@@ -27,8 +40,25 @@
                 //Get the ids of all users we follow
                 $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
 
-                $newPosts = Post::blockedUserPostCheck()->whereIn('user_id', $followedUserIds)->where('id', '<', $this->posts->last()->id)
-                    ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+                $posts = Post::blockedUserPostCheck()->where('hidden', false)
+                    ->whereIn('user_id', $followedUserIds)
+                    ->where('id', '<', $this->posts->last()->id);
+
+                // Applique le tri en fonction de filterOption
+                if ($this->filterOption === 'newest') {
+                    $posts->orderBy('id', 'desc')
+                        ->where('id', '<', $this->posts->last()->id);
+                    
+                    $newPosts = $posts->take(10)->with(['user', 'tags'])->get();
+                } else {
+                    $posts->withCount('likes')
+                        ->orderBy('likes_count', 'desc')  // Trie par le nombre de likes
+                        ->orderBy('id', 'desc')  // En cas d'égalité, trie par id (plus récent)
+                        ->where('id', '<', $this->posts->last()->id); // Filtre pour obtenir les posts plus anciens
+
+                    // Si aucun post avec des likes n'est trouvé, alors passez au tri par date
+                    $newPosts = $posts->take(10)->with(['user', 'tags'])->get();
+                }
 
                 // Merge the new posts with the existing ones
                 $this->posts = $this->posts->concat($newPosts);
@@ -43,11 +73,29 @@
             //Get the ids of all users we follow
             $followedUserIds = User::with('followed_users')->find(Auth::id())->followed_users()->pluck('id');
 
-            $this->posts = Post::blockedUserPostCheck()->whereIn('user_id', $followedUserIds)
-                ->orderby('id', 'desc')->take(10)->with('user')->get();
+            $posts = Post::blockedUserPostCheck()->where('hidden', false)
+                ->whereIn('user_id', $followedUserIds);
+
+            if ($this->filterOption === 'newest') {
+                $posts->orderBy('id', 'desc');
+            } else {
+                // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                $posts->withCount('likes')
+                    ->orderBy('likes_count', 'desc')
+                    ->orderBy('id', 'desc');
+            }
+
+            $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
 
             // Check if there are more pages to load
             $this->moreAvailable = $this->posts->isNotEmpty();
+        }
+
+        #[On('set-filter-option')]
+        public function setFilterOption($option)
+        {
+            $this->filterOption = $option;
+            logger($this->filterOption);
         }
     }; ?>
 

@@ -11,14 +11,24 @@ new class extends Component {
     #[Locked]
     public $moreAvailable = true;
 
+    public $filterOption = 'newest';
+
     public function mount()
     {
-        // Ajoutez une condition pour vérifier si moderator est 0 ou 1
-        $this->posts = Post::blockedUserPostCheck()->where('hidden', false)
-            ->orderby('id', 'desc')
-            ->take(10)
-            ->with(['user', 'tags'])
-            ->get();
+        // Vérifiez la valeur de filterOption pour définir l'ordre
+        $posts = Post::blockedUserPostCheck() 
+            ->with(['user', 'tags']);
+
+        if ($this->filterOption === 'newest') {
+            $posts->orderBy('id', 'desc');
+        } else {
+            // Utilise une jointure pour compter les likes et trier par le nombre de likes
+            $posts->withCount('likes')
+                ->orderBy('likes_count', 'desc')
+                ->orderBy('id', 'desc');
+        }
+
+        $this->posts = $posts->take(10)->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
@@ -27,17 +37,31 @@ new class extends Component {
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newPosts = Post::blockedUserPostCheck()->where('id', '<', $this->posts->last()->id)
+            // Recommence la requête pour récupérer les posts suivants
+            $posts = Post::blockedUserPostCheck()
                 ->where('hidden', false)
-                ->orderby('id', 'desc')
-                ->take(10)
-                ->with(['user', 'tags'])
-                ->get();
+                ->with(['user', 'tags']);
 
-            // Merge the new posts with the existing ones
+            // Applique le tri en fonction de filterOption
+            if ($this->filterOption === 'newest') {
+                $posts->orderBy('id', 'desc')
+                    ->where('id', '<', $this->posts->last()->id);
+                
+                $newPosts = $posts->take(10)->get();
+            } else {
+                $posts->withCount('likes')
+                    ->orderBy('likes_count', 'desc')  // Trie par le nombre de likes
+                    ->orderBy('id', 'desc')  // En cas d'égalité, trie par id (plus récent)
+                    ->where('id', '<', $this->posts->last()->id); // Filtre pour obtenir les posts plus anciens
+
+                // Si aucun post avec des likes n'est trouvé, alors passez au tri par date
+                $newPosts = $posts->take(10)->get();
+            }
+
+            // Fusionne les nouveaux posts avec les posts existants
             $this->posts = $this->posts->concat($newPosts);
 
-            // Check if there are more pages to load
+            // Vérifie s'il y a plus de pages à charger
             $this->moreAvailable = $newPosts->count() == 10;
         }
     }
@@ -46,14 +70,29 @@ new class extends Component {
     public function resetPosts()
     {
         // Ajoutez la condition de même manière ici
-        $this->posts = Post::blockedUserPostCheck()->where('hidden', false)
-            ->orderby('id', 'desc')
-            ->take(10)
-            ->with('user')
-            ->get();
+        // Vérifiez la valeur de filterOption pour définir l'ordre
+        $posts = Post::blockedUserPostCheck()->where('hidden', false)
+            ->with(['user', 'tags']);
+
+        if ($this->filterOption === 'newest') {
+            $posts->orderBy('id', 'desc');
+        } else {
+            // Utilise une jointure pour compter les likes et trier par le nombre de likes
+            $posts->withCount('likes')
+                ->orderBy('likes_count', 'desc')
+                ->orderBy('id', 'desc');
+        }
+
+        $this->posts = $posts->take(10)->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
+    }
+
+    #[On('set-filter-option')]
+    public function setFilterOption($option)
+    {
+        $this->filterOption = $option;
     }
 };
 ?>

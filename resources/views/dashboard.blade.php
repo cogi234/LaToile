@@ -19,18 +19,33 @@
                 </div>
             </div>
 
+            <!-- Tab and Filter Bar -->
+            <div class="bg-white w-full lg:max-w-[50%] justify-self-center dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:mb-5">
+                <div class="flex flex-col sm:flex-row p-2 sm:p-3 justify-self-center text-gray-900 dark:text-gray-100">
+                    <a href="javascript:void(0);" 
+                        class="text-black dark:text-gray-100 dark:hover:bg-blue-100/20 hover:bg-gray-200 cursor-pointer px-4 py-3 font-bold text-center no-underline flex-grow rounded-lg transition-all duration-300 ease-in-out activeFilter" 
+                        id="newest-tab" onclick="applyFilter('newest')">
+                        Les plus récents d'abord
+                    </a>
+                    <a href="javascript:void(0);" 
+                        class="text-black dark:text-gray-100 dark:hover:bg-blue-100/20 hover:bg-gray-200 cursor-pointer px-4 py-3 font-bold text-center no-underline flex-grow rounded-lg transition-all duration-300 ease-in-out"
+                        id="popular-tab" onclick="applyFilter('popular')">
+                        Les plus populaires d'abord
+                    </a>
+                </div>
+            </div>
             <!-- Contenu associé aux onglets -->
             <div class="bg-transparent overflow-hidden">
                 <div class="text-gray-900 dark:text-gray-100">
                     <div id="all-content" class="content-section" style="display: block;">
-                        <livewire:posts.viewall />
+                        <livewire:posts.viewall :key="'viewall-'.now()" />
                     </div>
                     @auth
                     <div id="abonnements-content" class="content-section" style="display: none;">
-                        <livewire:posts.view-followed-users />
+                        <livewire:posts.view-followed-users :key="'view-followed-users-'.now()" />
                     </div>
                     <div id="tags-content" class="content-section" style="display: none;">
-                        <livewire:posts.view-followed-tags />
+                        <livewire:posts.view-followed-tags :key="'view-followed-tags-'.now()" />
                     </div>
                     @endauth
                 </div>
@@ -47,6 +62,14 @@
             display: flex;
             justify-content: space-around;
             background-color: #2d3748;
+            /* correspond à bg-gray-800 */
+            padding: 10px;
+        }
+
+        .tabsFilter {
+            display: flex;
+            justify-content: space-around;
+            background-color: #ffffff;
             /* correspond à bg-gray-800 */
             padding: 10px;
         }
@@ -79,6 +102,14 @@
             transition: 0s;
         }
 
+        .activeFilter {
+            background-color: #8a969c3f;
+            /* correspond à bg-gray-700 */
+            border-bottom: 3px solid #00000027;
+            /* correspond à text-blue-400 */
+            transition: 0s;
+        }
+
         .content-section {
             display: none;
         }
@@ -90,6 +121,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            
+            const lastFilter = localStorage.getItem('lastFilter') || 'newest'; // 'newest' par défaut
+            applyFilter(lastFilter);
             // Charger l'onglet sélectionné précédemment
             const lastTab = localStorage.getItem('lastTab') || 'all'; // 'all' par défaut
             showContent(lastTab);
@@ -121,6 +155,33 @@
             // Afficher la section sélectionnée et rendre l'onglet actif
             document.getElementById(tab + '-content').style.display = 'block';
             document.getElementById(tab + '-tab').classList.add('active');
+        }
+
+        let filterTimeout;
+        function applyFilter(filter) {
+            clearTimeout(filterTimeout);
+
+            filterTimeout = setTimeout(() => {
+                // Save filter to localStorage
+                localStorage.setItem('lastFilter', filter);
+
+                // Reset Active Class
+                document.getElementById('newest-tab').classList.remove('activeFilter');
+                document.getElementById('popular-tab').classList.remove('activeFilter');
+
+                // Add Active Class to Selected Tab
+                document.getElementById(filter + '-tab').classList.add('activeFilter');
+
+                // Envoyer l'event pour reset le contenu des tabs
+                const filterEvent = new CustomEvent('set-filter-option', {
+                    detail: { option: filter }
+                });
+
+                this.dispatchEvent(filterEvent);
+                this.dispatchEvent(
+                    new Event('reset-post-views')
+                );
+            }, 200); // 200ms de délai
         }
     </script>
 </x-app-layout>
