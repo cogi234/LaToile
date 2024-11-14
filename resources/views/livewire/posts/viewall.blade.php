@@ -53,7 +53,7 @@ new class extends Component {
 
             $this->posts->load(['user', 'tags']);
 
-            // Check if there are more pages to load
+            // Vérifie s'il y a plus de pages à charger
             $this->moreAvailable = $newPosts->count() == 10;
         }
     }

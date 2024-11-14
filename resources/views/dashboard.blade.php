@@ -39,14 +39,14 @@
             <div class="bg-transparent overflow-hidden">
                 <div class="text-gray-900 dark:text-gray-100">
                     <div id="all-content" class="content-section" style="display: block;">
-                        <livewire:posts.viewall />
+                        <livewire:posts.viewall :key="'viewall-'.now()" />
                     </div>
                     @auth
                     <div id="abonnements-content" class="content-section" style="display: none;">
-                        <livewire:posts.view-followed-users />
+                        <livewire:posts.view-followed-users :key="'view-followed-users-'.now()" />
                     </div>
                     <div id="tags-content" class="content-section" style="display: none;">
-                        <livewire:posts.view-followed-tags />
+                        <livewire:posts.view-followed-tags :key="'view-followed-tags-'.now()" />
                     </div>
                     @endauth
                 </div>
@@ -123,6 +123,9 @@
     <script>
         let currentTab = 'all';
         document.addEventListener('DOMContentLoaded', function() {
+            
+            const lastFilter = localStorage.getItem('lastFilter') || 'newest'; // 'newest' par défaut
+            applyFilter(lastFilter);
             // Charger l'onglet sélectionné précédemment
             const lastTab = localStorage.getItem('lastTab') || 'all'; // 'all' par défaut
             let currentTab = lastTab;
@@ -152,7 +155,7 @@
             document.getElementById(tab + '-content').style.display = 'block';
             document.getElementById(tab + '-tab').classList.add('active');
         }
-
+        
         function applyNewFilter(filter) {
             // Save filter to localStorage
             localStorage.setItem('lastFilter', filter);

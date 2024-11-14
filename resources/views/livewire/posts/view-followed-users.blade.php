@@ -78,7 +78,7 @@
             $posts = Post::blockedUserPostCheck()
                 ->whereIn('user_id', $followedUserIds)
                 ->where('hidden', false);
-            
+           
             if ($this->filterOption === 'newest') {
                 $posts->orderBy('id', 'desc');
             } else {
@@ -87,7 +87,7 @@
                     ->orderBy('likes_count', 'desc')
                     ->orderBy('id', 'desc');
             }
-
+            
             $this->posts = $posts->take(10)->with(['user'])->get();
 
             // Check if there are more pages to load
