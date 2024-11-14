@@ -16,7 +16,7 @@ new class extends Component {
     public function mount()
     {
         // Vérifiez la valeur de filterOption pour définir l'ordre
-        $posts = Post::blockedUserPostCheck()->where('hidden', false)
+        $posts = Post::blockedUserPostCheck() 
             ->with(['user', 'tags']);
 
         if ($this->filterOption === 'newest') {

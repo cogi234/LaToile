@@ -38,14 +38,14 @@
             <div class="bg-transparent overflow-hidden">
                 <div class="text-gray-900 dark:text-gray-100">
                     <div id="all-content" class="content-section" style="display: block;">
-                        <livewire:posts.viewall  />
+                        <livewire:posts.viewall :key="'viewall-'.now()" />
                     </div>
                     @auth
                     <div id="abonnements-content" class="content-section" style="display: none;">
-                        <livewire:posts.view-followed-users />
+                        <livewire:posts.view-followed-users :key="'view-followed-users-'.now()" />
                     </div>
                     <div id="tags-content" class="content-section" style="display: none;">
-                        <livewire:posts.view-followed-tags />
+                        <livewire:posts.view-followed-tags :key="'view-followed-tags-'.now()" />
                     </div>
                     @endauth
                 </div>
@@ -121,12 +121,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            
+            const lastFilter = localStorage.getItem('lastFilter') || 'newest'; // 'newest' par défaut
+            applyFilter(lastFilter);
             // Charger l'onglet sélectionné précédemment
             const lastTab = localStorage.getItem('lastTab') || 'all'; // 'all' par défaut
             showContent(lastTab);
-
-            const lastFilter = localStorage.getItem('lastFilter') || 'newest'; // 'newest' par défaut
-            applyFilter(lastFilter);
         });
 
         function showContent(tab) {
@@ -157,24 +157,31 @@
             document.getElementById(tab + '-tab').classList.add('active');
         }
 
+        let filterTimeout;
         function applyFilter(filter) {
-            // Save filter to localStorage
-            localStorage.setItem('lastFilter', filter);
+            clearTimeout(filterTimeout);
 
-            // Reset Active Class
-            document.getElementById('newest-tab').classList.remove('activeFilter');
-            document.getElementById('popular-tab').classList.remove('activeFilter');
+            filterTimeout = setTimeout(() => {
+                // Save filter to localStorage
+                localStorage.setItem('lastFilter', filter);
 
-            // Add Active Class to Selected Tab
-            document.getElementById(filter + '-tab').classList.add('activeFilter');
+                // Reset Active Class
+                document.getElementById('newest-tab').classList.remove('activeFilter');
+                document.getElementById('popular-tab').classList.remove('activeFilter');
 
-            // Envoyer l'event pour reset le contenu des tabs
-            const filterEvent = new CustomEvent('set-filter-option', {
-                detail: { option: filter }
-            });
+                // Add Active Class to Selected Tab
+                document.getElementById(filter + '-tab').classList.add('activeFilter');
 
-            this.dispatchEvent(filterEvent);
-            this.dispatchEvent(new Event('reset-post-views'));
+                // Envoyer l'event pour reset le contenu des tabs
+                const filterEvent = new CustomEvent('set-filter-option', {
+                    detail: { option: filter }
+                });
+
+                this.dispatchEvent(filterEvent);
+                this.dispatchEvent(
+                    new Event('reset-post-views')
+                );
+            }, 200); // 200ms de délai
         }
     </script>
 </x-app-layout>
