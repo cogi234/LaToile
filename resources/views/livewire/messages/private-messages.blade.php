@@ -128,6 +128,7 @@ new class extends Component {
         $this->messageContent = '';
 
         $this->updateSelectedConversation();
+        $this->updateConversations();
     }
 
 
@@ -175,9 +176,24 @@ new class extends Component {
         $this->updateSelectedConversation();
     }
 
+
     public function updatedSearchQuery()
     {
-        $this->searchResults = User::where('name', 'like', $this->searchQuery . '%')->get();
+        $this->searchResults = User::where('name', 'like', '%' . $this->searchQuery . '%')->get();
+
+        $matchingIds = $this->searchResults->pluck('id')->toArray();
+
+        $this->uniqueSenderIds = $this->privateMessages->pluck('receiver_id')
+            ->merge($this->privateMessages->pluck('sender_id'))
+            ->unique()
+            ->reject(function ($id) {
+                return $id == Auth::id();
+            })
+            ->filter(function ($id) use ($matchingIds) {
+                return in_array($id, $matchingIds);
+            })
+            ->values()
+            ->toArray();
     }
 
     public function getSenders()
@@ -221,7 +237,7 @@ new class extends Component {
                     </div>
                     <!-- Champ de recherche -->
                     <input x-on:focus="focus = true" x-on:blur="focus = false; $el.classList.remove('--tw-ring-color', '--tw-ring-shadow')"
-                            wire:model='searchQuery' 
+                            wire:model.live='searchQuery' 
                             type="text" name="query" id="searchBar"
                             class="border-transparent focus:border-transparent focus:ring-0 !outline-none ring-transparent block w-full pl-2 bg-transparent border-none focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full h-8 text-sm placeholder:text-sm" 
                             placeholder="Rechercher des Messages Directs"/>
