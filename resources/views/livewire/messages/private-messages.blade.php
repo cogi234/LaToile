@@ -306,7 +306,7 @@ new class extends Component {
                     <!-- Ajouter un séparateur de date si nécessaire -->
                     @if ($previousDate !== $messageDate)
                         <div class="text-center text-gray-500 my-4">
-                            {{ \Carbon\Carbon::parse($message->created_at)->locale('fr')->isoFormat('LL') }}
+                            {{ \Carbon\Carbon::parse($message->created_at)->setTimezone('America/Toronto')->locale('fr')->isoFormat('LL') }}
                         </div>
                         @php
                             $previousDate = $messageDate;

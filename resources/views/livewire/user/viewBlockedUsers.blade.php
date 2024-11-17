@@ -41,7 +41,7 @@ new class extends Component {
 
 <div>
     @if($blockedUsers->isEmpty())
-    <p>Aucun utilisateur bloqué.</p>
+    <p class="text-black dark:text-gray-100">Aucun utilisateur bloqué.</p>
     @else
     <ul>
         @foreach($blockedUsers as $blockedUser)

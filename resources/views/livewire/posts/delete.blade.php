@@ -31,7 +31,8 @@ new class extends Component {
         if ($this->enabled){
             $post = Post::find($this->postId);
             if ($post != null) {
-                $post->delete();
+                $post->likes()->detach(); // Détache tous les likes du post
+                $post->delete();          // Supprime le post
                 $this->dispatch('reset-post-views');
             }
 

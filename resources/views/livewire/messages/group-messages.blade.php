@@ -370,7 +370,7 @@ new class extends Component {
                         <!-- Ligne de séparation si une nouvelle journée commence -->
                         @if ($lastMessageDate !== $messageDate)
                             <div class="text-center text-gray-500 my-4">
-                                <span>{{ \Carbon\Carbon::parse($message->created_at)->locale('fr')->isoFormat('LL') }}</span>
+                                <span>{{ \Carbon\Carbon::parse($message->created_at)->setTimezone('America/Toronto')->locale('fr')->isoFormat('LL') }}</span>
                             </div>
                             @php
                                 $lastMessageDate = $messageDate; // Mettre à jour la date du dernier message

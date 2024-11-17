@@ -38,5 +38,5 @@
             // Appeler parseEmoji pour initialiser les emojis à la première chargement
             parseEmoji();
         });
-    </script
+    </script>
 </x-app-layout>

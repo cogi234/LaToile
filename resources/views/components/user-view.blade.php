@@ -107,11 +107,11 @@
                 <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
                     <p> {{ $user->bio ?? '' }} </p> 
                 </div>
-                @if ($user->bio != '')
-                <button id="toggle-bio" onclick="toggleBio()" class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-blue-500 text-white rounded hover:bg-blue-700"> 
+                @if ($user->bio != '' && strlen($user->bio) > 180)
+                <button id="toggle-bio" onclick="toggleBio()" title="...Voir le reste de la bio" class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-gray-500 text-white rounded hover:bg-gray-600"> 
                     <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> 
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
-                    </svg> 
+                    </svg>
                 </button>
                 @endif
             </div>
