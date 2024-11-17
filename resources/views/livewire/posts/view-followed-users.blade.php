@@ -31,7 +31,7 @@
                     ->orderBy('id', 'desc');
             }
 
-            $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
+            $this->posts = $posts->take(10)->with(['user', 'tags', 'likes'])->get();
 
             // Check if there are more pages to load
             $this->moreAvailable = $this->posts->count() == 10;
@@ -52,18 +52,21 @@
                     ->where('hidden', false);
                 
                 if ($this->filterOption === 'newest') {
+                    // Si filtre "newest"
                     $newPosts->orderBy('id', 'desc');
                 } else {
-                    // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                    // Si filtre "popular"
                     $newPosts->withCount('likes')
                         ->orderBy('likes_count', 'desc')
                         ->orderBy('id', 'desc');
                 }
 
-                $newPosts = $newPosts->take(10)->with(['user', 'tags'])->get();
+                $newPosts = $newPosts->take(10)->with(['user', 'tags', 'likes'])->get();
 
                 // Merge the new posts with the existing ones
                 $this->posts = $this->posts->concat($newPosts);
+
+                $this->posts->load(['user', 'tags', 'likes']);
 
                 // Check if there are more pages to load
                 $this->moreAvailable = $newPosts->count() == 10;
@@ -88,10 +91,10 @@
                     ->orderBy('id', 'desc');
             }
             
-            $this->posts = $posts->take(10)->with(['user'])->get();
+            $this->posts = $posts->take(10)->with('user', 'tags', 'likes')->get();
 
             // Check if there are more pages to load
-            $this->moreAvailable = $this->posts->isNotEmpty();
+            $this->moreAvailable = $this->posts->count() == 10;
         }
 
         #[On('set-filter-followedUsers-option')]

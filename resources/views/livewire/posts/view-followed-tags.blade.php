@@ -32,7 +32,7 @@ new class extends Component {
                 ->orderBy('id', 'desc');
         }
 
-        $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
+        $this->posts = $posts->take(10)->with(['user', 'tags', 'likes'])->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
@@ -45,7 +45,7 @@ new class extends Component {
             $followedTagIds = User::find(Auth::id())->followed_tags()->pluck('id');
 
             // Fetch more posts that have any of the followed tags
-            $posts = Post::blockedUserPostCheck()->where('hidden', false)
+            $newPosts = Post::blockedUserPostCheck()->where('hidden', false)
                 ->whereHas('tags', function ($query) use ($followedTagIds) {
                     $query->whereIn('tags.id', $followedTagIds);
                 })
@@ -53,20 +53,23 @@ new class extends Component {
                 ->where('hidden', false);
             
             if ($this->filterOption === 'newest') {
+                // Si filtre "newest"
                 $newPosts->orderBy('id', 'desc');
             } else {
-                // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                // Si filtre "popular"
                 $newPosts->withCount('likes')
                     ->orderBy('likes_count', 'desc')
                     ->orderBy('id', 'desc');
             }
 
-            $newPosts = $newPosts->take(10)->with(['user', 'tags'])->get();
+            $newPosts = $newPosts->take(10)->with(['user', 'tags', 'likes'])->get();
 
             // Merge the new posts with the existing ones
             $this->posts = $this->posts->concat($newPosts);
 
-            // Check if there are more pages to load
+            $this->posts->load(['user', 'tags', 'likes']);
+
+            // Vérifie s'il y a plus de pages à charger
             $this->moreAvailable = $newPosts->count() == 10;
         }
     }
@@ -92,10 +95,10 @@ new class extends Component {
                 ->orderBy('id', 'desc');
         }
 
-        $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
+        $this->posts = $posts->take(10)->with('user', 'tags', 'likes')->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->posts->isNotEmpty();
+        $this->moreAvailable = $this->posts->count() == 10;
     }
 
     #[On('set-filter-followedTags-option')]
