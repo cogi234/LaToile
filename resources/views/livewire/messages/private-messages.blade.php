@@ -450,12 +450,6 @@ new class extends Component {
         </p>
     </div>
     @endif
-    <style>
-        .focus-bg-white {
-            background-color: white;
-            border: 3px solid #2563eb;
-        }
-    </style>
     @script
     <script>
         $wire.on('updateSelectedConversation', () => {
