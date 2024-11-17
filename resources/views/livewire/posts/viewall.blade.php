@@ -21,10 +21,11 @@ new class extends Component {
         } else {
             // Utilise une jointure pour compter les likes et trier par le nombre de likes
             $posts->withCount('likes')
-                ->orderBy('likes_count', 'desc');
+                ->orderBy('likes_count', 'desc')
+                ->orderBy('id', 'desc');
         }
 
-        $this->posts = $posts->take(10)->with(['user', 'tags'])->get();
+        $this->posts = $posts->take(10)->with(['user', 'tags', 'likes'])->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
@@ -38,20 +39,18 @@ new class extends Component {
                 ->where('hidden', false);
             
             if ($this->filterOption === 'newest') {
+                // Si filtre "newest"
                 $newPosts->orderBy('id', 'desc');
             } else {
-                // Utilise une jointure pour compter les likes et trier par le nombre de likes
+                // Si filtre "popular"
                 $newPosts->withCount('likes')
-                    ->orderBy('likes_count', 'desc');
+                    ->orderBy('likes_count', 'desc')
+                    ->orderBy('id', 'desc');
             }
 
-            $newPosts = $newPosts->take(10)->with(['user', 'tags'])->get();
+            $newPosts = $newPosts->take(10)->with(['user', 'tags', 'likes'])->get();
 
-            // Merge the new posts with the existing ones
-            //$this->posts = $this->posts->concat($newPosts); // Puis qu'il y a un bug tant que je le règle pas je préfère utiliser "merge" qui as un comportement qui break moins.
-            $this->posts = $this->posts->merge($newPosts);
-
-            $this->posts->load(['user', 'tags']);
+            $this->posts = $this->posts->concat($newPosts);
 
             // Vérifie s'il y a plus de pages à charger
             $this->moreAvailable = $newPosts->count() == 10;
@@ -63,15 +62,16 @@ new class extends Component {
         // Ajoutez la condition de même manière ici
         $posts = Post::blockedUserPostCheck()->where('hidden', false);
 
-            if ($this->filterOption === 'newest') {
-                $posts->orderBy('id', 'desc');
-            } else {
-                // Utilise une jointure pour compter les likes et trier par le nombre de likes
-                $posts->withCount('likes')
-                    ->orderBy('likes_count', 'desc');
-            }
+        if ($this->filterOption === 'newest') {
+            $posts->orderBy('id', 'desc');
+        } else {
+            // Utilise une jointure pour compter les likes et trier par le nombre de likes
+            $posts->withCount('likes')
+                ->orderBy('likes_count', 'desc')
+                ->orderBy('id', 'desc');
+        }
 
-        $this->posts = $posts->take(10)->with('user')->get();
+        $this->posts = $posts->take(10)->with('user', 'tags', 'likes')->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->posts->count() == 10;
