@@ -100,8 +100,10 @@
         #[On('set-filter-followedUsers-option')]
         public function setFilterOption($option)
         {
-            $this->filterOption = $option;
-            $this->resetPosts();
+            if ($this->filterOption !== $option) {
+                $this->filterOption = $option;
+                $this->resetPosts();
+            }
         }
     }; ?>
 

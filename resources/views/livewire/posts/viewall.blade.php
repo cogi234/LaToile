@@ -80,8 +80,10 @@ new class extends Component {
     #[On('set-filter-viewall-option')]
     public function setFilterOption($option)
     {
-        $this->filterOption = $option;
-        $this->resetPosts();
+        if ($this->filterOption !== $option) {
+            $this->filterOption = $option;
+            $this->resetPosts();
+        }
     }
 }; ?>
 
