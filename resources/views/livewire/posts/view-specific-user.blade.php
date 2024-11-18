@@ -14,14 +14,25 @@ new class extends Component {
     #[Locked]
     public $userId;
 
+    public $filterOption = 'newest';
+
     public function mount($userId)
     {
         $this->userId = $userId;
 
-        $this->posts = User::find($this->userId)->posts()
-            ->where('hidden', false)
-            ->orderby('id', 'desc')
-            ->take(10)->with(['user', 'tags'])->get();
+        $posts = Post::where('hidden', false)
+            ->where('user_id', $this->userId);
+        
+        if ($this->filterOption === 'newest') {
+            $posts->orderBy('id', 'desc');
+        } else {
+            // Utilise une jointure pour compter les likes et trier par le nombre de likes
+            $posts->withCount('likes')
+                ->orderBy('likes_count', 'desc')
+                ->orderBy('id', 'desc');
+        }
+
+        $this->posts = $posts->take(10)->with(['user', 'tags', 'likes'])->get();
 
         // Vérifie s'il y a plus de posts à charger
         $this->moreAvailable = $this->posts->count() == 10;
@@ -29,14 +40,27 @@ new class extends Component {
 
     public function loadMore()
     {
-        if ($this->moreAvailable) {
-            $newPosts = User::find($this->userId)->posts()
+        if ($this->moreAvailable) {        
+            $newPosts = Post::where('hidden', false)
                 ->where('id', '<', $this->posts->last()->id)
-                ->where('hidden', false)
-                ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+                ->where('user_id', $this->userId);
+            
+            if ($this->filterOption === 'newest') {
+                // Si filtre "newest"
+                $newPosts->orderBy('id', 'desc');
+            } else {
+                // Si filtre "popular"
+                $newPosts->withCount('likes')
+                    ->orderBy('likes_count', 'desc')
+                    ->orderBy('id', 'desc');
+            }
+
+            $newPosts = $newPosts->take(10)->with(['user', 'tags', 'likes'])->get();
 
             // Fusionne les nouveaux posts avec les existants
             $this->posts = $this->posts->concat($newPosts);
+
+            $this->posts->load(['user', 'tags', 'likes']);
 
             // Vérifie s'il y a plus de posts à charger
             $this->moreAvailable = $newPosts->count() == 10;
@@ -46,11 +70,29 @@ new class extends Component {
     #[On('reset-post-views')]
     public function resetPosts()
     {
-        $this->posts = User::find($this->userId)->posts()
-            ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+        $posts = Post::where('hidden', false)
+            ->where('user_id', $this->userId);
+        
+        if ($this->filterOption === 'newest') {
+            $posts->orderBy('id', 'desc');
+        } else {
+            // Utilise une jointure pour compter les likes et trier par le nombre de likes
+            $posts->withCount('likes')
+                ->orderBy('likes_count', 'desc')
+                ->orderBy('id', 'desc');
+        }
+
+        $this->posts = $posts->take(10)->with('user', 'tags', 'likes')->get();
 
         // Vérifie s'il y a plus de posts à charger
         $this->moreAvailable = $this->posts->count() == 10;
+    }
+
+    #[On('set-filter-profile-option')]
+    public function setFilterOption($option)
+    {
+        $this->filterOption = $option;
+        $this->resetPosts();
     }
 };
 ?>
@@ -75,4 +117,17 @@ new class extends Component {
     @else
     <div class="dark:text-gray-300 text-center">Il n'y a plus de post à voir, revenez plus tard.</div>
     @endif
+
+    <script>
+        function applyFilterToProfile(filter = 'newest') {
+            //Envoyer l'event pour activer le post editor{
+            this.dispatchEvent(
+                new CustomEvent('set-filter-profile-option', {
+                    detail: {
+                        option: filter
+                    }
+                })
+            );
+        }
+    </script>
 </div>
