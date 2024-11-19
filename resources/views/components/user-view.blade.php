@@ -39,7 +39,7 @@
                             class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
                             <p
                                 class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
-                                Tags
+                                Tags suivis
                             </p>
                         </button>
                         <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags' />
