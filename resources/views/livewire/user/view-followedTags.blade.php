@@ -39,7 +39,7 @@ new class extends Component {
         fixed
     @else
         hidden
-    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll">
+    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll z-50">
     <div class="relative z-50 top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
         <!-- Commande pour fermer -->
         <div class="flex flex-row-reverse pb-2">

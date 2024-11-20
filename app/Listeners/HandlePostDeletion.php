@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\PostDeleting;
 use App\Models\Post;
+use App\Notifications\GroupInvitation;
 use Illuminate\Support\Facades\Log;
 
 class HandlePostDeletion

@@ -25,7 +25,7 @@ new class extends Component
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" wire:navigate>
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                        <x-application-logo class="block h-12 w-auto fill-current text-gray-800 dark:text-gray-200" />
                     </a>
                 </div>
 
@@ -68,7 +68,7 @@ new class extends Component
             </div>
 
             <!-- Right of the top bar -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6 w-">
+            <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <!-- Notifications dropdown -->
                 <x-dropdown align="right" width="w-72">
                     <x-slot name="trigger">
@@ -180,7 +180,7 @@ new class extends Component
             </div>
 
             <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
+            <div class="-me-2 items-center flex sm:hidden">
                 <button @click="open = ! open"
                     class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out">
                     <svg class="h-8 w-8" stroke="currentColor" fill="none" viewBox="0 0 24 24">

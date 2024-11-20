@@ -6,6 +6,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
 use App\Models\User;
 use App\Models\Group;
+use App\Notifications\GroupInvitation;
 
 new class extends Component {
     public string $search = '';
@@ -69,7 +70,9 @@ new class extends Component {
             ]);
             User::find(Auth::id())->group_memberships()->attach($group, ['status' => 'creator']);
             foreach ($this->selectedUsers as $selectedUser) {
-                User::find($selectedUser)->group_invites()->attach($group, ['status' => 'invite']);
+                $selectedUserModel = User::find($selectedUser);
+                $selectedUserModel->group_invites()->attach($group, ['status' => 'invite']);
+                $selectedUserModel->notify(new GroupInvitation(Auth::user(), $group));
             }
 
             $this->groupName = '';

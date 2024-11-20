@@ -11,7 +11,7 @@
         main="true"/>
 
     <div x-data="{ showFullContent: false, tooTall: true }">
-        <div class="block" x-cloak x-bind:class="(!showFullContent && tooTall) ? 'overflow-hidden max-h-[200px]' : ''"
+        <div class="block relative" x-cloak x-bind:class="(!showFullContent && tooTall) ? 'overflow-hidden max-h-[200px]' : ''"
             x-init="
                 setTimeout(function () {
                     tooTall = $el.clientHeight > 300;

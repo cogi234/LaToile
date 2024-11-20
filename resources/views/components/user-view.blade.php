@@ -10,7 +10,7 @@
                 <div class="mr-2">
                     <div class="flex flex-row">
                         <h2 class="text-xl font-semibold text-black dark:text-gray-100 mr-2">{{ $user->name }}</h2>
-                        @auth                     
+                        @auth
                         @if (auth()->user()->id !== $user->id)
                         <livewire:user.follow id="{{ $user->id }}" />
                         @endif
@@ -18,32 +18,38 @@
                     </div>
                     <div class="flex space-x-4 mt-2">
                         <!-- Lien vers les abonnements -->
-                        <a href="/followings/{{$user->id}}" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
-                            <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
+                        <a href="/followings/{{$user->id}}"
+                            class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                            <p
+                                class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
                                 Abonnements : {{ $user->followed_users()->count() }}
                             </p>
                         </a>
                         <!-- Lien vers les abonnés -->
-                        <a href="/followers/{{$user->id}}" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
-                            <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
+                        <a href="/followers/{{$user->id}}"
+                            class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                            <p
+                                class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
                                 Abonnés : {{ $user->followers()->count() }}
                             </p>
                         </a>
                     </div>
                     <div class="flex space-x-4 mt-2">
-                        <button onclick="toggleFollowedTagsMenu()" class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
-                            <p class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
-                                Tags
+                        <button onclick="toggleFollowedTagsMenu()"
+                            class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
+                            <p
+                                class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
+                                Tags suivis
                             </p>
                         </button>
-                        <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags'/>
+                        <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags' />
                     </div>
                 </div>
-                    {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
-                    <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p> --}}
-                    @if (Auth::Check())
-                        <livewire:user.blocked-user-check id="{{ $user->id }}" />
-                    @endif
+                {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
+                <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p> --}}
+                @if (Auth::Check())
+                <livewire:user.blocked-user-check id="{{ $user->id }}" />
+                @endif
             </div>
 
             {{-- Éditer profil --}}
@@ -102,14 +108,15 @@
         <div class="mt-4">
             <div class="flex flex-col">
                 <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
-                    <p > {{ $user->bio ?? '' }} </p>
-                </div> 
+                    <p> {{ $user->bio ?? '' }} </p>
+                </div>
                 <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
-                    <p> {{ $user->bio ?? '' }} </p> 
+                    <p> {{ $user->bio ?? '' }} </p>
                 </div>
                 @if ($user->bio != '' && strlen($user->bio) > 180)
-                <button id="toggle-bio" onclick="toggleBio()" title="...Voir le reste de la bio" class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-gray-500 text-white rounded hover:bg-gray-600"> 
-                    <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> 
+                <button id="toggle-bio" onclick="toggleBio()" title="...Voir le reste de la bio"
+                    class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-gray-500 text-white rounded hover:bg-gray-600">
+                    <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
                     </svg>
                 </button>
@@ -148,6 +155,22 @@
     <div class="tabs p-6 text-gray-100 dark:text-gray-100 rounded-lg mb-5 font-bold">
         Tous les posts de {{ $user->name }}
     </div>
+    <!-- Filtres (Newest/Popular) -->
+    <div
+        class="bg-white w-full lg:max-w-[50%] justify-self-center dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:mb-5">
+        <div class="flex flex-col sm:flex-row p-2 sm:p-3 justify-self-center text-gray-900 dark:text-gray-100">
+            <a href="javascript:void(0);"
+                class="text-black dark:text-gray-100 dark:hover:bg-blue-100/20 hover:bg-gray-200 cursor-pointer px-4 py-3 font-bold text-center no-underline flex-grow rounded-lg transition-all duration-300 ease-in-out activeFilter"
+                id="newest-tab" onclick="applyNewFilter('newest'); applyFilterToProfile('newest');">
+                Les plus récents d'abord
+            </a>
+            <a href="javascript:void(0);"
+                class="text-black dark:text-gray-100 dark:hover:bg-blue-100/20 hover:bg-gray-200 cursor-pointer px-4 py-3 font-bold text-center no-underline flex-grow rounded-lg transition-all duration-300 ease-in-out"
+                id="popular-tab" onclick="applyNewFilter('popular'); applyFilterToProfile('popular');">
+                Les plus populaires d'abord
+            </a>
+        </div>
+    </div>
     <div id="all-content" class="content-section" style="display: block;">
         <livewire:posts.view-specific-user :userId="$user->id" />
     </div>
@@ -169,14 +192,15 @@
         background-color: rgba(255, 255, 255, 0.2);
         border-radius: 4px;
     }
-    
-    .bio-reduite p { 
-        overflow: hidden; 
-        text-overflow: 
-        ellipsis; display: 
-        -webkit-box; 
+
+    .bio-reduite p {
+        overflow: hidden;
+        text-overflow:
+            ellipsis;
+        display:
+            -webkit-box;
         -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical; 
+        -webkit-box-orient: vertical;
         white-space: pre-wrap;
     }
 
@@ -184,8 +208,12 @@
         white-space: pre-wrap;
     }
 
-    .hidden { 
-        display: none; 
+    .activeFilter {
+        background-color: #8a969c3f;
+        /* correspond à bg-gray-700 */
+        border-bottom: 3px solid #00000027;
+        /* correspond à text-blue-400 */
+        transition: 0s;
     }
 </style>
 
@@ -195,31 +223,43 @@
         menu.classList.toggle("hidden");
     }
 
-    window.onclick = function(event) {
-        if (!event.target.closest('button')) {
-            var dropdown = document.getElementById("dropdownMenu");
-            if (!dropdown.classList.contains('hidden')) {
-                dropdown.classList.add('hidden');
-            }
-        }
-    }
     function toggleBio() { 
-        var bioReduite = document.getElementById("bio-reduite"); 
-        var bioComplete = document.getElementById("bio-complete"); 
-        var toggleButton = document.getElementById("toggle-bio"); 
-        var iconBio = document.getElementById("icon-bio"); 
-        if (bioReduite.classList.contains("hidden")) { 
+        const bioReduite = document.getElementById("bio-reduite"); 
+        const bioComplete = document.getElementById("bio-complete"); 
+        const iconBio = document.getElementById("icon-bio"); 
+
+        // Vérifier si l'état est "réduit"
+        const isHidden = bioReduite.classList.contains("hidden");
+
+        if (isHidden) { 
             bioReduite.classList.remove("hidden"); 
             bioComplete.classList.add("hidden"); 
-            iconBio.innerHTML = ` <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"> <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" /> </svg>`; 
-        } 
-        else { 
+            iconBio.innerHTML = `
+                <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+                </svg>`;
+        } else { 
             bioReduite.classList.add("hidden"); 
             bioComplete.classList.remove("hidden"); 
-            iconBio.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
-                                </svg> `; 
-        } 
+            iconBio.innerHTML = `
+                <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
+                </svg>`;
+        }
     }
-</script>  
+
+
+    // Filtres
+    function applyNewFilter(filter) {
+        // Save filter to localStorage
+        localStorage.setItem('lastFilter', filter);
+
+        // Reset Active Class
+        document.getElementById('newest-tab').classList.remove('activeFilter');
+        document.getElementById('popular-tab').classList.remove('activeFilter');
+
+        // Add Active Class to Selected Tab
+        document.getElementById(filter + '-tab').classList.add('activeFilter');
+    }
+</script>

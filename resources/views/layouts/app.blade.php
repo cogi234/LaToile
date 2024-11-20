@@ -22,6 +22,7 @@
 
     </head>
     <body class="font-sans antialiased">
+        <!-- App Layout -->
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             @auth
                 <livewire:layout.navigation />

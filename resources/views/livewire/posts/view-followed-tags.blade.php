@@ -104,8 +104,10 @@ new class extends Component {
     #[On('set-filter-followedTags-option')]
     public function setFilterOption($option)
     {
-        $this->filterOption = $option;
-        $this->resetPosts();
+        if ($this->filterOption !== $option) {
+            $this->filterOption = $option;
+            $this->resetPosts();
+        }
     }
 };
  ?>

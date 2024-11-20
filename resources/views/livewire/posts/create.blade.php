@@ -72,6 +72,7 @@ new class extends Component {
                 $newInput = ['type' => 'text', 'content' => ''];
                 array_splice($this->inputs, $index + 1, 0, [$newInput]);
                 $this->dispatch('focus-input', index: $index + 1);
+                $this->dispatch('init-emoji-input', index: $index + 1);
                 break;
             case 'image':
                 $newInput = ['type' => 'image', 'content' => null, 'url' => null];
@@ -79,10 +80,11 @@ new class extends Component {
                 //We add a new image input. If the next one isn't text, we add text after.
                 if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
                     array_splice($this->inputs, $index + 1, 0, [$newInput]);
-                else
+                else {
                     array_splice($this->inputs, $index + 1, 0, [$newInput, $newTextInput]);
+                    $this->dispatch('init-emoji-input', index: $index + 2);
+                }
                 $this->dispatch('focus-input', index: $index + 2);
-                //$this->dispatch('click-input', index: $index + 1);
                 break;
             case 'video':
                 $newInput = ['type' => 'video', 'content' => null, 'url' => null];
@@ -90,10 +92,11 @@ new class extends Component {
                 //We add a new video input. If the next one isn't text, we add text after.
                 if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
                     array_splice($this->inputs, $index + 1, 0, [$newInput]);
-                else
+                else {
                     array_splice($this->inputs, $index + 1, 0, [$newInput, $newTextInput]);
+                    $this->dispatch('init-emoji-input', index: $index + 2);
+                }
                 $this->dispatch('focus-input', index: $index + 2);
-                //$this->dispatch('click-input', index: $index + 1);
                 break;
             case 'audio':
                 $newInput = ['type' => 'audio', 'content' => null, 'url' => null];
@@ -101,10 +104,11 @@ new class extends Component {
                 //We add a new audio input. If the next one isn't text, we add text after.
                 if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
                     array_splice($this->inputs, $index + 1, 0, [$newInput]);
-                else
+                else {
                     array_splice($this->inputs, $index + 1, 0, [$newInput, $newTextInput]);
+                    $this->dispatch('init-emoji-input', index: $index + 2);
+                }
                 $this->dispatch('focus-input', index: $index + 2);
-                //$this->dispatch('click-input', index: $index + 1);
                 break;
         }
     }
@@ -140,7 +144,8 @@ new class extends Component {
         $this->enabled = true;
         if ($editId >= 0) {
             $original = Post::find($editId);
-            $this->inputs = $this->inputsFromContent($original->content);
+            if (sizeof($original->content) > 0)
+                $this->inputs = $this->inputsFromContent($original->content);
             $this->tags = $original->tags->map(function ($tag, $key) { return $tag->name; })->toArray();
             if ($original->previous != null) {
                 $this->sharedPostId = $original->previous_id;
@@ -157,6 +162,9 @@ new class extends Component {
         } else if ($sharedId >= 0) {
             $previousPost = Post::find($sharedId);
             $this->previousContent = $previousPost->createPreviousContent();
+            $this->dispatch('init-emoji-input', index: 0);
+        } else {
+            $this->dispatch('init-emoji-input', index: 0);
         }
     
         $this->tags[] = '';
@@ -164,7 +172,7 @@ new class extends Component {
 
     public function inputsFromContent($content) : array {
         $inputs = [];
-
+        $index = 0;
         foreach ($content as $block) {
             switch ($block['type']) {
                 case 'text':{
@@ -172,47 +180,61 @@ new class extends Component {
                         'type' => 'text',
                         'content' => $block['content']
                     ];
+                    $this->dispatch('init-emoji-input', index: $index);
+                    $index++;
                     break;
                 }
                 case 'image':{
-                    if ($inputs == [])
+                    if ($inputs == []) {
                         $inputs[] = [
                             'type' => 'text',
                             'content' => ''
                         ];
+                        $this->dispatch('init-emoji-input', index: $index);
+                        $index++;
+                    }
                     $inputs[] = [
                         'type' => 'image',
                         'content' => null,
                         'url' => $block['url']
                     ];
+                    $index++;
                     break;
                 }
                 case 'video':{
-                    if ($inputs == [])
+                    if ($inputs == []) {
                         $inputs[] = [
                             'type' => 'text',
                             'content' => ''
                         ];
+                        $this->dispatch('init-emoji-input', index: $index);
+                        $index++;
+                    }
                     $inputs[] = [
                         'type' => 'video',
                         'content' => null,
                         'url' => $block['url'],
                         'mime' => $block['mime']
                     ];
+                    $index++;
                     break;
                 }
                 case 'audio':{
-                    if ($inputs == [])
+                    if ($inputs == []) {
                         $inputs[] = [
                             'type' => 'text',
                             'content' => ''
                         ];
+                        $this->dispatch('init-emoji-input', index: $index);
+                        $index++;
+                    }
                     $inputs[] = [
                         'type' => 'audio',
                         'content' => null,
                         'url' => $block['url'],
                         'mime' => $block['mime']
                     ];
+                    $index++;
                     break;
                 }
                 default:
@@ -221,11 +243,14 @@ new class extends Component {
         }
         
         //We always end with a text input
-        if ($inputs[sizeof($inputs) - 1]['type'] != 'text')
+        if ($inputs[sizeof($inputs) - 1]['type'] != 'text') {
             $inputs[] = [
                 'type' => 'text',
                 'content' => ''
             ];
+            $this->dispatch('init-emoji-input', index: $index);
+            $index++;
+        }
 
         return $inputs;
     }
@@ -535,7 +560,7 @@ new class extends Component {
         fixed
     @else
         hidden
-    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll z-50">
+    @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll z-20">
     <div
         class="relative top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
 
@@ -569,6 +594,11 @@ new class extends Component {
                         oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
                         class="block w-full h-10 !border-none !ring-0 resize-none bg-white dark:bg-gray-800 text-black dark:text-white"></textarea>
                     <div class="hidden group-hover:flex group-last:flex flex-row">
+                        <button type="button" id="emoji_button_{{ $loop->index }}" class="mx-2" title="Émojis">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 dark:text-gray-100 hover:text-orange-500 dark:hover:text-yellow-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
+                            </svg>                      
+                        </button>
                         <button wire:click='insertInput({{ $loop->index }}, "image")' type="button" class="mx-2" title="Ajouter une image">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                 class="size-6 dark:text-gray-100 hover:text-orange-500 dark:hover:text-yellow-400">
@@ -587,7 +617,6 @@ new class extends Component {
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z" />
                             </svg>
                         </button>
-                          
                     </div>
                     @break
                     @case('image')
@@ -811,6 +840,52 @@ new class extends Component {
                 $('#input_' + event.index).click()
             }, 100);
         });
+        
+        //For emojis
+        const EmojiButtonModule = await import('https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.2/dist/index.js');
+        const EmojiButton = EmojiButtonModule.EmojiButton;
+        
+        function parseEmoji() {
+            if (typeof twemoji !== "undefined" && typeof twemoji.parse === "function") {
+                // Parse the document body to replace emoji codes with images
+                twemoji.parse(document.body, {
+                    base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
+                    folder: '72x72/',
+                    ext: '.png'
+                });
+            } else {
+                console.error("Twemoji library did not load correctly.");
+            }
+        }
+
+        const picker = new EmojiButton({
+            styleProperties: {
+                'z-index' : '100'
+            },
+            position: {
+                strategy: 'fixed',
+                bottom: '0'
+            }
+        });
+
+        picker.wrapper.style.zIndex = "100";
+
+        $wire.on('init-emoji-input', (event) => {
+            setTimeout(() => {                
+                let button = $('#emoji_button_' + event.index);
+                let textarea = $('#input_' + event.index);
+
+                button.on('click', () => {
+                    picker.togglePicker(button);
+                    parseEmoji();
+                });
+
+                picker.on('emoji', emoji => {
+                    $wire.inputs[event.index].content += emoji.emoji;
+                    textarea.trigger('input');
+                });
+            }, 100);
+        });
     </script>
     @endscript
 
@@ -848,37 +923,4 @@ new class extends Component {
             }
         }
     </script>
-
-    <!-- Remove Emoji button stuff while I rework the editor
-    <script type="module">
-        import { EmojiButton } from 'https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.2/dist/index.js';
-
-        const button = document.querySelector('#emoji-button');
-        const textarea = document.querySelector('#postTextArea');
-        const picker = new EmojiButton();
-
-        button.addEventListener('click', () => {
-            picker.togglePicker(button);
-            parseEmoji();
-        });
-
-        picker.on('emoji', emoji => {
-            textarea.value += emoji.emoji;
-            textarea.dispatchEvent(new Event('input'));
-        });
-
-        function parseEmoji() {
-            if (typeof twemoji !== "undefined" && typeof twemoji.parse === "function") {
-                // Parse the document body to replace emoji codes with images
-                twemoji.parse(document.body, {
-                    base: 'https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/',
-                    folder: '72x72/',
-                    ext: '.png'
-                });
-            } else {
-                console.error("Twemoji library did not load correctly.");
-            }
-        }
-    </script>
-    -->
 </div>

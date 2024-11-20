@@ -14,11 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-           'admin' => EnsureUserIsAdmin::class 
-        ]);
-        $middleware->alias([
-           'banned' => CheckBan::class 
-        ]);
+            'admin' => EnsureUserIsAdmin::class,
+            'banned' => CheckBan::class,
+        ]);         
         $middleware->trustProxies('*');
     })
     ->withExceptions(function (Exceptions $exceptions) {

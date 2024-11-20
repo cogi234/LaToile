@@ -19,7 +19,7 @@
                 </div>
             </div>
 
-            <!-- Tab and Filter Bar -->
+            <!-- Filtres (Newest/Popular) -->
             <div
                 class="bg-white w-full lg:max-w-[50%] justify-self-center dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:mb-5">
                 <div class="flex flex-col sm:flex-row p-2 sm:p-3 justify-self-center text-gray-900 dark:text-gray-100">

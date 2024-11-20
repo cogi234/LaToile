@@ -5,6 +5,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Locked;
 use App\Models\User;
 use App\Models\Group;
+use App\Notifications\GroupInvitation;
 
 new class extends Component {
     public $members = [];
@@ -90,7 +91,9 @@ new class extends Component {
     public function addUsers() {
         if(!empty($this->selectedUsers)){
             foreach ($this->selectedUsers as $selectedUser) {
-                User::find($selectedUser)->group_invites()->attach($this->targetGroup, ['status' => 'invite']);
+                $selectedUserModel = User::find($selectedUser);
+                $selectedUserModel->group_invites()->attach($this->targetGroup, ['status' => 'invite']);
+                $selectedUserModel->notify(new GroupInvitation(Auth::user(), $this->targetGroup));
             }
         }
         $this->close();
