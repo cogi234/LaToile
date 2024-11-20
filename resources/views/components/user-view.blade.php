@@ -247,11 +247,6 @@
 </style>
 
 <script>
-    function toggleDropdown() {
-        var menu = document.getElementById("dropdownMenu");
-        menu.classList.toggle("hidden");
-    }
-
     function toggleBio() { 
         const bioReduite = document.getElementById("bio-reduite"); 
         const bioComplete = document.getElementById("bio-complete"); 
