@@ -39,7 +39,7 @@ new class extends Component {
 
     #[On('close-reportMessage-modal')]
     public function close() {
-        $this->reset('messageId', 'messageType', 'userId', 'enabled', 'reason');
+        $this->reset('messageId', 'messageType', 'enabled', 'reason');
     }
 
     public function submitReport() {
@@ -117,7 +117,7 @@ new class extends Component {
 
 <!-- Script pour ouvrir le formulaire de signalement -->
 <script>
-    function showReportMessageModal(messageId = -1, messageType = '', userId = -1) {
+    function showReportMessageModal(messageId = -1, messageType = '') {
         this.dispatchEvent(
             new CustomEvent('open-reportMessage-modal', {
                 detail: {
