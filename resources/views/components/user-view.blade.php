@@ -208,10 +208,6 @@
         white-space: pre-wrap;
     }
 
-    .hidden {
-        display: none;
-    }
-
     .activeFilter {
         background-color: #8a969c3f;
         /* correspond à bg-gray-700 */

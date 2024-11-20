@@ -1,12 +1,19 @@
 <x-app-layout>
-    <!-- Post forms -->
-    @auth
-    <x-post-forms />
-    @endauth
 
-    <div class="py-12" style="background-image: url('{{ Storage::url($user->profile_background) }}'); background-size: cover; background-repeat: no-repeat; background-position: center;">
+    @php
+        $backgroundImageStyle = "";
+        if ($user->profile_background != null)
+            $backgroundImageStyle = "background-image: url('" . $user->profile_background . "');";
+    @endphp
+
+    <div class="py-12" style="{{ $backgroundImageStyle }} background-size: cover; background-repeat: no-repeat; background-position: center;">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-user-view :user="$user" />
         </div>
     </div>
+    
+    <!-- Post forms -->
+    @auth
+    <x-post-forms />
+    @endauth
 </x-app-layout>
