@@ -12,32 +12,42 @@ new class extends Component {
 
     public function mount()
     {
-        $this->queuedPosts = QueuedPost::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
+        $this->queuedPosts = QueuedPost::where('user_id', Auth::user()->id)
+            ->orderby('id', 'desc')
+            ->take(config('app.posts_per_load', 20))
+            ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->queuedPosts->count() == 10;
+        $this->moreAvailable = $this->queuedPosts->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newQueuedPosts = QueuedPost::where('user_id', Auth::user()->id)->where('id', '<', $this->queuedPosts->last()->id)->orderby('id', 'desc')->take(10)->get();
+            $newQueuedPosts = QueuedPost::where('user_id', Auth::user()->id)
+                ->where('id', '<', $this->queuedPosts->last()->id)
+                ->orderby('id', 'desc')
+                ->take(config('app.posts_per_load', 20))
+                ->get();
 
             // Merge the new queuedPosts with the existing ones
             $this->queuedPosts = $this->queuedPosts->concat($newqueuedPosts);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newQueuedPosts->count() == 10;
+            $this->moreAvailable = $newQueuedPosts->count() == config('app.posts_per_load', 20);
         }
     }
 
     #[On('reset-queue-views')]
     public function resetqueuedPosts()
     {
-        $this->queuedPosts = QueuedPost::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
+        $this->queuedPosts = QueuedPost::where('user_id', Auth::user()->id)
+            ->orderby('id', 'desc')
+            ->take(config('app.posts_per_load', 20))
+            ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->queuedPosts->count() == 10;
+        $this->moreAvailable = $this->queuedPosts->count() == config('app.posts_per_load', 20);
     }
 }; ?>
 

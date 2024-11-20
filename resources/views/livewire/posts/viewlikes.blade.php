@@ -19,11 +19,11 @@ new class extends Component {
         $this->post = $post;
         $this->likes = $this->post->likes()
             ->orderByPivot('created_at', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->likes->count() == 10;
+        $this->moreAvailable = $this->likes->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
@@ -32,14 +32,14 @@ new class extends Component {
             $newLikes = $this->post->likes()
                 ->wherePivot('created_at', '<', $this->likes->last()->pivot->created_at)
                 ->orderByPivot('created_at', 'desc')
-                ->take(10)
+                ->take(config('app.posts_per_load', 20))
                 ->get();
 
             // Merge the new likes with the existing ones
             $this->likes = $this->posts->concat($newLikes);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newLikes->count() == 10;
+            $this->moreAvailable = $newLikes->count() == config('app.posts_per_load', 20);
         }
     }
     
@@ -48,11 +48,11 @@ new class extends Component {
     {
         $this->likes = $this->post->likes()
             ->orderByPivot('created_at', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->likes->count() == 10;
+        $this->moreAvailable = $this->likes->count() == config('app.posts_per_load', 20);
     }
 };
 ?>

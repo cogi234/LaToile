@@ -19,10 +19,13 @@ new class extends Component {
         $this->tagId = $tagId;
 
         $this->posts = Tag::find($this->tagId)->posts()
-            ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+            ->orderby('id', 'desc')
+            ->take(config('app.posts_per_load', 20))
+            ->with(['user', 'tags'])
+            ->get();
 
         // Vérifie s'il y a plus de posts à charger
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->posts->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
@@ -30,13 +33,16 @@ new class extends Component {
         if ($this->moreAvailable) {
             $newPosts = Tag::find($this->tagId)->posts()
                 ->where('id', '<', $this->posts->last()->id)
-                ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+                ->orderby('id', 'desc')
+                ->take(config('app.posts_per_load', 20))
+                ->with(['user', 'tags'])
+                ->get();
 
             // Fusionne les nouveaux posts avec les existants
             $this->posts = $this->posts->concat($newPosts);
 
             // Vérifie s'il y a plus de posts à charger
-            $this->moreAvailable = $newPosts->count() == 10;
+            $this->moreAvailable = $newPosts->count() == config('app.posts_per_load', 20);
         }
     }
     
@@ -45,10 +51,13 @@ new class extends Component {
     public function resetPosts()
     {
         $this->posts = Tag::find($this->tagId)->posts()
-            ->orderby('id', 'desc')->take(10)->with(['user', 'tags'])->get();
+            ->orderby('id', 'desc')
+            ->take(config('app.posts_per_load', 20))
+            ->with(['user', 'tags'])
+            ->get();
 
         // Vérifie s'il y a plus de posts à charger
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->posts->count() == config('app.posts_per_load', 20);
     }
 
 }; ?>

@@ -29,12 +29,12 @@ new class extends Component {
         ->leftJoin('group_messages', 'report_messages.message_id', '=', 'group_messages.id')
         ->where('handled', 1)
         ->orderBy('id', 'desc')
-        ->take(10)
+        ->take(config('app.posts_per_load', 20))
         ->get();
 
         
         // Check if there are more pages to load
-        $this->moreAvailable = $this->reportedMessages->count() == 10;
+        $this->moreAvailable = $this->reportedMessages->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
@@ -58,14 +58,14 @@ new class extends Component {
             ->where('handled', 0)
             ->where('report_messages.id', '<', $this->reportedMessages->last()->id)
             ->orderBy('id', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
             // Merge the new posts with the existing ones
             $this->reportedMessages = $this->reportedMessages->concat($newReportedMessages);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newReportedMessages->count() == 10;
+            $this->moreAvailable = $newReportedMessages->count() == config('app.posts_per_load', 20);
         }
     }
 
@@ -89,11 +89,11 @@ new class extends Component {
         ->leftJoin('group_messages', 'report_messages.message_id', '=', 'group_messages.id')
         ->where('handled', 0)
         ->orderBy('id', 'desc')
-        ->take(10)
+        ->take(config('app.posts_per_load', 20))
         ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->reportedMessages->count() == 10;
+        $this->moreAvailable = $this->reportedMessages->count() == config('app.posts_per_load', 20);
     }
 };
 

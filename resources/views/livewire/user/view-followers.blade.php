@@ -9,7 +9,6 @@ new class extends Component
     public $userId;
     public $followedUsers = [];
     public $moreAvailable = true;
-    protected $perPage = 10;
 
     public function mount($userId)
     {
@@ -20,21 +19,21 @@ new class extends Component
     public function loadFollowedUsers()
     {
         $this->followedUsers = User::find($this->userId)->followed_users()
-            ->take($this->perPage)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
-        $this->moreAvailable = $this->followedUsers->count() == $this->perPage;
+        $this->moreAvailable = $this->followedUsers->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
     {
         $additionalUsers = User::find($this->userId)->followed_users()
             ->skip(count($this->followedUsers))
-            ->take($this->perPage)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
         $this->followedUsers = $this->followedUsers->merge($additionalUsers);
-        $this->moreAvailable = $additionalUsers->count() == $this->perPage;
+        $this->moreAvailable = $additionalUsers->count() == config('app.posts_per_load', 20);
     }
 
     public function resetUsers()

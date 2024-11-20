@@ -24,6 +24,7 @@
     <body class="font-sans antialiased">
         <!-- App Layout -->
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+            <!-- Page Heading -->
             @auth
                 <livewire:layout.navigation />
             @endauth
@@ -31,19 +32,18 @@
                 <livewire:layout.guest />
             @endguest
 
-            <!-- Page Heading -->
-            @if (isset($header))
-                <header class="bg-white dark:bg-gray-800 shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endif
-
             <!-- Page Content -->
             <main>
                 {{ $slot }}
             </main>
+
+            <footer class="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-6 dark:text-gray-300">
+                    <a class="text-black dark:text-gray-300 underline" href="{{ route('about') }}">
+                        À propos de ce site
+                    </a>
+                </div>
+            </footer>
         </div>
     </body>
 </html>

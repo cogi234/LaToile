@@ -40,7 +40,7 @@ new class extends Component {
             $this->users = User::where('name', 'like', '%' . $this->search . '%')
                 ->whereNotIn('id', $this->selectedUsers)
                 ->where('id', '!=', Auth::id())
-                ->take(10)
+                ->take(config('app.posts_per_load', 20))
                 ->get();
         }
     }
@@ -71,6 +71,22 @@ new class extends Component {
             User::find(Auth::id())->group_memberships()->attach($group, ['status' => 'creator']);
             foreach ($this->selectedUsers as $selectedUser) {
                 $selectedUserModel = User::find($selectedUser);
+
+                // Vérification des permissions d'invitation
+                if (!$selectedUserModel->can_get_group_invitation_from_anyone && 
+                    $selectedUserModel->followed_users()->where('id', Auth::id())->count() === 0) {
+                    // Afficher un message d'erreur et ne pas envoyer d'invitation
+                    session()->flash('info', 'L\'utilisateur ' . $selectedUserModel->name . ' n\'accepte pas les invitations des personnes qu\'il ne suit pas. Il ne sera donc pas invité au groupe "' . $this->groupName . '".');
+                    continue; // Passer à l'utilisateur suivant
+                }
+
+                // Vérification si l'utilisateur est bloqué ou s'il bloque l'auteur
+                if (Auth::user()->blocked_users()->where('id', $selectedUserModel->id)->exists() || 
+                    Auth::user()->blockers()->where('id', $selectedUserModel->id)->exists()) {
+                    session()->flash('info', 'L\'utilisateur ' . $selectedUserModel->name . ' vous as bloqué, il ne sera donc pas invité au groupe "' . $this->groupName . '".');
+                    continue; // Passer à l'utilisateur suivant
+                }
+
                 $selectedUserModel->group_invites()->attach($group, ['status' => 'invite']);
                 $selectedUserModel->notify(new GroupInvitation(Auth::user(), $group));
             }
@@ -112,13 +128,6 @@ new class extends Component {
                 </svg>
             </button>
         </div>
-
-        <!-- Affichage de l'erreur -->
-        {{-- @if($errorMessage)
-            <div class="bg-red-500 text-white p-2 rounded mb-4" id="errorBox">
-                {{ $errorMessage }}
-            </div>
-        @endif --}}
 
         @if($pageNum === 1)
             <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Nouvelle Conversation</span>

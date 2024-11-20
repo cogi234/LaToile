@@ -98,6 +98,7 @@ new class extends Component {
     public function leaveGroup($groupId){
         Group::find($groupId)->memberships()->detach(Auth::id());
         $this->loadInvitations();
+        $this->redirect('/messages/group');
     }
 
     public function updateGroupConversations() {
@@ -228,11 +229,11 @@ new class extends Component {
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Invitations</h3>
                         @if(count($invites) > 0)
                             @foreach($invites as $invite)
-                                <div class="flex justify-between items-center p-2 my-2 bg-gray-100 dark:bg-gray-700 rounded">
+                                <div class="flex justify-between items-center p-2 my-2 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 rounded">
                                     <span>{{ $invite->name }}</span>
                                     <div class="space-x-2">
-                                        <button wire:click="acceptInvitation({{ $invite->id }})" class="bg-green-500 text-white p-1 rounded">Accepter</button>
-                                        <button wire:click="rejectInvitation({{ $invite->id }})" class="bg-red-500 text-white p-1 rounded">Refuser</button>
+                                        <button wire:click="acceptInvitation({{ $invite->id }})" title="Accepter l'invitation de groupe" class="w-[5em] bg-green-500 hover:bg-green-600 text-white p-1 rounded">Accepter</button>
+                                        <button wire:click="rejectInvitation({{ $invite->id }})" title="Refuser l'invitation de groupe" class="w-[5em] bg-red-500 hover:bg-red-600 text-white p-1 rounded">Refuser</button>
                                     </div>
                                 </div>
                             @endforeach
@@ -242,22 +243,14 @@ new class extends Component {
                     <div class="pt-4 pr-4 pb-2 pl-4 bg-gray-100 dark:bg-gray-800">
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Groupes</h3>
                     </div>
-                    <!-- Search Bar -->
-                    <div class="p-4">
-                        <input type="text" name="query" id="searchBar"
-                            class="block w-full pl-10 pr-4 py-2 bg-gray-200 dark:bg-slate-600 text-gray-900 dark:text-white rounded-full focus:outline-none focus:bg-white focus:text-gray-900 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm"
-                            placeholder="Rechercher des groupes"/>
-                
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
         
                     <!-- List of Groups -->
                     <div>
+                        @if(session('info'))
+                            <div class="alert alert-danger text-red-700 ml-4">
+                                {{ session('info') }}
+                            </div>
+                        @endif
                         @foreach ($groups as $group)
                             <div wire:click='setSelectedGroup({{ $group->id }})' wire:key='groupe_{{ $group->id }}'
                                 class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer overflow-y-auto 
@@ -438,15 +431,16 @@ new class extends Component {
                                         <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
                                             class="flex flex-nowrap justify-center items-center p-3 rounded-lg bg-gray-300 text-gray-900">
                                             <div class="hidden group-hover:block pl-4">
-                                                <button title="Signaler le message"
-                                                    class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
-                                                    onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'PrivateMessage');">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                                        stroke="currentColor" class="size-6">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                            <!-- Signaler -->
+                                            <button title="Signaler le message"
+                                                class="share-button flex lg:mb-0 mb-2 items-center text-gray-900 dark:text-gray-900 hover:text-orange-400 dark:hover:text-orange-400 mr-2"
+                                                onclick="event.stopPropagation(); showReportMessageModal({{$message->id}}, 'GroupMessage');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                    stroke="currentColor" class="size-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                                                     </svg>
-                                                </button>
+                                            </button>
                                             </div>
                                             <div class="break-words w-full pr-4">
                                                 <p class="break-words">{!! $messageText !!}</p>

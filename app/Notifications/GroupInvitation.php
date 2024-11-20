@@ -22,7 +22,7 @@ class GroupInvitation extends Notification
      */
     public function __construct(User $sender, Group $group)
     {
-        $this->message = "✉️ " . $sender->name . " t'a invité au groupe " . $group->name . "!";
+        $this->message = "📩 " . $sender->name . " t'a invité au groupe " . $group->name . "!";
         $this->url = '/messages/group';
     }
 
@@ -34,7 +34,7 @@ class GroupInvitation extends Notification
     public function via(object $notifiable): array
     {
         // User notification preference
-        if (!$notifiable->can_get_notification_from_message) {
+        if (!$notifiable->can_get_notification_from_group_invitation) {
             return [];
         }
         return ['database'];
