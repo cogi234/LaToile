@@ -41,6 +41,9 @@
                                 </div>
                             </div>
                         @endif
+                        @if (Auth::Check())
+                            <livewire:user.blocked-user-check id="{{ $user->id }}" />
+                        @endif
                     </div>
                     <div class="flex space-x-4 mt-2">
                         <!-- Lien vers les abonnements -->
@@ -85,11 +88,6 @@
                         <span class="text-gray-600 dark:text-gray-300 text-sm">Membre depuis le : {{ $user->created_at->format('d M Y') }}</span>
                     </div>                                                 
                 </div>
-                {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
-                <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p> --}}
-                @if (Auth::Check())
-                <livewire:user.blocked-user-check id="{{ $user->id }}" />
-                @endif
             </div>
             
             {{-- Éditer profil --}}
