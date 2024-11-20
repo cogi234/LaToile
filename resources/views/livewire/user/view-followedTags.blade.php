@@ -56,7 +56,7 @@ new class extends Component {
         <!-- Liste des tags followed -->
         <ul class="mb-4 overflow-y-auto h-52">
             @foreach ($followedtags as $followedtag)
-                <li class="flex justify-between mr-4 items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2">
+                <li class="flex justify-between mr-4 items-center py-2 px-3 bg-gray-100 dark:bg-gray-800 rounded border-white mb-2">
                     <a href="/tag/{{ $followedtag->id }}" title="{{ $followedtag->name }}">
                         <span class="flex items-center text-gray-800 dark:text-gray-300">
                             # {{ $followedtag->name }}

@@ -19,31 +19,39 @@
                     <div class="flex space-x-4 mt-2">
                         <!-- Lien vers les abonnements -->
                         <a href="/followings/{{$user->id}}"
-                            class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
-                            <p
-                                class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
-                                Abonnements : {{ $user->followed_users()->count() }}
-                            </p>
+                            class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 4.5c0 1.933-1.567 3.5-3.5 3.5s-3.5-1.567-3.5-3.5 1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5zM2.75 20.75a9 9 0 0118 0v.5H2.75v-.5z" />
+                            </svg>
+                            <span class="text-black dark:text-gray-100 font-semibold">Abonnements : {{ $user->followed_users()->count() }}</span>
                         </a>
                         <!-- Lien vers les abonnés -->
                         <a href="/followers/{{$user->id}}"
-                            class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
-                            <p
-                                class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
-                                Abonnés : {{ $user->followers()->count() }}
-                            </p>
+                            class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 4.5c0 1.933-1.567 3.5-3.5 3.5s-3.5-1.567-3.5-3.5 1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5zM4.75 20.75a9 9 0 0118 0v.5H4.75v-.5z" />
+                            </svg>
+                            <span class="text-black dark:text-gray-100 font-semibold">Abonnés : {{ $user->followers()->count() }}</span>
                         </a>
-                    </div>
+                    </div>                    
                     <div class="flex space-x-4 mt-2">
+                        <!-- Tags suivis -->
                         <button onclick="toggleFollowedTagsMenu()"
-                            class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
-                            <p
-                                class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
-                                Tags suivis
-                            </p>
+                            class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 7.5h18M9 3.75h6M7.5 12h9m-10.5 4.5h12" />
+                            </svg>
+                            <span class="text-black dark:text-gray-100 font-semibold">Tags suivis</span>
                         </button>
+                        <!-- Contenu du menu des tags suivis -->
                         <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags' />
-                    </div>
+                    </div>                  
                 </div>
                 {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
                 <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p> --}}

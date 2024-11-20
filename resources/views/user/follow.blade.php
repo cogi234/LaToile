@@ -1,6 +1,11 @@
+{{-- 
+    - Faire que abonnements et abonnes soient plus intuitif comme boutons
+    - Améliorer le layout pour voir les tags followed
+
+--}}
 <x-app-layout>
     <div class="py-6">
-        <x-follow-view :user="$user" />
+        <x-follow-view :user="$user" :viewFollowers="$viewFollowers"/>
     </div>
     <style>
         .tabs {
@@ -73,6 +78,12 @@
         }
 
         function showContent(tab) {
+            if(tab == 'followers'){
+                $viewFollowers = true;
+            } else{
+                $viewFollowers = false;
+            }
+
             //Envoyer l'event pour reset le contenu des tabs
             this.dispatchEvent(
                 new Event('reset-post-views')
@@ -86,17 +97,17 @@
             document.getElementById('followers-tab').classList.remove('active');
             document.getElementById('following-tab').classList.remove('active');
 
-            document.getElementById(tab + '-content').style.display = 'block';
-            document.getElementById(tab + '-tab').classList.add('active');
+            // document.getElementById(tab + '-content').style.display = 'block';
+            // document.getElementById(tab + '-tab').classList.add('active');
 
             // Afficher la section sélectionnée et rendre l'onglet actif
-            // if($viewFollowers){
-            //     document.getElementById('followers-content').style.display = 'block';
-            //     document.getElementById('followers-tab').classList.add('active');
-            // } else {
-            //     document.getElementById('following-content').style.display = 'block';
-            //     document.getElementById('following-tab').classList.add('active');
-            // }
+            if($viewFollowers){
+                document.getElementById('followers-content').style.display = 'block';
+                document.getElementById('followers-tab').classList.add('active');
+            } else {
+                document.getElementById('following-content').style.display = 'block';
+                document.getElementById('following-tab').classList.add('active');
+            }
         }
     </script>
 </x-app-layout>

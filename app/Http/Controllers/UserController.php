@@ -13,7 +13,7 @@ class UserController extends Controller
         ]);
     }
 
-    // Les gens qui suivent l'usager
+    // Les gens qui suivent l'usager --> Abonnés
     public function showFollowers(int $id)
     {
         return view('user.follow',[
@@ -22,7 +22,7 @@ class UserController extends Controller
         ]);
     }
 
-    // Les gens que l'usager suit
+    // Les gens que l'usager suit --> Abonnements
     public function showFollowings(int $id)
     {
         return view('user.follow',[
