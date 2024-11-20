@@ -26,13 +26,16 @@ new class extends Component {
                 <div class="flex sm:items-center items-start sm:flex-row flex-col sm:pt-0 pt-4">
                     <div class="flex flex-row gap-6">
                         <!-- Image de profil -->
-                        <img src="{{ $matchedUser->getAvatar() }}" alt="Profile Image" class="w-20 h-20 rounded-full shadow-xl ring-4 ring-gray-200 dark:ring-gray-700">
+                        <img src="{{ $matchedUser->getAvatar() }}" alt="Profile Image" class="w-16 h-16 rounded-full shadow-xl ring-4 ring-gray-200 dark:ring-gray-700">
         
                         {{-- Nom et Abonnés / Abonnement --}}
                         <div class="mr-2">
                             <div class="flex flex-row gap-3">
-                                <h2 class="text-xl font-semibold text-black dark:text-gray-100 mr-2">{{ $matchedUser->name }}</h2>
-                                
+                                <a href="/user/{{$matchedUser->id}}" onclick="event.stopPropagation()"
+                                    class="mr-2 text-xl font-bold text-gray-700 hover:text-gray-900 hover:underline dark:text-white dark:hover:text-gray-400 transition duration-150 ease-in-out">
+                                        {{ $matchedUser->name }}
+                                </a>
+                                 
                                 @auth
                                 @if (auth()->user()->id !== $matchedUser->id)
                                 <livewire:user.follow id="{{ $matchedUser->id }}" />
