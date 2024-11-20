@@ -26,7 +26,7 @@ new class extends Component {
                 <div class="flex sm:items-center items-start sm:flex-row flex-col sm:pt-0 pt-4">
                     <div class="flex flex-row gap-6">
                         <!-- Image de profil -->
-                        <img src="{{ $matchedUser->getAvatar() }}" alt="Profile Image" class="w-24 h-24 rounded-full shadow-xl ring-4 ring-gray-200 dark:ring-gray-700">
+                        <img src="{{ $matchedUser->getAvatar() }}" alt="Profile Image" class="w-20 h-20 rounded-full shadow-xl ring-4 ring-gray-200 dark:ring-gray-700">
         
                         {{-- Nom et Abonnés / Abonnement --}}
                         <div class="mr-2">
