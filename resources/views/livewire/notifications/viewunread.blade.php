@@ -18,7 +18,9 @@ new class extends Component {
 
     #[On('open-notifications-display')]
     public function loadNotifications() {
-        $this->notifications = Auth::user()->unreadNotifications()->take(10)->get();
+        $this->notifications = Auth::user()->unreadNotifications()
+            ->take(config('app.posts_per_load', 20))
+            ->get();
         $this->markRead($this->notifications);
     }
 

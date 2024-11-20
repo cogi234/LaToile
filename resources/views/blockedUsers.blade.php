@@ -11,8 +11,6 @@
                     <livewire:user.viewBlockedUsers />
                 </div>
             </div>
-
-           
         </div>
     </div>
 </x-app-layout>

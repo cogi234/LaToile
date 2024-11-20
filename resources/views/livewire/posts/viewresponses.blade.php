@@ -20,11 +20,11 @@ new class extends Component {
         $this->responses = $this->post->original_shares()
             ->where('content', '!=', '[]')
             ->orderBy('created_at', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->responses->count() == 10;
+        $this->moreAvailable = $this->responses->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
@@ -34,14 +34,14 @@ new class extends Component {
                 ->where('content', '!=', '[]')
                 ->where('created_at', '<', $this->responses->last()->created_at)
                 ->orderBy('created_at', 'desc')
-                ->take(10)
+                ->take(config('app.posts_per_load', 20))
                 ->get();
 
             // Merge the new responses with the existing ones
             $this->responses = $this->responses->concat($newResponses);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newResponses->count() == 10;
+            $this->moreAvailable = $newResponses->count() == config('app.posts_per_load', 20);
         }
     }
     
@@ -51,11 +51,11 @@ new class extends Component {
         $this->responses = $this->post->original_shares()
             ->where('content', '!=', '[]')
             ->orderBy('created_at', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->responses->count() == 10;
+        $this->moreAvailable = $this->responses->count() == config('app.posts_per_load', 20);
     }
 };
 ?>

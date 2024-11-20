@@ -17,14 +17,14 @@ new class extends Component {
         setlocale(LC_TIME, 'fr');
         $this->notifications = Auth::user()->notifications()
             ->orderby('id', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
             
         //All notifications we display in this page are marked as read
         $this->markRead($this->notifications);
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->notifications->count() == 10;
+        $this->moreAvailable = $this->notifications->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore() {
@@ -32,7 +32,7 @@ new class extends Component {
             $newNotifs = Auth::user()->notifications()
                 ->where('id', '<', $this->notifications->last()->id)
                 ->orderby('id', 'desc')
-                ->take(10)
+                ->take(config('app.posts_per_load', 20))
                 ->get();
 
             //All notifications we display in this page are marked as read
@@ -42,7 +42,7 @@ new class extends Component {
             $this->notifications = $this->notifications->concat($newNotifs);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newNotifs->count() == 10;
+            $this->moreAvailable = $newNotifs->count() == config('app.posts_per_load', 20);
         }
     }
 

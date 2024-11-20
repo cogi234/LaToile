@@ -66,7 +66,7 @@ new class extends Component {
             $this->users = User::where('name', 'like', '%' . $this->search . '%')
                 ->whereNotIn('id', $excludedIds)
                 ->where('id', '!=', Auth::id())
-                ->take(10)
+                ->take(config('app.posts_per_load', 20))
                 ->get();
         }
     }

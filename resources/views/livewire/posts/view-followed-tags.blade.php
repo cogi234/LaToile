@@ -32,10 +32,13 @@ new class extends Component {
                 ->orderBy('id', 'desc');
         }
 
-        $this->posts = $posts->take(10)->with(['user', 'tags', 'likes'])->get();
+        $this->posts = $posts->
+            take(config('app.posts_per_load', 20))
+            ->with(['user', 'tags', 'likes'])
+            ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->posts->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
@@ -62,7 +65,10 @@ new class extends Component {
                     ->orderBy('id', 'desc');
             }
 
-            $newPosts = $newPosts->take(10)->with(['user', 'tags', 'likes'])->get();
+            $newPosts = $newPosts
+                ->take(config('app.posts_per_load', 20))
+                ->with(['user', 'tags', 'likes'])
+                ->get();
 
             // Merge the new posts with the existing ones
             $this->posts = $this->posts->concat($newPosts);
@@ -70,7 +76,7 @@ new class extends Component {
             $this->posts->load(['user', 'tags', 'likes']);
 
             // Vérifie s'il y a plus de pages à charger
-            $this->moreAvailable = $newPosts->count() == 10;
+            $this->moreAvailable = $newPosts->count() == config('app.posts_per_load', 20);
         }
     }
 
@@ -95,10 +101,13 @@ new class extends Component {
                 ->orderBy('id', 'desc');
         }
 
-        $this->posts = $posts->take(10)->with('user', 'tags', 'likes')->get();
+        $this->posts = $posts
+            ->take(config('app.posts_per_load', 20))
+            ->with('user', 'tags', 'likes')
+            ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->posts->count() == 10;
+        $this->moreAvailable = $this->posts->count() == config('app.posts_per_load', 20);
     }
 
     #[On('set-filter-followedTags-option')]

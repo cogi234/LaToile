@@ -20,11 +20,11 @@ new class extends Component {
         $this->shares = $this->post->original_shares()
             ->where('content', '[]')
             ->orderBy('created_at', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->shares->count() == 10;
+        $this->moreAvailable = $this->shares->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
@@ -34,14 +34,14 @@ new class extends Component {
                 ->where('content', '[]')
                 ->where('created_at', '<', $this->shares->last()->created_at)
                 ->orderBy('created_at', 'desc')
-                ->take(10)
+                ->take(config('app.posts_per_load', 20))
                 ->get();
 
             // Merge the new shares with the existing ones
             $this->shares = $this->shares->concat($newShares);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newShares->count() == 10;
+            $this->moreAvailable = $newShares->count() == config('app.posts_per_load', 20);
         }
     }
     
@@ -51,11 +51,11 @@ new class extends Component {
         $this->shares = $this->post->original_shares()
             ->where('content', '[]')
             ->orderBy('created_at', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->shares->count() == 10;
+        $this->moreAvailable = $this->shares->count() == config('app.posts_per_load', 20);
     }
 };
 ?>

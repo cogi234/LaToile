@@ -13,11 +13,11 @@ new class extends Component {
         $this->reports = Report::where('handled', true)
             ->with(['user', 'post', 'post.user'])
             ->orderBy('id', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->reports->count() == 10;
+        $this->moreAvailable = $this->reports->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
@@ -27,14 +27,14 @@ new class extends Component {
                 ->where('id', '<', $this->reports->last()->id)
                 ->with(['user', 'post', 'post.user'])
                 ->orderBy('id', 'desc')
-                ->take(10)
+                ->take(config('app.posts_per_load', 20))
                 ->get();
 
             // Merge the new posts with the existing ones
             $this->reports = $this->reports->concat($newReports);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newReports->count() == 10;
+            $this->moreAvailable = $newReports->count() == config('app.posts_per_load', 20);
         }
     }
 
@@ -44,11 +44,11 @@ new class extends Component {
         $this->reports = Report::where('handled', true)
             ->with(['user', 'post', 'post.user'])
             ->orderBy('id', 'desc')
-            ->take(10)
+            ->take(config('app.posts_per_load', 20))
             ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->reports->count() == 10;
+        $this->moreAvailable = $this->reports->count() == config('app.posts_per_load', 20);
     }
 };
 

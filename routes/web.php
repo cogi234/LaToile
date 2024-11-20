@@ -87,6 +87,9 @@ Route::middleware(['banned'])->group(function () {
 //The page that banned users see
 Route::view('banned', 'banned')
     ->name('banned');
+
+Route::view('about', 'about')
+    ->name('about');
     
 
 //Emails

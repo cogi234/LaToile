@@ -12,32 +12,42 @@ new class extends Component {
 
     public function mount()
     {
-        $this->drafts = Draft::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
+        $this->drafts = Draft::where('user_id', Auth::user()->id)
+            ->orderby('id', 'desc')
+            ->take(config('app.posts_per_load', 20))
+            ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->drafts->count() == 10;
+        $this->moreAvailable = $this->drafts->count() == config('app.posts_per_load', 20);
     }
 
     public function loadMore()
     {
         if ($this->moreAvailable) {
-            $newDrafts = Draft::where('user_id', Auth::user()->id)->where('id', '<', $this->drafts->last()->id)->orderby('id', 'desc')->take(10)->get();
+            $newDrafts = Draft::where('user_id', Auth::user()->id)
+                ->where('id', '<', $this->drafts->last()->id)
+                ->orderby('id', 'desc')
+                ->take(config('app.posts_per_load', 20))
+                ->get();
 
             // Merge the new drafts with the existing ones
             $this->drafts = $this->drafts->concat($newDrafts);
 
             // Check if there are more pages to load
-            $this->moreAvailable = $newDrafts->count() == 10;
+            $this->moreAvailable = $newDrafts->count() == config('app.posts_per_load', 20);
         }
     }
 
     #[On('reset-draft-views')]
     public function resetDrafts()
     {
-        $this->drafts = Draft::where('user_id', Auth::user()->id)->orderby('id', 'desc')->take(10)->get();
+        $this->drafts = Draft::where('user_id', Auth::user()->id)
+            ->orderby('id', 'desc')
+            ->take(config('app.posts_per_load', 20))
+            ->get();
 
         // Check if there are more pages to load
-        $this->moreAvailable = $this->drafts->count() == 10;
+        $this->moreAvailable = $this->drafts->count() == config('app.posts_per_load', 20);
     }
 }; ?>
 
