@@ -195,18 +195,6 @@
 </div>
 
 <style>
-    .card {
-        background: linear-gradient(to right, #f9f9f9, #ffffff);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-    }
-
-    .card:hover {
-        transform: scale(1.02);
-    }
-
     .tabs {
         display: flex;
         justify-content: space-around;

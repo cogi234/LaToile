@@ -21,12 +21,12 @@ new class extends Component {
 
 <div>
     @foreach ($matchedUsers as $matchedUser)
-        <div class="max-w-5xl mx-auto pt-5 px-3 sm:px-8 mt-10 2xl:mt-0 relative z-10">
+        <div class="max-w-5xl mx-auto px-3 sm:px-8 2xl:mt-0">
             <div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
                 <div class="flex sm:items-center items-start sm:flex-row flex-col sm:pt-0 pt-4">
-                    <div class="flex flex-row">
+                    <div class="flex flex-row gap-6">
                         <!-- Image de profil -->
-                        <img src="{{ $matchedUser->getAvatar() }}" alt="Profile Image" class="w-20 h-20 rounded-full mr-4 shadow-lg">
+                        <img src="{{ $matchedUser->getAvatar() }}" alt="Profile Image" class="w-24 h-24 rounded-full shadow-xl ring-4 ring-gray-200 dark:ring-gray-700">
         
                         {{-- Nom et Abonnés / Abonnement --}}
                         <div class="mr-2">
@@ -68,7 +68,15 @@ new class extends Component {
                                         </div>
                                     </div>
                                 @endif
-                            </div>                                                
+                            </div> 
+                            {{-- Biographie --}}
+                            <div class="mt-4">
+                                <div class="flex flex-col">
+                                    <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
+                                        <p>{{ $matchedUser->bio ?? '' }}</p>
+                                    </div>
+                                </div>
+                            </div>                                              
                         </div>
                     </div>
                     
@@ -100,8 +108,8 @@ new class extends Component {
                             </x-slot>
         
                             <x-slot name="content">
-                                <ul class="py-1 text-sm min-h-fit text-gray-200 z-50">
-                                    <li class="z-50">
+                                <ul class="py-1 text-sm min-h-fit text-gray-200">
+                                    <li>
                                         <a href="{{ url('messages/user/' . $matchedUser->id) }}"
                                             title="Envoyer un message à {{$matchedUser->name}} ?"
                                             class="flex px-4 py-2 hover:bg-gray-600 items-center">
@@ -125,28 +133,19 @@ new class extends Component {
                     @endif
                     @endauth
                 </div>
-                {{-- Biographie --}}
-                <div class="mt-4">
-                    <div class="flex flex-col">
-                        <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
-                            <p>{{ $matchedUser->bio ?? '' }}</p>
-                        </div>
-                        <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
-                            <p>{{ $matchedUser->bio ?? '' }}</p>
-                        </div>
-                        @if ($matchedUser->bio && substr_count($matchedUser->bio, "\n") > 4)
-                        <button id="toggle-bio" onclick="toggleBio()" title="Voir le reste de la bio"
-                            class="mt-2 flex justify-center items-center">
-                            <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 5.25l7.5 7.5 7.5-7.5" />
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l7.5 7.5 7.5-7.5" />
-                            </svg>                    
-                        </button>
-                        @endif
-                    </div>
-                </div>
+                
             </div>
         </div>
     @endforeach
+    <style>
+        .bio-reduite p {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            white-space: pre-wrap;
+        }
+    </style>
 </div>
 
