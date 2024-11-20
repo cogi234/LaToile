@@ -114,13 +114,15 @@
         <div class="mt-4">
             <div class="flex flex-col">
                 <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
-                    <p> {{ $user->bio ?? '' }} </p>
+                    <p>{{ $user->bio ?? '' }}</p>
                 </div>
                 <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
-                    <p> {{ $user->bio ?? '' }} </p>
+                    <p>{{ $user->bio ?? '' }}</p>
                 </div>
-                @if ($user->bio != '' && strlen($user->bio) > 180)
-                <button id="toggle-bio" onclick="toggleBio()" title="...Voir le reste de la bio"
+        
+                <!-- Condition pour afficher le bouton -->
+                @if ($user->bio && substr_count($user->bio, "\n") > 4)
+                <button id="toggle-bio" onclick="toggleBio()" title="Voir le reste de la bio"
                     class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-gray-500 text-white rounded hover:bg-gray-600">
                     <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
@@ -201,14 +203,13 @@
 
     .bio-reduite p {
         overflow: hidden;
-        text-overflow:
-            ellipsis;
-        display:
-            -webkit-box;
-        -webkit-line-clamp: 3;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
         white-space: pre-wrap;
     }
+
 
     .bio-complete p {
         white-space: pre-wrap;
@@ -229,31 +230,29 @@
         menu.classList.toggle("hidden");
     }
 
-    function toggleBio() { 
-        const bioReduite = document.getElementById("bio-reduite"); 
-        const bioComplete = document.getElementById("bio-complete"); 
-        const iconBio = document.getElementById("icon-bio"); 
+    function toggleBio() {
+        const bioReduite = document.getElementById("bio-reduite");
+        const bioComplete = document.getElementById("bio-complete");
+        const iconBio = document.getElementById("icon-bio");
 
-        // Vérifier si l'état est "réduit"
+        // Basculer l'état
         const isHidden = bioReduite.classList.contains("hidden");
 
-        if (isHidden) { 
-            bioReduite.classList.remove("hidden"); 
-            bioComplete.classList.add("hidden"); 
+        if (isHidden) {
+            bioReduite.classList.remove("hidden");
+            bioComplete.classList.add("hidden");
             iconBio.innerHTML = `
-                <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
-                </svg>`;
-        } else { 
-            bioReduite.classList.add("hidden"); 
-            bioComplete.classList.remove("hidden"); 
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+            `;
+        } else {
+            bioReduite.classList.add("hidden");
+            bioComplete.classList.remove("hidden");
             iconBio.innerHTML = `
-                <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
-                </svg>`;
+                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+            `;
         }
     }
+
 
 
     // Filtres
