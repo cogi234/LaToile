@@ -1,8 +1,8 @@
 <div class="max-w-5xl mx-auto pt-5 px-3 sm:px-8 mt-10 2xl:mt-0">
     <div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
         <div class="flex sm:items-center items-start sm:flex-row flex-col sm:pt-0 pt-4">
-            <!-- Image de profil -->
             <div class="flex flex-row">
+                <!-- Image de profil -->
                 <img src="{{ $user->getAvatar() }}" alt="Profile Image" class="w-20 h-20 rounded-full mr-4 shadow-lg">
 
                 {{-- Nom et Abonnés / Abonnement --}}
@@ -88,7 +88,7 @@
                 <livewire:user.blocked-user-check id="{{ $user->id }}" />
                 @endif
             </div>
-
+            
             {{-- Éditer profil --}}
             @auth
             @if (auth()->user()->id == $user->id)
