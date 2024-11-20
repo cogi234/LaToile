@@ -98,6 +98,7 @@ new class extends Component {
     public function leaveGroup($groupId){
         Group::find($groupId)->memberships()->detach(Auth::id());
         $this->loadInvitations();
+        $this->redirect('/messages/group');
     }
 
     public function updateGroupConversations() {
@@ -228,11 +229,11 @@ new class extends Component {
                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Invitations</h3>
                         @if(count($invites) > 0)
                             @foreach($invites as $invite)
-                                <div class="flex justify-between items-center p-2 my-2 bg-gray-100 dark:bg-gray-700 rounded">
+                                <div class="flex justify-between items-center p-2 my-2 text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-700 rounded">
                                     <span>{{ $invite->name }}</span>
                                     <div class="space-x-2">
-                                        <button wire:click="acceptInvitation({{ $invite->id }})" class="bg-green-500 text-white p-1 rounded">Accepter</button>
-                                        <button wire:click="rejectInvitation({{ $invite->id }})" class="bg-red-500 text-white p-1 rounded">Refuser</button>
+                                        <button wire:click="acceptInvitation({{ $invite->id }})" title="Accepter l'invitation de groupe" class="w-[5em] bg-green-500 hover:bg-green-600 text-white p-1 rounded">Accepter</button>
+                                        <button wire:click="rejectInvitation({{ $invite->id }})" title="Refuser l'invitation de groupe" class="w-[5em] bg-red-500 hover:bg-red-600 text-white p-1 rounded">Refuser</button>
                                     </div>
                                 </div>
                             @endforeach
@@ -258,6 +259,11 @@ new class extends Component {
         
                     <!-- List of Groups -->
                     <div>
+                        @if(session('info'))
+                            <div class="alert alert-danger text-red-700 ml-4">
+                                {{ session('info') }}
+                            </div>
+                        @endif
                         @foreach ($groups as $group)
                             <div wire:click='setSelectedGroup({{ $group->id }})' wire:key='groupe_{{ $group->id }}'
                                 class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer overflow-y-auto 

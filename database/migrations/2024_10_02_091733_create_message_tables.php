@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->boolean("can_get_messages_from_anyone")->default(true);
+            $table->boolean("can_get_group_invitation_from_anyone")->default(true);
         });
         Schema::create('private_messages', function (Blueprint $table) {
             $table->id();
@@ -56,6 +57,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn(["can_get_messages_from_anyone"]);
+            $table->dropColumn(["can_get_group_invitation_from_anyone"]);
         });
         Schema::dropIfExists('private_messages');
         Schema::dropIfExists('groups');

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->boolean("can_get_notification_from_message")->default(true);
+            $table->boolean("can_get_notification_from_group_invitation")->default(true);
             $table->boolean("can_get_notification_from_follow")->default(true);
             $table->boolean("can_get_notification_from_share")->default(true);
             $table->boolean("can_get_notification_from_like")->default(true);

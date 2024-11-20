@@ -9,6 +9,7 @@ use Livewire\Attributes\Locked;
 new class extends Component
 {
     public bool $can_get_messages_from_anyone = true;
+    public bool $can_get_group_invitation_from_anyone = true;
 
     /**
      * Mount the component.
@@ -16,6 +17,7 @@ new class extends Component
     public function mount(): void
     {
         $this->can_get_messages_from_anyone = Auth::user()->can_get_messages_from_anyone;
+        $this->can_get_group_invitation_from_anyone = Auth::user()->can_get_group_invitation_from_anyone;
     }
 
     /**
@@ -26,6 +28,7 @@ new class extends Component
         $user = Auth::user();
 
         $user->can_get_messages_from_anyone = $this->can_get_messages_from_anyone;
+        $user->can_get_group_invitation_from_anyone = $this->can_get_group_invitation_from_anyone;
 
         $user->save();
 
@@ -36,16 +39,23 @@ new class extends Component
 <!-- Section message privé -->
 <form wire:submit="updatePreferences" class="mt-6 space-y-6">
     <div>
-        <span class="text-gray-900 dark:text-gray-100">Qui peut m'envoyer des messages privés?</span><br>
-        <div class="flex flex-row sm:mt-1 mt-2">
+        <span class="text-gray-900 dark:text-gray-100">Quelles personnes peuvent-il intéragir avec vous?</span><br>
+        <div class="flex flex-row sm:mb-2 sm:mt-1 pt-2 mb-5">
             <input type="checkbox" wire:click='updatePreferences' wire:model='can_get_messages_from_anyone'
                 id="can_get_messages_from_anyone" name="can_get_messages_from_anyone" class="size-4 mr-1" />
             <x-input-label for="can_get_messages_from_anyone"
-                value="En cochant cette case, je peux recevoir des messages de personnes que je ne suis pas"
+                value="Recevoir des messages privés de personnes que je ne suis pas"
                 class="inline" />
-            <x-action-message class="me-3 ml-2" on="preferences-updated">
-                Sauvegardé.
-            </x-action-message>
         </div>
+        <div class="flex flex-row mt-1 sm:mb-2 mb-5">
+            <input type="checkbox" wire:click='updatePreferences' wire:model='can_get_group_invitation_from_anyone'
+                id="can_get_group_invitation_from_anyone" name="can_get_group_invitation_from_anyone" class="size-4 mr-1" />
+            <x-input-label for="can_get_group_invitation_from_anyone"
+                value="Recevoir des invitations de groupe de personnes que je ne suis pas"
+                class="inline" />
+        </div>
+        <x-action-message class="mt-2" on="preferences-updated">
+            Préférences d'intéractions sauvegardé.
+        </x-action-message>
     </div>
 </form>
