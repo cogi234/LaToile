@@ -1,4 +1,6 @@
-<x-app-layout>
+<x-app-layout showFooter="false">
+    <x-slot:showFooter>false</x-slot>
+
     <livewire:messages.report />
         @if ($isGroup)
                 <livewire:messages.group-messages :targetGroupId="$targetGroupId" />

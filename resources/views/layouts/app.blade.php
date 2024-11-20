@@ -33,10 +33,11 @@
             @endguest
 
             <!-- Page Content -->
-            <main>
+            <main class="min-h-screen">
                 {{ $slot }}
             </main>
-
+            
+            @if (!isset($showFooter) || $showFooter == "true")
             <footer class="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
                 <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-6 dark:text-gray-300">
                     <a class="text-black dark:text-gray-300 underline" href="{{ route('about') }}">
@@ -44,6 +45,7 @@
                     </a>
                 </div>
             </footer>
+            @endif
         </div>
     </body>
 </html>

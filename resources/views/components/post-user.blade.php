@@ -58,7 +58,7 @@
             @endif
 
             @if ($post != null && $post->created_at != $post->updated_at)
-            <span class="italic self-center ml-5">
+            <span class="italic self-center ml-5 hidden sm:block">
                 Post modifié le {{ strftime('%d %B %Y à %H:%M', strtotime($post->updated_at)) }}
             </span>
             @endif
