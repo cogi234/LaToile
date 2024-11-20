@@ -18,14 +18,10 @@ new class extends Component {
     {
         $this->post = $post;
         $this->shares = $this->post->original_shares()
-            ->withCount('tags as tags_count')
             ->where('content', '[]')
             ->orderBy('created_at', 'desc')
-            ->take(50)
-            ->get()
-            ->filter(function ($post) {
-                return $post->tags_count == 0;
-            });
+            ->take(10)
+            ->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->shares->count() == 10;
@@ -35,15 +31,11 @@ new class extends Component {
     {
         if ($this->moreAvailable) {
             $newShares = $this->post->original_shares()
-                ->withCount('tags')
                 ->where('content', '[]')
                 ->where('created_at', '<', $this->shares->last()->created_at)
                 ->orderBy('created_at', 'desc')
-                ->take(50)
-                ->get()
-                ->filter(function ($post) {
-                    return $post->tags_count == 0;
-                });
+                ->take(10)
+                ->get();
 
             // Merge the new shares with the existing ones
             $this->shares = $this->shares->concat($newShares);
@@ -57,14 +49,10 @@ new class extends Component {
     public function resetShares()
     {
         $this->shares = $this->post->original_shares()
-            ->withCount('tags')
             ->where('content', '[]')
             ->orderBy('created_at', 'desc')
-            ->take(50)
-            ->get()
-            ->filter(function ($post) {
-                return $post->tags_count == 0;
-            });
+            ->take(10)
+            ->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->shares->count() == 10;
@@ -75,76 +63,99 @@ new class extends Component {
 <!-- Show more button -->
 <div>
     @foreach ($shares as $share)
-    <div class="flex items-center bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:dark:bg-gray-700
-        overflow-hidden shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0">
-        <!-- Share icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
-        class="size-8 text-green-400 mr-2">
-            <path stroke-linecap="round" stroke-linejoin="round" 
-            d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
-        </svg>
-          
-        <a href="/user/{{$share->user->id}}" class="flex items-center cursor-pointer">
-            <!-- Image de profil -->
-            <div>
-                <img src="{{ $share->user->getAvatar() }}" alt="Profile Image"
-                    class="w-10 h-10 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
+    <div class="bg-white hover:bg-white/50 dark:bg-gray-800 dark:hover:dark:bg-gray-700
+        shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full mt-5 xl:mt-0">
+        <div class="flex items-center">
+            <!-- Share icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
+            class="size-8 text-green-400 mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" 
+                d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
+            </svg>
+            
+            <a href="/user/{{$share->user->id}}" class="flex items-center cursor-pointer mr-1">
+                <!-- Image de profil -->
+                <div>
+                    <img src="{{ $share->user->getAvatar() }}" alt="Profile Image"
+                        class="w-10 h-10 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
+                </div>
+                <span class="flex">
+                    <b>{{ $share->user->name }}</b> 
+
+                    @if($share->user->moderator)
+                    <div title="Modérateur vérifié">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="size-4 text-green-500 mx-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                        </svg>
+                    </div>
+                    @endif
+                    @if($share->user->isBanned())
+                    <div title="Banni">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" 
+                        stroke="currentColor" class="size-4 text-red-500 mx-1">
+                            <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                    </div>
+                    @endif
+                </span>
+            </a>
+
+            a partagé de
+            
+            <a href="/user/{{$share->previous->user->id}}" class="flex items-center cursor-pointer ml-2">
+                <!-- Image de profil -->
+                <div>
+                    <img src="{{ $share->previous->user->getAvatar() }}" alt="Profile Image"
+                        class="w-10 h-10 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
+                </div>
+                <span class="flex">
+                    <b>{{ $share->previous->user->name }}</b> 
+
+                    @if($share->previous->user->moderator)
+                    <div title="Modérateur vérifié">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="size-4 text-green-500 mx-1">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                        </svg>
+                    </div>
+                    @endif
+                    @if($share->previous->user->isBanned())
+                    <div title="Banni">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" 
+                        stroke="currentColor" class="size-4 text-red-500 mx-1">
+                            <path stroke-linecap="round" stroke-linejoin="round" 
+                                d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                    </div>
+                    @endif
+                </span>
+            </a>
+        </div>
+        @if ($share->tags()->count() > 0)
+            <div class="my-4">
+                @foreach ($share->tags as $tag)
+                    @php
+                        $followedTagCSS = "";
+                        $titleTag = "";
+                        if (Auth::check() && Auth::user()->followed_tags->contains($tag)) {
+                            $followedTagCSS = 'border-2 border-green-400 hover:border-green-600';
+                            $titleTag = 'Vous suivez le tag "' . $tag->name . '"'; 
+                        }
+                    @endphp
+                    <a href="/tag/{{ $tag->id }}" title="{{ $titleTag }}" onclick="event.stopPropagation()"
+                        class="p-1 m-1 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-gray-400 {{ $followedTagCSS }}">
+                        #{{ $tag->name }}
+                    </a>
+                @endforeach
             </div>
-            <span class="flex">
-                <b>{{ $share->user->name }}</b> 
-
-                @if($share->user->moderator)
-                <div title="Modérateur vérifié">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor" class="size-4 text-green-500 mx-1">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-                    </svg>
-                </div>
-                @endif
-                @if($share->user->isBanned())
-                <div title="Banni">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" 
-                    stroke="currentColor" class="size-4 text-red-500 mx-1">
-                        <path stroke-linecap="round" stroke-linejoin="round" 
-                            d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
-                    </svg>
-                </div>
-                @endif
-            </span>
-        </a>
-
-        a partagé de
-          
-        <a href="/user/{{$share->previous->user->id}}" class="flex items-center cursor-pointer ml-2">
-            <!-- Image de profil -->
-            <div>
-                <img src="{{ $share->previous->user->getAvatar() }}" alt="Profile Image"
-                    class="w-10 h-10 rounded-full mr-2 shadow-lg hover:outline hover:outline-2 hover:outline-black/10">
-            </div>
-            <span class="flex">
-                <b>{{ $share->previous->user->name }}</b> 
-
-                @if($share->previous->user->moderator)
-                <div title="Modérateur vérifié">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor" class="size-4 text-green-500 mx-1">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-                    </svg>
-                </div>
-                @endif
-                @if($share->previous->user->isBanned())
-                <div title="Banni">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" 
-                    stroke="currentColor" class="size-4 text-red-500 mx-1">
-                        <path stroke-linecap="round" stroke-linejoin="round" 
-                            d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
-                    </svg>
-                </div>
-                @endif
-            </span>
-        </a>
+        @endif
+        <div class="text-sm text-gray-600 dark:text-gray-400 mt-4">
+            {{ strftime('%d %B %Y à %H:%M', strtotime($share->created_at)) }}
+        </div>
     </div>
     @endforeach
 

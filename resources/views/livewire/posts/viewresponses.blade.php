@@ -18,13 +18,10 @@ new class extends Component {
     {
         $this->post = $post;
         $this->responses = $this->post->original_shares()
-            ->withCount('tags')
+            ->where('content', '!=', '[]')
             ->orderBy('created_at', 'desc')
-            ->take(50)
-            ->get()
-            ->filter(function ($post) {
-                return $post->tags_count > 0 || sizeof($post->content) > 0;
-            });
+            ->take(10)
+            ->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->responses->count() == 10;
@@ -34,14 +31,11 @@ new class extends Component {
     {
         if ($this->moreAvailable) {
             $newResponses = $this->post->original_shares()
-                ->withCount('tags')
+                ->where('content', '!=', '[]')
                 ->where('created_at', '<', $this->responses->last()->created_at)
                 ->orderBy('created_at', 'desc')
-                ->take(50)
-                ->get()
-                ->filter(function ($post) {
-                    return $post->tags_count > 0 || sizeof($post->content) > 0;
-                });
+                ->take(10)
+                ->get();
 
             // Merge the new responses with the existing ones
             $this->responses = $this->responses->concat($newResponses);
@@ -55,13 +49,10 @@ new class extends Component {
     public function resetresponses()
     {
         $this->responses = $this->post->original_shares()
-            ->withCount('tags')
+            ->where('content', '!=', '[]')
             ->orderBy('created_at', 'desc')
-            ->take(50)
-            ->get()
-            ->filter(function ($post) {
-                return $post->tags_count > 0 || sizeof($post->content) > 0;
-            });
+            ->take(10)
+            ->get();
 
         // Check if there are more pages to load
         $this->moreAvailable = $this->responses->count() == 10;
