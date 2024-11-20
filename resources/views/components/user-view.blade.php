@@ -9,6 +9,14 @@
                 <div class="mr-2">
                     <div class="flex flex-row">
                         <h2 class="text-xl font-semibold text-black dark:text-gray-100 mr-2">{{ $user->name }}</h2>
+                        
+                        @auth
+                        @if (auth()->user()->id !== $user->id)
+                        <livewire:user.follow id="{{ $user->id }}" />
+                        @endif
+                        @endauth
+                    </div>
+                    <div class="flex mb-4">
                         @if($user->moderator)
                             <div class="flex flex-row items-center">
                                 <p class="text-green-500 font-bold">Modérateur</p>
@@ -33,11 +41,6 @@
                                 </div>
                             </div>
                         @endif
-                        @auth
-                        @if (auth()->user()->id !== $user->id)
-                        <livewire:user.follow id="{{ $user->id }}" />
-                        @endif
-                        @endauth
                     </div>
                     <div class="flex space-x-4 mt-2">
                         <!-- Lien vers les abonnements -->
