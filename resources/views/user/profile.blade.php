@@ -3,7 +3,7 @@
     @php
         $backgroundImageStyle = "";
         if ($user->profile_background != null)
-            $backgroundImageStyle = "background-image: url('" . $user->profile_background . "');";
+            $backgroundImageStyle = "background-image: url('" . Storage::url($user->profile_background) . "');";
     @endphp
 
     <div class="py-12" style="{{ $backgroundImageStyle }} background-size: cover; background-repeat: no-repeat; background-position: center;">
