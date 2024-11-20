@@ -19,7 +19,7 @@
                 </div>
 
                 <!-- Contenu associé aux onglets -->
-                <div class="bg-transparent overflow-hidden">
+                <div class="bg-transparent ">
                     <div class="text-gray-900 dark:text-gray-100">
                         <div id="posts-content" class="content-section" style="display: block;">
                             <livewire:search.view-searched-posts query="{{$query}}"/>
@@ -119,19 +119,21 @@
     </style>
 
     <script>
-        function toggleDropdown() {
-        var menu = document.getElementById("dropdownMenu");
-        menu.classList.toggle("hidden");
-    }
+        function toggleDropdown(id) {
+            var menu = document.getElementById("dropdownMenu_" + id);
+            menu.classList.toggle("hidden");
+        }
 
-    window.onclick = function(event) {
-        if (!event.target.closest('button')) {
-            var dropdown = document.getElementById("dropdownMenu");
-            if (!dropdown.classList.contains('hidden')) {
-                dropdown.classList.add('hidden');
+        window.onclick = function(event) {
+            if (!event.target.closest('button')) {
+                var dropdowns = document.getElementsByClassName("dropdownMenu");
+                for (const dropdown of dropdowns) {
+                    if (!dropdown.classList.contains('hidden')) {
+                        dropdown.classList.add('hidden');
+                    }
+                }
             }
         }
-    }
 
 
         window.onload = function(){
