@@ -144,7 +144,8 @@ new class extends Component {
         $this->enabled = true;
         if ($editId >= 0) {
             $original = Post::find($editId);
-            $this->inputs = $this->inputsFromContent($original->content);
+            if (sizeof($original->content) > 0)
+                $this->inputs = $this->inputsFromContent($original->content);
             $this->tags = $original->tags->map(function ($tag, $key) { return $tag->name; })->toArray();
             if ($original->previous != null) {
                 $this->sharedPostId = $original->previous_id;
