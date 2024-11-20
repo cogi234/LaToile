@@ -19,31 +19,39 @@
                     <div class="flex space-x-4 mt-2">
                         <!-- Lien vers les abonnements -->
                         <a href="/followings/{{$user->id}}"
-                            class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
-                            <p
-                                class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
-                                Abonnements : {{ $user->followed_users()->count() }}
-                            </p>
+                            class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 4.5c0 1.933-1.567 3.5-3.5 3.5s-3.5-1.567-3.5-3.5 1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5zM2.75 20.75a9 9 0 0118 0v.5H2.75v-.5z" />
+                            </svg>
+                            <span class="text-black dark:text-gray-100 font-semibold">Abonnements : {{ $user->followed_users()->count() }}</span>
                         </a>
                         <!-- Lien vers les abonnés -->
                         <a href="/followers/{{$user->id}}"
-                            class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
-                            <p
-                                class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
-                                Abonnés : {{ $user->followers()->count() }}
-                            </p>
+                            class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M16.5 4.5c0 1.933-1.567 3.5-3.5 3.5s-3.5-1.567-3.5-3.5 1.567-3.5 3.5-3.5 3.5 1.567 3.5 3.5zM4.75 20.75a9 9 0 0118 0v.5H4.75v-.5z" />
+                            </svg>
+                            <span class="text-black dark:text-gray-100 font-semibold">Abonnés : {{ $user->followers()->count() }}</span>
                         </a>
-                    </div>
+                    </div>                    
                     <div class="flex space-x-4 mt-2">
+                        <!-- Tags suivis -->
                         <button onclick="toggleFollowedTagsMenu()"
-                            class="hover:bg-gray-100 dark:hover:bg-gray-700 px-4 py-2 rounded-lg transition duration-150 ease-in-out">
-                            <p
-                                class="text-black dark:text-gray-100 font-semibold hover:text-indigo-600 dark:hover:text-indigo-400">
-                                Tags suivis
-                            </p>
+                            class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 7.5h18M9 3.75h6M7.5 12h9m-10.5 4.5h12" />
+                            </svg>
+                            <span class="text-black dark:text-gray-100 font-semibold">Tags suivis</span>
                         </button>
+                        <!-- Contenu du menu des tags suivis -->
                         <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags' />
-                    </div>
+                    </div>                  
                 </div>
                 {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
                 <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p> --}}
@@ -106,17 +114,18 @@
         <div class="mt-4">
             <div class="flex flex-col">
                 <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
-                    <p> {{ $user->bio ?? '' }} </p>
+                    <p>{{ $user->bio ?? '' }}</p>
                 </div>
                 <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
-                    <p> {{ $user->bio ?? '' }} </p>
+                    <p>{{ $user->bio ?? '' }}</p>
                 </div>
-                @if ($user->bio != '' && strlen($user->bio) > 180)
-                <button id="toggle-bio" onclick="toggleBio()" title="...Voir le reste de la bio"
-                    class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-gray-500 text-white rounded hover:bg-gray-600">
-                    <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
-                    </svg>
+                @if ($user->bio && substr_count($user->bio, "\n") > 4)
+                <button id="toggle-bio" onclick="toggleBio()" title="Voir le reste de la bio"
+                    class="mt-2 flex justify-center items-center">
+                    <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 5.25l7.5 7.5 7.5-7.5" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l7.5 7.5 7.5-7.5" />
+                    </svg>                    
                 </button>
                 @endif
             </div>
@@ -193,14 +202,13 @@
 
     .bio-reduite p {
         overflow: hidden;
-        text-overflow:
-            ellipsis;
-        display:
-            -webkit-box;
-        -webkit-line-clamp: 3;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
         -webkit-box-orient: vertical;
         white-space: pre-wrap;
     }
+
 
     .bio-complete p {
         white-space: pre-wrap;
@@ -225,25 +233,33 @@
         const bioReduite = document.getElementById("bio-reduite"); 
         const bioComplete = document.getElementById("bio-complete"); 
         const iconBio = document.getElementById("icon-bio"); 
+        const toggleButton = document.getElementById("toggle-bio"); // Référence au bouton
 
-        // Vérifier si l'état est "réduit"
+        // Vérifiez si la version réduite est cachée
         const isHidden = bioReduite.classList.contains("hidden");
 
         if (isHidden) { 
             bioReduite.classList.remove("hidden"); 
             bioComplete.classList.add("hidden"); 
+
+            // Icône : deux flèches vers le bas
             iconBio.innerHTML = `
-                <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
-                </svg>`;
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 5.25l7.5 7.5 7.5-7.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l7.5 7.5 7.5-7.5" />   
+            `;
+            // Change le titre du bouton
+            toggleButton.title = "Voir le reste de la bio";
         } else { 
             bioReduite.classList.add("hidden"); 
             bioComplete.classList.remove("hidden"); 
+
+            // Icône : deux flèches vers le haut
             iconBio.innerHTML = `
-                <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 7.5-7.5 7.5 7.5" />
-                </svg>`;
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 18.75l7.5-7.5 7.5 7.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12l7.5-7.5 7.5 7.5" />
+            `;
+            // Change le titre du bouton
+            toggleButton.title = "Réduire la bio";
         }
     }
 

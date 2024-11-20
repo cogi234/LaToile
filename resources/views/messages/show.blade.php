@@ -46,6 +46,11 @@
             -ms-overflow-style: none;
             overflow-y: scroll;
         }
+        
+        .focus-bg-white {
+            background-color: white;
+            border: 3px solid #2563eb;
+        }
     </style>
 </x-app-layout>
     
