@@ -123,9 +123,9 @@
                 <button id="toggle-bio" onclick="toggleBio()" title="Voir le reste de la bio"
                     class="mt-2 flex justify-center items-center">
                     <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 18.75l7.5-7.5 7.5 7.5" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12l7.5-7.5 7.5 7.5" />
-                    </svg>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 5.25l7.5 7.5 7.5-7.5" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l7.5 7.5 7.5-7.5" />
+                    </svg>                    
                 </button>
                 @endif
             </div>
@@ -233,6 +233,7 @@
         const bioReduite = document.getElementById("bio-reduite"); 
         const bioComplete = document.getElementById("bio-complete"); 
         const iconBio = document.getElementById("icon-bio"); 
+        const toggleButton = document.getElementById("toggle-bio"); // Référence au bouton
 
         // Vérifiez si la version réduite est cachée
         const isHidden = bioReduite.classList.contains("hidden");
@@ -246,6 +247,8 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 5.25l7.5 7.5 7.5-7.5" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l7.5 7.5 7.5-7.5" />   
             `;
+            // Change le titre du bouton
+            toggleButton.title = "Voir le reste de la bio";
         } else { 
             bioReduite.classList.add("hidden"); 
             bioComplete.classList.remove("hidden"); 
@@ -255,8 +258,11 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 18.75l7.5-7.5 7.5 7.5" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12l7.5-7.5 7.5 7.5" />
             `;
+            // Change le titre du bouton
+            toggleButton.title = "Réduire la bio";
         }
     }
+
 
     // Filtres
     function applyNewFilter(filter) {

@@ -1,5 +1,4 @@
 {{-- 
-    - Faire que abonnements et abonnes soient plus intuitif comme boutons
     - Améliorer le layout pour voir les tags followed
 
 --}}
