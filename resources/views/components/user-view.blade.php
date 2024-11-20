@@ -119,13 +119,12 @@
                 <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
                     <p>{{ $user->bio ?? '' }}</p>
                 </div>
-        
-                <!-- Condition pour afficher le bouton -->
                 @if ($user->bio && substr_count($user->bio, "\n") > 4)
                 <button id="toggle-bio" onclick="toggleBio()" title="Voir le reste de la bio"
-                    class="mt-2 px-4 py-2 w-fit justify-self-center self-center bg-gray-500 text-white rounded hover:bg-gray-600">
-                    <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+                    class="mt-2 flex justify-center items-center">
+                    <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 18.75l7.5-7.5 7.5 7.5" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12l7.5-7.5 7.5 7.5" />
                     </svg>
                 </button>
                 @endif
@@ -230,30 +229,34 @@
         menu.classList.toggle("hidden");
     }
 
-    function toggleBio() {
-        const bioReduite = document.getElementById("bio-reduite");
-        const bioComplete = document.getElementById("bio-complete");
-        const iconBio = document.getElementById("icon-bio");
+    function toggleBio() { 
+        const bioReduite = document.getElementById("bio-reduite"); 
+        const bioComplete = document.getElementById("bio-complete"); 
+        const iconBio = document.getElementById("icon-bio"); 
 
-        // Basculer l'état
+        // Vérifiez si la version réduite est cachée
         const isHidden = bioReduite.classList.contains("hidden");
 
-        if (isHidden) {
-            bioReduite.classList.remove("hidden");
-            bioComplete.classList.add("hidden");
+        if (isHidden) { 
+            bioReduite.classList.remove("hidden"); 
+            bioComplete.classList.add("hidden"); 
+
+            // Icône : deux flèches vers le bas
             iconBio.innerHTML = `
-                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 5.25 7.5 7.5 7.5-7.5m-15 6 7.5 7.5 7.5-7.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 5.25l7.5 7.5 7.5-7.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l7.5 7.5 7.5-7.5" />   
             `;
-        } else {
-            bioReduite.classList.add("hidden");
-            bioComplete.classList.remove("hidden");
+        } else { 
+            bioReduite.classList.add("hidden"); 
+            bioComplete.classList.remove("hidden"); 
+
+            // Icône : deux flèches vers le haut
             iconBio.innerHTML = `
-                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 18.75 7.5-7.5 7.5 7.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 18.75l7.5-7.5 7.5 7.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12l7.5-7.5 7.5 7.5" />
             `;
         }
     }
-
-
 
     // Filtres
     function applyNewFilter(filter) {
