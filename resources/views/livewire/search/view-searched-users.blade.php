@@ -136,7 +136,6 @@ new class extends Component {
                     @endif
                     @endauth
                 </div>
-                
             </div>
         </div>
     @endforeach
