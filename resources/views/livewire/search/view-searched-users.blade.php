@@ -97,7 +97,7 @@ new class extends Component {
                         Éditer le profil
                     </x-primary-button>
                     @else
-                    <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
+                    <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out relative z-50">
                         <x-dropdown width="w-56">
                             <x-slot name="trigger">
                                 <button>
