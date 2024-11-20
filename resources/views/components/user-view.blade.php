@@ -5,11 +5,34 @@
             <div class="flex flex-row">
                 <img src="{{ $user->getAvatar() }}" alt="Profile Image" class="w-20 h-20 rounded-full mr-4 shadow-lg">
 
-
                 {{-- Nom et Abonnés / Abonnement --}}
                 <div class="mr-2">
                     <div class="flex flex-row">
                         <h2 class="text-xl font-semibold text-black dark:text-gray-100 mr-2">{{ $user->name }}</h2>
+                        @if($user->moderator)
+                            <div class="flex flex-row items-center">
+                                <p class="text-green-500 font-bold">Modérateur</p>
+                                <div title="Modérateur vérifié">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                        stroke="currentColor" class="size-4 text-green-500 ml-1">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        @endif
+                        @if($user->isBanned())
+                            <div class="flex flex-row items-center">
+                                <span class="text-red-500 font-bold mr-1">Banni</span>
+                                <div title="Banni">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                        stroke="currentColor" class="size-4 text-red-500 mr-1">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                                    </svg>
+                                </div>
+                            </div>
+                        @endif
                         @auth
                         @if (auth()->user()->id !== $user->id)
                         <livewire:user.follow id="{{ $user->id }}" />
@@ -37,21 +60,27 @@
                             </svg>
                             <span class="text-black dark:text-gray-100 font-semibold">Abonnés : {{ $user->followers()->count() }}</span>
                         </a>
-                    </div>                    
-                    <div class="flex space-x-4 mt-2">
-                        <!-- Tags suivis -->
-                        <button onclick="toggleFollowedTagsMenu()"
-                            class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M3 7.5h18M9 3.75h6M7.5 12h9m-10.5 4.5h12" />
-                            </svg>
-                            <span class="text-black dark:text-gray-100 font-semibold">Tags suivis</span>
-                        </button>
-                        <!-- Contenu du menu des tags suivis -->
-                        <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags' />
-                    </div>                  
+                        <div>
+                            <!-- Tags suivis -->
+                            <button onclick="toggleFollowedTagsMenu()"
+                                class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                    class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3 7.5h18M9 3.75h6M7.5 12h9m-10.5 4.5h12" />
+                                </svg>
+                                <span class="text-black dark:text-gray-100 font-semibold">Tags suivis</span>
+                            </button>
+                            <!-- Contenu du menu des tags suivis -->
+                            <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags' />
+                        </div> 
+                    </div>
+                    <div class="flex items-center mt-4 space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-indigo-600 dark:text-indigo-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5m7.5-1.5v1.5m-9 0h10.5c.621 0 1.125.504 1.125 1.125v13.5c0 .621-.504 1.125-1.125 1.125H6.75c-.621 0-1.125-.504-1.125-1.125V5.625c0-.621.504-1.125 1.125-1.125zm-.75 4.5h12" />
+                        </svg>
+                        <span class="text-gray-600 dark:text-gray-300 text-sm">Membre depuis le : {{ $user->created_at->format('d M Y') }}</span>
+                    </div>                                                 
                 </div>
                 {{-- <p class="text-black dark:text-gray-100">Abonnés : {{ $user->followers()->count() }}</p>
                 <p class="text-black dark:text-gray-100">Abonnements : {{ $user->followed_users()->count() }}</p> --}}
@@ -110,7 +139,7 @@
             @endif
             @endauth
         </div>
-        {{-- Biographie + Modérateur? --}}
+        {{-- Biographie --}}
         <div class="mt-4">
             <div class="flex flex-col">
                 <div id="bio-reduite" class="bio-reduite text-gray-600 dark:text-gray-300">
@@ -129,30 +158,7 @@
                 </button>
                 @endif
             </div>
-            @if($user->moderator)
-            <div class="flex flex-row items-center">
-                <p class="text-green-500 font-bold">Modérateur</p>
-                <div title="Modérateur vérifié">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-4 text-green-500 ml-1">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-                    </svg>
-                </div>
-            </div>
-            @endif
-            @if($user->isBanned())
-            <div class="flex flex-row items-center">
-                <span class="text-red-500 font-bold mr-1">Banni</span>
-                <div title="Banni">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor" class="size-4 text-red-500 mr-1">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
-                    </svg>
-                </div>
-            </div>
-            @endif
+            
         </div>
     </div>
 </div>
@@ -184,6 +190,18 @@
 </div>
 
 <style>
+    .card {
+        background: linear-gradient(to right, #f9f9f9, #ffffff);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+    }
+
     .tabs {
         display: flex;
         justify-content: space-around;
