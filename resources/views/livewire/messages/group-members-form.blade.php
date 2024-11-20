@@ -100,8 +100,8 @@ new class extends Component {
     }
 
     public function removeUser($userId) {
-        if ($this->isCreator && $userId !== Auth()->id) {
-            $this->targetGroup->members()->detach($userId);
+        if ($this->isCreator && $userId !== Auth::id()) {
+            $this->targetGroup->memberships()->detach($userId);
             $this->loadGroupMembers();
         }
     }
