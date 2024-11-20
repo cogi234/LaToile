@@ -857,28 +857,31 @@ new class extends Component {
             }
         }
 
+        const picker = new EmojiButton({
+            styleProperties: {
+                'z-index' : '100'
+            },
+            position: {
+                strategy: 'fixed',
+                bottom: '0'
+            }
+        });
+
+        picker.wrapper.style.zIndex = "100";
+
         $wire.on('init-emoji-input', (event) => {
             setTimeout(() => {                
                 let button = $('#emoji_button_' + event.index);
                 let textarea = $('#input_' + event.index);
-                const picker = new EmojiButton({
-                    styleProperties: {
-                        'z-index' : '30'
-                    },
-                    position: {
-                        strategy: 'fixed',
-                        bottom: '0'
-                    }
-                });
 
                 button.on('click', () => {
-                    picker.togglePicker(textarea);
+                    picker.togglePicker(button);
                     parseEmoji();
                 });
 
                 picker.on('emoji', emoji => {
-                    textarea.value += emoji.emoji;
-                    textarea.dispatchEvent(new Event('input'));
+                    $wire.inputs[event.index].content += emoji.emoji;
+                    textarea.trigger('input');
                 });
             }, 100);
         });
