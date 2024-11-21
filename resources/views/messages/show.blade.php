@@ -29,6 +29,11 @@
     </script>
     
     <style>
+        .min-h-screen{
+            max-height: fit-content !important;
+            min-height: fit-content !important;
+        }
+
         main{
             height: calc(100vh - 4rem);
         }
