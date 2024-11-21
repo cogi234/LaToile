@@ -6,9 +6,11 @@
 
 <div class="max-w-5xl mx-auto px-3 sm:px-8">
     <div class=" flex items-center text-lg font-semibold text-gray-800 dark:text-white pb-4">
-        <span><img src="{{ $user->getAvatar() }}" alt="Profile Image"
-            class="w-16 h-16 rounded-full mr-4 shadow-lg"></span>
-            <span>{{$user->name}}</span>
+        <a class="flex flex-row" href="/user/{{$user->id}}">
+            <img src="{{ $user->getAvatar() }}" alt="Profile Image"
+            class="w-16 h-16 rounded-full mr-4 shadow-lg">
+            <span class="hover:underline text-gray-900 dark:text-gray-100">{{$user->name}}</span>
+        </a>
     </div>
     <!-- Ajout des onglets -->
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5">
