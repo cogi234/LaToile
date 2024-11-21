@@ -7,7 +7,7 @@
 
                 {{-- Nom et Abonnés / Abonnement --}}
                 <div class="mr-2">
-                    <div class="flex flex-row">
+                    <div class="flex flex-row gap-3">
                         <h2 class="text-xl font-semibold text-black dark:text-gray-100 mr-2">{{ $user->name }}</h2>
                         
                         @auth
@@ -15,20 +15,7 @@
                         <livewire:user.follow id="{{ $user->id }}" />
                         @endif
                         @endauth
-                    </div>
-                    <div class="flex mb-4">
-                        @if($user->moderator)
-                            <div class="flex flex-row items-center">
-                                <p class="text-green-500 font-bold">Modérateur</p>
-                                <div title="Modérateur vérifié">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                        stroke="currentColor" class="size-4 text-green-500 ml-1">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-                                    </svg>
-                                </div>
-                            </div>
-                        @endif
+
                         @if($user->isBanned())
                             <div class="flex flex-row items-center">
                                 <span class="text-red-500 font-bold mr-1">Banni</span>
@@ -43,6 +30,20 @@
                         @endif
                         @if (Auth::Check())
                             <livewire:user.blocked-user-check id="{{ $user->id }}" />
+                        @endif
+                    </div>
+                    <div class="flex mb-4">
+                        @if($user->moderator)
+                            <div class="flex flex-row items-center">
+                                <p class="text-green-500 font-bold">Modérateur</p>
+                                <div title="Modérateur vérifié">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                        stroke="currentColor" class="size-4 text-green-500 ml-1">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                                    </svg>
+                                </div>
+                            </div>
                         @endif
                     </div>
                     <div class="flex space-x-4 mt-2">
@@ -98,36 +99,41 @@
                 Éditer le profil
             </x-primary-button>
             @else
-            <div
-                class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
-                <button onclick="toggleDropdown()" title="Plus d'actions..." class="focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor"
-                        class="size-7 text-gray-800 hover:text-gray-950 dark:text-gray-100 dark:hover:text-gray-300">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                </button>
-                <div id="dropdownMenu"
-                    class="hidden absolute top-32 right-72 bg-gray-700 dark:bg-gray-900 rounded-md shadow-lg z-50 max-h-48 overflow-auto">
-                    <ul class="py-1 text-sm min-h-fit text-gray-200">
-                        <li>
-                            <a href="{{ url('messages/user/' . $user->id) }}"
-                                title="Envoyer un message à {{$user->name}} ?"
-                                class="flex px-4 py-2 hover:bg-gray-600 items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                                </svg>
-                                <span>Envoyer un message</span>
-                            </a>
-                        </li>
-                        <li>
-                            <livewire:user.block-user :userId="$user->id" />
-                        </li>
-                    </ul>
-                </div>
+            <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
+                <x-dropdown width="w-56">
+                    <x-slot name="trigger">
+                        <button>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor"
+                                class="size-7 text-gray-800 hover:text-gray-950 dark:text-gray-100 dark:hover:text-gray-300">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <ul class="py-1 text-sm min-h-fit text-gray-200">
+                            <li>
+                                <a href="{{ url('messages/user/' . $user->id) }}"
+                                    title="Envoyer un message à {{$user->name}} ?"
+                                    class="flex px-4 py-2 hover:bg-gray-600 items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                                    </svg>
+                                    <span>Envoyer un message</span>
+                                </a>
+                            </li>
+                            <li>
+                                @auth
+                                <livewire:user.block-user :userId="$user->id" />
+                                @endauth
+                            </li>
+                        </ul>
+                    </x-slot>
+                </x-dropdown>
             </div>
             @endif
             @endauth
@@ -183,18 +189,6 @@
 </div>
 
 <style>
-    .card {
-        background: linear-gradient(to right, #f9f9f9, #ffffff);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease;
-    }
-
-    .card:hover {
-        transform: scale(1.02);
-    }
-
     .tabs {
         display: flex;
         justify-content: space-around;
@@ -235,11 +229,6 @@
 </style>
 
 <script>
-    function toggleDropdown() {
-        var menu = document.getElementById("dropdownMenu");
-        menu.classList.toggle("hidden");
-    }
-
     function toggleBio() { 
         const bioReduite = document.getElementById("bio-reduite"); 
         const bioComplete = document.getElementById("bio-complete"); 

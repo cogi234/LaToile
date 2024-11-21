@@ -29,10 +29,18 @@
     </script>
     
     <style>
-        main{
-            height: calc(100vh - 4rem);
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
         }
-    
+
+        main {
+            height: calc(100vh - 4rem);
+            overflow-y: auto;
+        }
+
         #discussion::-webkit-scrollbar {
             width: 0;
             height: 0;
@@ -40,13 +48,15 @@
     
         #discussion {
             scrollbar-width: none;
-        }
-    
-        #discussion {
             -ms-overflow-style: none;
             overflow-y: scroll;
         }
-        
+
+        .min-h-screen{
+            max-height: fit-content !important;
+            min-height: fit-content !important;
+        }
+    
         .focus-bg-white {
             background-color: white;
             border: 3px solid #2563eb;
