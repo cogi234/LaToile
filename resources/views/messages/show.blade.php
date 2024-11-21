@@ -56,11 +56,7 @@
             max-height: fit-content !important;
             min-height: fit-content !important;
         }
-
-        main{
-            height: calc(100vh - 4rem);
-        }
-            
+    
         .focus-bg-white {
             background-color: white;
             border: 3px solid #2563eb;
