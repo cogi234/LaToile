@@ -332,13 +332,18 @@ new class extends Component {
                     <div wire:key='message_{{ $message->id }}' class="p-2 flex {{ $isCurrentUserMessage ? 'justify-end' : 'justify-start' }}">
                         <!-- Conteneur du message -->
                         @if($isCurrentUserMessage)
-                            <div id="selfMessageContainer" class="flex items-center max-w-[60%] group mr-4">
+                            <div id="selfMessageContainer" class="flex items-center flex-col max-w-[60%] group mr-4">
                                 <!-- Bouton Modifier -->
                                 <div class="hidden group-hover:block max-w-full">
                                     <button type="button" title="Modifier le message" wire:click.stop='startEditing({{ $message->id }})'>
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 mr-2 stroke-gray-400 hover:stroke-gray-700 dark:hover:stroke-gray-200">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                                         </svg>                              
+                                    </button>
+                                    <button type="button" title="Copier le message"  onclick="copyToClipboard('messageText_{{ $message->id }}')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 stroke-gray-400 hover:stroke-gray-700 dark:hover:stroke-gray-200">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5h10.5M8.25 7.5h10.5m-7.5 6.75H6a2.25 2.25 0 0 1-2.25-2.25V5.25A2.25 2.25 0 0 1 6 3h8.25M6 3V15a2.25 2.25 0 0 0 2.25 2.25h10.5A2.25 2.25 0 0 0 21 15V8.25A2.25 2.25 0 0 0 18.75 6H12" />
+                                        </svg>
                                     </button>
                                 </div>
                                 <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
@@ -373,6 +378,7 @@ new class extends Component {
                                             </div>
                                         </div>
                                     @else
+                                        <div id="messageText_{{ $message->id }}" class="hidden">{{ $messageText }}</div>
                                         <div class="w-full break-words">
                                             <p class="break-words">{!! $messageText !!}</p>
                                         </div>
@@ -450,20 +456,64 @@ new class extends Component {
         </p>
     </div>
     @endif
-    @script
     <script>
-        $wire.on('updateSelectedConversation', () => {
-            setTimeout(() => {
-                let element = document.querySelector("#message_area");
-                if (element && element.children[1].children.length > 2){
-                    element.children[1].children[element.children[1].children.length - 1].scrollIntoView();
+        function copyToClipboard(elementId) {
+            const textElement = document.getElementById(elementId);
+
+            if (textElement) {
+                const textToCopy = textElement.textContent || textElement.innerText;
+                console.log('Texte à copier:', textToCopy);
+
+                // Vérifier si l'API Clipboard est disponible
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        alert('Message copié dans le presse-papier !');
+                    }).catch(err => {
+                        console.error('Erreur lors de la copie : ', err);
+                        alert('Échec de la copie.');
+                    });
+                } else {
+                    // Fallback pour les environnements non sécurisés
+                    const textarea = document.createElement('textarea');
+                    textarea.value = textToCopy;
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = 0;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+
+                    try {
+                        document.execCommand('copy');
+                        alert('Message copié !');
+                    } catch (err) {
+                        console.error('Erreur lors de la copie : ', err);
+                        alert('Échec de la copie.');
+                    }
+
+                    document.body.removeChild(textarea);
                 }
-            }, 100);
-            
-        });
+            } else {
+                alert('Élément introuvable.');
+            }
+        }
+
     </script>
+    @script
+        <script>
+            $wire.on('updateSelectedConversation', () => {
+                setTimeout(() => {
+                    let element = document.querySelector("#message_area");
+                    if (element && element.children[1].children.length > 2){
+                        element.children[1].children[element.children[1].children.length - 1].scrollIntoView();
+                    }
+                }, 100);
+                
+            });
+            
+        </script>
     @endscript
 </div>
+
+
 
 {{-- <div id="discussion" class="flex-1 p-4">
             @if ($selectedConversation)
