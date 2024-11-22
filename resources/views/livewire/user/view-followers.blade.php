@@ -45,7 +45,7 @@ new class extends Component
 <div>
     @foreach ($followedUsers as $followedUser)
         <div class="max-w-5xl mx-auto px-3 sm:px-8">
-            <div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
+            <div class="post bg-white dark:bg-gray-800 shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
                 <div class="flex items-center justify-between">
                     <!-- Image de profil et détails -->
                     <div class="flex items-center">
@@ -71,28 +71,40 @@ new class extends Component
                         </div>
                     </div>
                     <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
-                        <button onclick="toggleDropdown()" title="Plus d'actions..." class="focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-7 text-gray-800 hover:text-gray-950 dark:text-gray-100 dark:hover:text-gray-300">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>   
-                        </button>
-                        <div id="dropdownMenu" class="hidden absolute top-32 right-72 bg-gray-700 dark:bg-gray-900 rounded-md shadow-lg z-50 max-h-48 overflow-auto">
-                            <ul class="py-1 text-sm min-h-fit text-gray-200">
-                                <li>
-                                    <a href="{{ url('messages/user/' . $followedUser->id) }}" title="Envoyer un message à {{$followedUser->name}} ?" class="flex px-4 py-2 hover:bg-gray-600 items-center">
-                                        <span class="mr-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                                            </svg>                                                                                                                                                                                  
-                                        </span>
-                                        <span>Envoyer un message</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <livewire:user.block-user :userId="$followedUser->id" />
-                                </li>
-                            </ul>
-                        </div>
+                        <x-dropdown width="w-56">
+                            <x-slot name="trigger">
+                                <button title="Plus d'actions...">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="size-7 text-gray-800 hover:text-gray-950 dark:text-gray-100 dark:hover:text-gray-300">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    </svg>
+                                </button>
+                            </x-slot>
+        
+                            <x-slot name="content" class="bg-gray-800">
+                                <ul class="py-1 text-sm min-h-fit text-gray-800 dark:text-gray-200">
+                                    <li>
+                                        <a href="{{ url('messages/user/' . $followedUser->id) }}"
+                                            title="Envoyer un message à {{$followedUser->name}} ?"
+                                            class="flex px-4 py-2 hover:bg-gray-200 hover:dark:bg-gray-600 items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                                            </svg>
+                                            <span>Envoyer un message</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        @auth
+                                        <livewire:user.block-user :userId="$followedUser->id" />
+                                        @endauth
+                                    </li>
+                                </ul>
+                            </x-slot>
+                        </x-dropdown>
                     </div>
                 </div>
 
