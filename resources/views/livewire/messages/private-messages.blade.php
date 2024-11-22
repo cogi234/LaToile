@@ -461,10 +461,24 @@ new class extends Component {
             const textElement = document.getElementById(elementId);
 
             if (textElement) {
-                const textToCopy = textElement.textContent || textElement.innerText;
-                console.log('Texte à copier:', textToCopy);
+                const rawContent = textElement.textContent || textElement.innerText;
 
-                // Vérifier si l'API Clipboard est disponible
+                const tempContainer = document.createElement('div');
+                tempContainer.innerHTML = rawContent;
+
+                const anchorTags = tempContainer.querySelectorAll('a');
+                console.log('anchorTags :', anchorTags);
+
+                anchorTags.forEach(anchor => {
+                    const href = anchor.getAttribute('href');
+                    console.log('href :', href);
+                    anchor.replaceWith(href);
+                });
+
+                const textToCopy = tempContainer.textContent || tempContainer.innerText;
+
+                console.log('Texte à copier :', textToCopy);
+
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(textToCopy).then(() => {
                         alert('Message copié dans le presse-papier !');
@@ -473,7 +487,7 @@ new class extends Component {
                         alert('Échec de la copie.');
                     });
                 } else {
-                    // Fallback pour les environnements non sécurisés
+                    // Fallback pour environnements non sécurisés
                     const textarea = document.createElement('textarea');
                     textarea.value = textToCopy;
                     textarea.style.position = 'fixed';
@@ -495,7 +509,6 @@ new class extends Component {
                 alert('Élément introuvable.');
             }
         }
-
     </script>
     @script
         <script>
