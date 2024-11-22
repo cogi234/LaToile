@@ -205,7 +205,7 @@ new class extends Component {
             </p>
         </div>
         @else
-        <div class="grid grid-cols-10 h-max">
+        <div class="grid grid-cols-10 h-screen">
             <!-- First Column: 10% for icons -->
             <div class="col-span-1 flex flex-col items-center space-y-8 p-4 border-r-2 h-full">
                 <!-- Icon for viewing messages -->
