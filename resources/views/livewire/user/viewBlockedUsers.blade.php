@@ -57,13 +57,13 @@ new class extends Component {
                                 <div class="flex flex-row">
                                     <h2 class="text-xl font-semibold text-black dark:text-gray-100 mr-2 hover:underline">{{ $blockedUser->name }}</h2>
                                 </div>
-                                <p class="text-black dark:text-gray-100">Followers: {{ $blockedUser->followers()->count() }}</p>
-                                <p class="text-black dark:text-gray-100">Following: {{ $blockedUser->followed_users()->count() }}</p>
+                                <p class="text-black dark:text-gray-100">Abonnés: {{ $blockedUser->followers()->count() }}</p>
+                                <p class="text-black dark:text-gray-100">Abonnements: {{ $blockedUser->followed_users()->count() }}</p>
                             </div>
                         </a>
                     </div>
                     <!-- Block/Unblock Button -->
-                    <div class="flex justify-end items-right items-center mt-4 ml-auto">
+                    <div class="flex justify-end items-right items-center mt-4 ml-auto text-gray-200">
                         <x-primary-button wire:click="toggleBlock({{ $blockedUser->id }})" 
                                           class="btn {{ Auth::user()->blocked_users->contains($blockedUser->id) ? 'btn-danger' : 'btn-warning' }} w-fit h-10 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">

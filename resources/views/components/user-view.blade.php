@@ -1,6 +1,6 @@
 <div class="max-w-5xl mx-auto pt-5 px-3 sm:px-8 mt-10 2xl:mt-0">
     <div class="post bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
-        <div class="flex sm:items-center items-start sm:flex-row flex-col sm:pt-0 pt-4">
+        <div class="flex sm:items-center items-start flex-row sm:pt-0 pt-4">
             <div class="flex flex-row">
                 <!-- Image de profil -->
                 <img src="{{ $user->getAvatar() }}" alt="Profile Image" class="w-20 h-20 rounded-full mr-4 shadow-lg">
@@ -46,35 +46,33 @@
                             </div>
                         @endif
                     </div>
-                    <div class="flex space-x-4 mt-2">
+                    <div class="flex md:flex-row flex-col space-x-4 mt-2">
                         <!-- Lien vers les abonnements -->
-                        <a href="/followings/{{$user->id}}"
-                            class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                        <a href="/followings/{{$user->id}}" title="Voir les abonnements de {{$user->name}}"
+                            class="flex mb-3 !ml-0 mr-0 md:!mr-4 md:mb-0 items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                             </svg>   
                             <span class="text-black dark:text-gray-100 font-semibold">Abonnements : {{ $user->followed_users()->count() }}</span>
                         </a>
                         <!-- Lien vers les abonnés -->
-                        <a href="/followers/{{$user->id}}"
-                            class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                        <a href="/followers/{{$user->id}}" title="Voir les abonnés de {{$user->name}}"
+                            class="flex mb-3 mr-0 md:!mr-4 !ml-0 md:mb-0 items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                             </svg>                              
                             <span class="text-black dark:text-gray-100 font-semibold">Abonnés : {{ $user->followers()->count() }}</span>
                         </a>
-                        <div>
-                            <!-- Tags suivis -->
-                            <button onclick="toggleFollowedTagsMenu()"
-                                class="flex items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 mr-2 text-indigo-600 dark:text-indigo-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
-                                </svg>                                  
-                                <span class="text-black dark:text-gray-100 font-semibold">Tags suivis</span>
-                            </button>
-                            <!-- Contenu du menu des tags suivis -->
-                            <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags' />
-                        </div> 
+                        <!-- Tags suivis -->
+                        <button onclick="toggleFollowedTagsMenu()" title="Voir les tags suivis de {{$user->name}}"
+                            class="flex !ml-0 mr-0 md:!mr-4 items-center bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-4 py-2 rounded-lg transition duration-150 ease-in-out shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 mr-2 text-indigo-600 dark:text-indigo-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
+                            </svg>                                  
+                            <span class="text-black dark:text-gray-100 font-semibold">Tags suivis</span>
+                        </button>
+                        <!-- Contenu du menu des tags suivis -->
+                        <livewire:user.view-followedTags :userId="$user->id" wire:key='followedTags' /> 
                     </div>
                     <div class="flex items-center mt-4 space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-indigo-600 dark:text-indigo-400">
@@ -102,7 +100,7 @@
             <div class="sm:mt-1 mt-5 sm:!ml-auto !ml-0 items-start self-start dark:!text-gray-100 transition duration-300 ease-in-out">
                 <x-dropdown width="w-56">
                     <x-slot name="trigger">
-                        <button>
+                        <button title="Plus d'actions..." >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                 stroke="currentColor"
                                 class="size-7 text-gray-800 hover:text-gray-950 dark:text-gray-100 dark:hover:text-gray-300">
@@ -112,12 +110,12 @@
                         </button>
                     </x-slot>
 
-                    <x-slot name="content">
-                        <ul class="py-1 text-sm min-h-fit text-gray-200">
+                    <x-slot name="content" class="bg-gray-800">
+                        <ul class="py-1 text-sm min-h-fit text-gray-800 dark:text-gray-200">
                             <li>
                                 <a href="{{ url('messages/user/' . $user->id) }}"
                                     title="Envoyer un message à {{$user->name}} ?"
-                                    class="flex px-4 py-2 hover:bg-gray-600 items-center">
+                                    class="flex px-4 py-2 hover:bg-gray-200 hover:dark:bg-gray-600 items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="size-6 mr-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -147,7 +145,7 @@
                 <div id="bio-complete" class="bio-complete hidden text-gray-600 dark:text-gray-300">
                     <p>{{ $user->bio ?? '' }}</p>
                 </div>
-                @if ($user->bio && substr_count($user->bio, "\n") > 4)
+                @if ($user->bio && strlen($user->bio) > 180)
                 <button id="toggle-bio" onclick="toggleBio()" title="Voir le reste de la bio"
                     class="mt-2 flex justify-center items-center">
                     <svg id="icon-bio" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-6 w-6 text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white transition">

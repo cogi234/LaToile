@@ -26,7 +26,7 @@
     </div>
     
     <!-- Contenu associé aux onglets -->
-    <div class="bg-transparent overflow-hidden">
+    <div class="bg-transparent overflow-visible">
         <div class="text-gray-900 dark:text-gray-100">
             @if ($followersCount > 0)
                 <div id="followers-content" class="content-section" style="display: block;">
