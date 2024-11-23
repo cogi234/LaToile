@@ -467,17 +467,13 @@ new class extends Component {
                 tempContainer.innerHTML = rawContent;
 
                 const anchorTags = tempContainer.querySelectorAll('a');
-                console.log('anchorTags :', anchorTags);
 
                 anchorTags.forEach(anchor => {
                     const href = anchor.getAttribute('href');
-                    console.log('href :', href);
                     anchor.replaceWith(href);
                 });
 
                 const textToCopy = tempContainer.textContent || tempContainer.innerText;
-
-                console.log('Texte à copier :', textToCopy);
 
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(textToCopy).then(() => {
