@@ -464,9 +464,6 @@ new class extends Component {
         </p>
     </div>
     @endif
-    <script>
-        
-    </script>
     @script
         <script>
             $wire.on('updateSelectedConversation', () => {
