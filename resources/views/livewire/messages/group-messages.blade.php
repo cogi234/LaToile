@@ -96,7 +96,38 @@ new class extends Component {
     }
 
     public function leaveGroup($groupId){
-        Group::find($groupId)->memberships()->detach(Auth::id());
+        $group = Group::find($groupId);
+
+        if (!$group) {
+            return redirect()->back()->with('error', 'Groupe introuvable.');
+        }
+
+        $creator_id = $group->memberships()
+            ->wherePivot('status', 'creator')
+            ->pluck('user_id')
+            ->first();
+        
+        if ($creator_id === Auth::id()) {
+            $newCreator = $group->memberships()->where('user_id', '!=', Auth::id())->first();
+
+            if ($newCreator) {
+                $group->memberships()
+                    ->updateExistingPivot($newCreator->id, ['status' => 'creator']);
+            }
+        }
+
+        $group->memberships()->detach(Auth::id());
+
+        $remainingMembers = $group->memberships()->count();
+
+        if ($remainingMembers === 0) {
+            GroupMessage::where('group_id', $group->id)->delete();
+
+            $group->invites()->detach();
+
+            $group->delete();
+        }
+
         $this->loadInvitations();
         $this->redirect('/messages/group');
     }
@@ -379,6 +410,11 @@ new class extends Component {
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                                             </svg>                              
                                         </button>
+                                        <button type="button" title="Copier le message"  onclick="copyToClipboard('messageText_{{ $message->id }}')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 stroke-gray-400 hover:stroke-gray-700 dark:hover:stroke-gray-200">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5h10.5M8.25 7.5h10.5m-7.5 6.75H6a2.25 2.25 0 0 1-2.25-2.25V5.25A2.25 2.25 0 0 1 6 3h8.25M6 3V15a2.25 2.25 0 0 0 2.25 2.25h10.5A2.25 2.25 0 0 0 21 15V8.25A2.25 2.25 0 0 0 18.75 6H12" />
+                                            </svg>
+                                        </button>
                                     </div>
                                     <!-- (Votre contenu existant pour les messages de l'utilisateur actuel) -->
                                     <div title="{{ $message->created_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
@@ -413,6 +449,7 @@ new class extends Component {
                                                 </div>
                                             </div>
                                         @else
+                                            <div id="messageText_{{ $message->id }}" class="hidden">{{ $messageText }}</div>
                                             <!-- (Contenu du message pour l'utilisateur actuel) -->
                                             <div class="w-full break-words">
                                                 <p class="break-words">{!! $messageText !!}</p>
@@ -446,6 +483,14 @@ new class extends Component {
                                                 <p class="break-words">{!! $messageText !!}</p>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="hidden group-hover:block max-w-full">
+                                        <button type="button" title="Copier le message"  onclick="copyToClipboard('messageText_{{ $message->id }}')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 stroke-gray-400 hover:stroke-gray-700 dark:hover:stroke-gray-200">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5h10.5M8.25 7.5h10.5m-7.5 6.75H6a2.25 2.25 0 0 1-2.25-2.25V5.25A2.25 2.25 0 0 1 6 3h8.25M6 3V15a2.25 2.25 0 0 0 2.25 2.25h10.5A2.25 2.25 0 0 0 21 15V8.25A2.25 2.25 0 0 0 18.75 6H12" />
+                                            </svg>
+                                        </button>
+                                        <div id="messageText_{{ $message->id }}" class="hidden">{{ $messageText }}</div>
                                     </div>
                                 </div>
                             @endif

@@ -388,6 +388,14 @@ new class extends Component {
                         @else
                             <div class="flex items-end max-w-[60%] group">
                                 <div class="max-w-full">
+                                    <div class="hidden group-hover:block max-w-full">
+                                        <button type="button" title="Copier le message"  onclick="copyToClipboard('messageText_{{ $message->id }}')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" class="size-6 stroke-gray-400 hover:stroke-gray-700 dark:hover:stroke-gray-200">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5h10.5M8.25 7.5h10.5m-7.5 6.75H6a2.25 2.25 0 0 1-2.25-2.25V5.25A2.25 2.25 0 0 1 6 3h8.25M6 3V15a2.25 2.25 0 0 0 2.25 2.25h10.5A2.25 2.25 0 0 0 21 15V8.25A2.25 2.25 0 0 0 18.75 6H12" />
+                                            </svg>
+                                        </button>
+                                        <div id="messageText_{{ $message->id }}" class="hidden">{{ $messageText }}</div>
+                                    </div>
                                     <div title="{{ $message->updated_at->setTimezone($currentTimeZone)->format($timeFormat) }}"
                                         class="flex flex-nowrap justify-center items-center p-3 rounded-lg bg-gray-300 text-gray-900">
                                         <!-- Signaler -->
@@ -456,60 +464,6 @@ new class extends Component {
         </p>
     </div>
     @endif
-    <script>
-        function copyToClipboard(elementId) {
-            const textElement = document.getElementById(elementId);
-
-            if (textElement) {
-                const rawContent = textElement.textContent || textElement.innerText;
-
-                const tempContainer = document.createElement('div');
-                tempContainer.innerHTML = rawContent;
-
-                const anchorTags = tempContainer.querySelectorAll('a');
-                console.log('anchorTags :', anchorTags);
-
-                anchorTags.forEach(anchor => {
-                    const href = anchor.getAttribute('href');
-                    console.log('href :', href);
-                    anchor.replaceWith(href);
-                });
-
-                const textToCopy = tempContainer.textContent || tempContainer.innerText;
-
-                console.log('Texte à copier :', textToCopy);
-
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        alert('Message copié dans le presse-papier !');
-                    }).catch(err => {
-                        console.error('Erreur lors de la copie : ', err);
-                        alert('Échec de la copie.');
-                    });
-                } else {
-                    // Fallback pour environnements non sécurisés
-                    const textarea = document.createElement('textarea');
-                    textarea.value = textToCopy;
-                    textarea.style.position = 'fixed';
-                    textarea.style.opacity = 0;
-                    document.body.appendChild(textarea);
-                    textarea.select();
-
-                    try {
-                        document.execCommand('copy');
-                        alert('Message copié !');
-                    } catch (err) {
-                        console.error('Erreur lors de la copie : ', err);
-                        alert('Échec de la copie.');
-                    }
-
-                    document.body.removeChild(textarea);
-                }
-            } else {
-                alert('Élément introuvable.');
-            }
-        }
-    </script>
     @script
         <script>
             $wire.on('updateSelectedConversation', () => {
