@@ -96,7 +96,38 @@ new class extends Component {
     }
 
     public function leaveGroup($groupId){
-        Group::find($groupId)->memberships()->detach(Auth::id());
+        $group = Group::find($groupId);
+
+        if (!$group) {
+            return redirect()->back()->with('error', 'Groupe introuvable.');
+        }
+
+        $creator_id = $group->memberships()
+            ->wherePivot('status', 'creator')
+            ->pluck('user_id')
+            ->first();
+        
+        if ($creator_id === Auth::id()) {
+            $newCreator = $group->memberships()->where('user_id', '!=', Auth::id())->first();
+
+            if ($newCreator) {
+                $group->memberships()
+                    ->updateExistingPivot($newCreator->id, ['status' => 'creator']);
+            }
+        }
+
+        $group->memberships()->detach(Auth::id());
+
+        $remainingMembers = $group->memberships()->count();
+
+        if ($remainingMembers === 0) {
+            GroupMessage::where('group_id', $group->id)->delete();
+
+            $group->invites()->detach();
+
+            $group->delete();
+        }
+
         $this->loadInvitations();
         $this->redirect('/messages/group');
     }
