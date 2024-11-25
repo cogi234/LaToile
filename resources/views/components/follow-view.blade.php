@@ -1,45 +1,56 @@
 @php
     use App\Models\User;
-    $followersCount = User::find($user->id)->followed_users()->count();
-    $followingCount = User::find($user->id)->followers()->count();
+    // Récupérer le nombre de suivis (abonnements)
+    $followingCount = User::find($user->id)->followed_users()->count();
+    // Récupérer le nombre d'abonnés
+    $followersCount = User::find($user->id)->followers()->count();
 @endphp
 
 <div class="max-w-5xl mx-auto px-3 sm:px-8">
-    <div class=" flex items-center text-lg font-semibold text-gray-800 dark:text-white pb-4">
+    <div class="flex items-center text-lg font-semibold text-gray-800 dark:text-white pb-4">
         <a class="flex flex-row" href="/user/{{$user->id}}">
-            <img src="{{ $user->getAvatar() }}" alt="Profile Image"
-            class="w-16 h-16 rounded-full mr-4 shadow-lg">
+            <img src="{{ $user->getAvatar() }}" alt="Profile Image" class="w-16 h-16 rounded-full mr-4 shadow-lg">
             <span class="hover:underline text-gray-900 dark:text-gray-100">{{$user->name}}</span>
         </a>
     </div>
-    <!-- Ajout des onglets -->
+
+    <!-- Onglets -->
     <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg mb-3 md:mb-5">
         <div class="tabs p-6 text-gray-900 dark:text-gray-100">
-            <!-- Les blocs sont maintenant des liens entièrement cliquables -->
-            <a href="javascript:void(0);" class="tab active" id="followers-tab" onclick="showContent('followers')">
-                Abonnements ({{$followersCount}})
+            <!-- Onglet des abonnements (suivis) -->
+            <a href="/user/{{$user->id}}/followings"
+               class="tab {{ request()->is('user/' . $user->id . '/followings') ? 'active' : '' }}"
+               id="following-tab">
+                Abonnements : {{ $followingCount }}
             </a>
-            <a href="javascript:void(0);" class="tab" id="following-tab" onclick="showContent('following')">
-                Abonnés ({{$followingCount}})
+            <!-- Onglet des abonnés -->
+            <a href="/user/{{$user->id}}/followers"
+               class="tab {{ request()->is('user/' . $user->id . '/followers') ? 'active' : '' }}"
+               id="followers-tab">
+                Abonnés : {{ $followersCount }}
             </a>
         </div>
     </div>
-    
-    <!-- Contenu associé aux onglets -->
+
+    <!-- Contenu dynamique selon l'onglet sélectionné -->
     <div class="bg-transparent overflow-visible">
         <div class="text-gray-900 dark:text-gray-100">
-            @if ($followersCount > 0)
-                <div id="followers-content" class="content-section" style="display: block;">
-                    <livewire:user.view-followers :userId="$user->id" wire:key='followersComponent'/>
-                </div>
-            @endif
-            @if ($followingCount > 0)
-                <div id="following-content" class="content-section" style="display: none;">
-                    <livewire:user.view-following :userId="$user->id" wire:key='followingComponent'/>
-                </div>
-            @endif
+            <div id="followers-content" class="content-section {{ request()->is('user/' . $user->id . '/followers') ? 'active' : '' }}">
+                @if ($followersCount > 0)
+                    <livewire:user.view-followers :userId="$user->id" wire:key="followersComponent"/>
+                @else
+                    <p>Aucun abonné pour ce profil.</p>
+                @endif
+            </div>
+
+            <div id="following-content" class="{{ request()->is('user/' . $user->id . '/followings') ? 'active' : '' }}">
+                @if ($followingCount > 0)
+                    <livewire:user.view-following :userId="$user->id" wire:key="followingComponent"/>
+                @else
+                    <p>Aucun abonnement pour ce profil.</p>
+                @endif
+            </div>
         </div>
     </div>
 </div>
-{{-- href="javascript:void(0);" --}}
-{{-- href="/user-followers/{{$user->id}}" --}}
+
