@@ -18,7 +18,7 @@ new class extends Component
 
     public function loadFollowedUsers()
     {
-        $this->followedUsers = User::find($this->userId)->followed_users()
+        $this->followedUsers = User::find($this->userId)->followers()
             ->take(config('app.posts_per_load', 20))
             ->get();
 
@@ -27,7 +27,7 @@ new class extends Component
 
     public function loadMore()
     {
-        $additionalUsers = User::find($this->userId)->followed_users()
+        $additionalUsers = User::find($this->userId)->followers()
             ->skip(count($this->followedUsers))
             ->take(config('app.posts_per_load', 20))
             ->get();
