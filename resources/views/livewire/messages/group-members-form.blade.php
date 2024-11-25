@@ -35,6 +35,7 @@ new class extends Component {
     #[On('open-member-menu')]
     public function open() {
         $this->enabled = true;
+        $this->loadGroupMembers();
     }
 
     #[On('close-member-menu')]
@@ -168,40 +169,7 @@ new class extends Component {
                     </li>
                 @endforeach
             </ul>
-            {{-- <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Membres du groupe ({{ $groupMembersCount }})</span>
-
-            <!-- Liste des membres du groupe -->
-            <ul class="mb-4 overflow-y-auto h-52 pr-3">
-                @foreach ($members as $member)
-                    @php
-                        $isMemberCreator = Group::find($this->targetGroup->id)
-                        ->memberships()
-                        ->where('user_id', $member->id)
-                        ->where('status', 'creator')
-                        ->exists();
-                        $isConnectedUser = $member->id == Auth::id();
-                    @endphp
-                    <li class="grid grid-cols-[1fr,3fr,1fr] justify-items-center items-center py-2 px-3 bg-gray-100 dark:bg-gray-700 rounded mb-2 @if($isConnectedUser) border-2 border-amber-400 @endif">
-                        <span class="flex items-center text-gray-800 dark:text-gray-300">
-                            <img src="{{ $member->getAvatar() }}" alt="Profile Image" class="w-16 h-16 rounded-full mr-4 shadow-lg">
-                            {{ $member->name }}
-                        </span>
-                        <span class="text-gray-800 dark:text-gray-300">
-                            @if ($isMemberCreator)
-                                Créateur
-                            @endif
-                        </span>
-                        <span>
-                            <!-- Bouton de retrait visible seulement pour le créateur -->
-                            @if ($isCreator && $member->id !== Auth::id())
-                                <button wire:click="removeUser({{ $member->id }})" class="text-red-600 dark:text-red-400 hover:text-red-800">
-                                    Retirer
-                                </button>
-                            @endif
-                        </span>
-                    </li>
-                @endforeach
-            </ul> --}}
+            
             @if($isCreator)
                 <!-- Bouton pour ajouter un nouveau membre, visible pour tous -->
                 <div>
