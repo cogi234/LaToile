@@ -94,7 +94,7 @@ new class extends Component {
                 </svg>
             </div>
             @endif
-
+            &nbsp;
             a aimé!
         </span>
     </a>
