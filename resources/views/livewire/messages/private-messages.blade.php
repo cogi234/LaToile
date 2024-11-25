@@ -277,7 +277,7 @@ new class extends Component {
                         </div>
                     @endforeach
                 </div> --}}
-                <div class="overflow-y-auto space-y-2" style="max-height: calc(100vh - 200px);">
+                <div class="overflow-y-auto space-y-2 p-3" style="max-height: calc(100vh - 200px);">
                     <!-- Utilisateur ciblé -->
                     @if($targetUserId !== null && !in_array($targetUserId, $uniqueSenderIds))
                     <div wire:click="setSelectedUser({{ $targetUserId }})"
