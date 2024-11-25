@@ -481,7 +481,7 @@ new class extends Component {
         foreach ($this->inputs as $input) {
             if ($input['type'] == 'text')
                 $textLength += mb_strlen($input['content']);
-            else
+            else if ($input['content'] != null && $input['url'] != null)
                 $mediaCount++;
         }
         if ($this->sharedPostId < 0 && $textLength == 0 && $mediaCount == 0) {
