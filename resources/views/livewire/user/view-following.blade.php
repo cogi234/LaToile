@@ -44,7 +44,7 @@ new class extends Component
 
 <div>
     @foreach ($followingUsers as $followingUser)
-        <div class="max-w-5xl mx-auto px-3 sm:px-8">
+        <div class="max-w-5xl mx-auto px-3 sm:px-8 pt-2">
             <div class="post bg-white dark:bg-gray-800 shadow-sm rounded-lg md:p-5 p-2 md:mb-5 mb-3 w-full">
                 <div class="flex items-center justify-between overflow-visible">
                     <!-- Image de profil et détails -->
