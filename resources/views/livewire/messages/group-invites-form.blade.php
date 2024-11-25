@@ -47,7 +47,7 @@ new class extends Component {
     @else
         hidden
     @endif inset-0 bg-gray-900 bg-opacity-50 overflow-y-scroll">
-    <div class="relative z-50 top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
+    {{-- <div class="relative z-50 top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-sm rounded-lg">
         <!-- Commande pour fermer -->
         <div class="flex flex-row-reverse pb-2">
             <button wire:click='close' title="Fermez le panneau"
@@ -71,5 +71,42 @@ new class extends Component {
                 </li>
             @endforeach
         </ul>
-    </div>
+    </div> --}}
+    <div class="relative z-50 top-1/4 w-full md:w-2/4 p-4 pt-2 mx-auto bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg">
+        <!-- Commande pour fermer -->
+        <div class="flex flex-row-reverse pb-2">
+            <button wire:click='close' title="Fermer le panneau"
+                class="ml-2 flex items-center text-gray-600 dark:text-gray-400 hover:text-red-400 dark:hover:text-red-500 transition duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+    
+        <span class="text-xl pb-2 font-semibold text-gray-800 dark:text-white mb-4">Invitations au groupe ({{ $groupInvitesCount }})</span>
+    
+        <!-- Liste des invitations au groupe -->
+        <ul class="space-y-4 overflow-y-auto max-h-52 pr-3">
+            @if($groupInvitesCount > 0)
+                @foreach ($invites as $invite)
+                    <li class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition ease-in-out duration-150">
+                        <!-- Avatar et nom de l'invité -->
+                        <div class="flex items-center space-x-4">
+                            <img src="{{ $invite->getAvatar() }}" alt="Profile Image" class="w-16 h-16 rounded-full shadow-lg">
+                            <span class="text-lg font-medium text-gray-900 dark:text-white">{{ $invite->name }}</span>
+                        </div>
+    
+                        <!-- Statut de l'invitation -->
+                        <span class="text-sm text-gray-600 dark:text-gray-400">
+                            En attente
+                        </span>
+                    </li>
+                @endforeach
+            @else
+                <li class="flex justify-center items-center py-3 px-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-gray-600 dark:text-gray-400">
+                    Aucune invitation en cours.
+                </li>
+            @endif
+        </ul>
+    </div>    
 </div>

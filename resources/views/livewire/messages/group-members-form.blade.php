@@ -129,14 +129,46 @@ new class extends Component {
             </button>
         </div>
         @if ($pageNum === 1)
-            <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Membres du groupe ({{ $groupMembersCount }})</span>
+            <span class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Membres du groupe ({{ $groupMembersCount }})</span>
 
-            {{-- <!-- Affichage de l'erreur -->
-            @if($errorMessage)
-                <div class="bg-red-500 text-white p-2 rounded mb-4" id="errorBox">
-                    {{ $errorMessage }}
-                </div>
-            @endif --}}
+            <!-- Liste des membres du groupe -->
+            <ul class="space-y-3 overflow-y-auto h-52 pr-3">
+                @foreach ($members as $member)
+                    @php
+                        $isMemberCreator = Group::find($this->targetGroup->id)
+                            ->memberships()
+                            ->where('user_id', $member->id)
+                            ->where('status', 'creator')
+                            ->exists();
+                        $isConnectedUser = $member->id == Auth::id();
+                    @endphp
+                    <li class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-3 shadow-sm hover:bg-gray-200 dark:hover:bg-gray-600 transition ease-in-out duration-150 @if($isConnectedUser) border-2 border-amber-400 @endif">
+                        <!-- Avatar et nom du membre -->
+                        <div class="flex items-center space-x-4">
+                            <img src="{{ $member->getAvatar() }}" alt="Profile Image" class="w-16 h-16 rounded-full shadow-lg">
+                            <span class="text-lg font-medium text-gray-900 dark:text-white">{{ $member->name }}</span>
+                        </div>
+            
+                        <!-- Indicateur créateur -->
+                        <span class="text-sm text-gray-600 dark:text-gray-400">
+                            @if ($isMemberCreator)
+                                <span class="bg-indigo-500 text-white px-2 py-1 rounded-full text-xs">Créateur</span>
+                            @endif
+                        </span>
+            
+                        <!-- Bouton Retirer (visible pour le créateur) -->
+                        @if ($isCreator && $member->id !== Auth::id())
+                            <button wire:click="removeUser({{ $member->id }})" class="text-red-600 dark:text-red-400 hover:text-red-800 transition duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                Retirer
+                            </button>
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+            {{-- <span class="text-xl flex flex-row pb-2 text-black dark:text-white">Membres du groupe ({{ $groupMembersCount }})</span>
 
             <!-- Liste des membres du groupe -->
             <ul class="mb-4 overflow-y-auto h-52 pr-3">
@@ -169,7 +201,7 @@ new class extends Component {
                         </span>
                     </li>
                 @endforeach
-            </ul>
+            </ul> --}}
             @if($isCreator)
                 <!-- Bouton pour ajouter un nouveau membre, visible pour tous -->
                 <div>
