@@ -35,7 +35,7 @@
     <!-- Contenu dynamique selon l'onglet sélectionné -->
     <div class="bg-transparent overflow-visible">
         <div class="text-gray-900 dark:text-gray-100">
-            <div id="followers-content" class="{{ request()->is('user/' . $user->id . '/followers') ? 'active' : '' }}">
+            <div id="followers-content" class="content-section {{ request()->is('user/' . $user->id . '/followers') ? 'active' : '' }}">
                 @if ($followersCount > 0)
                     <livewire:user.view-followers :userId="$user->id" wire:key="followersComponent"/>
                 @else
@@ -43,7 +43,7 @@
                 @endif
             </div>
 
-            <div id="following-content" class="{{ request()->is('user/' . $user->id . '/followings') ? 'active' : '' }}">
+            <div id="following-content" class="content-section {{ request()->is('user/' . $user->id . '/followings') ? 'active' : '' }}">
                 @if ($followingCount > 0)
                     <livewire:user.view-following :userId="$user->id" wire:key="followingComponent"/>
                 @else
