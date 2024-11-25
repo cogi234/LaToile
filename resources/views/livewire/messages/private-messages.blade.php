@@ -220,64 +220,93 @@ new class extends Component {
             </p>
         </div>
         @else
-        <div>
-            <div class="pt-4 pr-4 pb-2 pl-4 bg-gray-100 dark:bg-gray-800">
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Conversations</h3>
-            </div>
-            
-            <!-- Search Bar -->
-            <div class="p-4 text-sm" x-data="{ focus: false}">
-                <!-- Conteneur avec le contour et les styles -->
-                <div id="search-container" :class="focus ? 'focus-bg-white' : ''"  class="h-11 flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2">
-                    <!-- Icône de recherche -->
-                    <div :class="focus ? '' : ''" class="pointer-events-none flex items-center pr-2">
-                        <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
-                        </svg>
-                    </div>
-                    <!-- Champ de recherche -->
-                    <input x-on:focus="focus = true" x-on:blur="focus = false; $el.classList.remove('--tw-ring-color', '--tw-ring-shadow')"
-                            wire:model.live='searchQuery' 
-                            type="text" name="query" id="searchBar"
-                            class="border-transparent focus:border-transparent focus:ring-0 !outline-none ring-transparent block w-full pl-2 bg-transparent border-none focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full h-8 text-sm placeholder:text-sm" 
-                            placeholder="Rechercher des Messages Directs"/>
-                </div>
-            </div>
-
-            <!-- List of Conversations -->
             <div>
-                @if($targetUserId !== null && !in_array($targetUserId, $uniqueSenderIds))
-                <div class="p-4 bg-gray-100 dark:bg-gray-700 cursor-pointer">
-                    <div class="flex items-start">
-                        <a class="flex flex-row" href="{{ url('user/' . $targetUser->id) }}">
-                            <a class="flex flex-row" href="{{ url('user/' . $targetUser->id) }}">
-                                <img class="w-12 h-12 rounded-full shadow-lg hover:outline hover:outline-2 hover:outline-black/10" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
-                                <div class="flex self-center ml-3 text-sm font-medium text-gray-900 hover:underline hover:dark:underline dark:text-white transition ease-in-out duration-150">
-                                    {{ $targetUser->name }}
-                                </div>
-                            </a>
-                        </a>
+                <div class="pt-4 pr-4 pb-2 pl-4 bg-gray-100 dark:bg-gray-800">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Conversations</h3>
+                </div>
+                
+                <!-- Search Bar -->
+                <div class="p-4 text-sm" x-data="{ focus: false}">
+                    <!-- Conteneur avec le contour et les styles -->
+                    <div id="search-container" :class="focus ? 'focus-bg-white' : ''"  class="h-11 flex items-center bg-gray-200 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full pl-3 pr-4 py-2">
+                        <!-- Icône de recherche -->
+                        <div :class="focus ? '' : ''" class="pointer-events-none flex items-center pr-2">
+                            <svg class="w-5 h-5 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m2.1-6.95a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0z"></path>
+                            </svg>
+                        </div>
+                        <!-- Champ de recherche -->
+                        <input x-on:focus="focus = true" x-on:blur="focus = false; $el.classList.remove('--tw-ring-color', '--tw-ring-shadow')"
+                                wire:model.live='searchQuery' 
+                                type="text" name="query" id="searchBar"
+                                class="border-transparent focus:border-transparent focus:ring-0 !outline-none ring-transparent block w-full pl-2 bg-transparent border-none focus:bg-white focus:text-gray-800 focus:outline-none text-gray-700 dark:text-gray-300 rounded-full h-8 text-sm placeholder:text-sm" 
+                                placeholder="Rechercher des Messages Directs"/>
                     </div>
                 </div>
-                @endif
 
-                @foreach ($uniqueSenderIds as $uniqueSenderId)
-                    @php
-                        $sender = \App\Models\User::find($uniqueSenderId);
-                    @endphp
-                    <div wire:click='setSelectedUser({{ $uniqueSenderId }})' wire:key='conversation_{{ $uniqueSenderId }}'
-                        class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer overflow-y-auto 
-                        @if ($uniqueSenderId == $targetUserId) bg-gray-100 dark:bg-gray-700 @endif">
-                        <div class="flex items-center">
-                            <img class="h-10 w-10 rounded-full" src="{{ $sender->getAvatar() }}" alt="Avatar de {{ $sender->name }}"/>
-                            <div class="ml-3 text-sm font-medium text-gray-900 dark:text-white">
-                                {{ $sender->name }}
-                            </div>
+                <!-- List of Conversations -->
+                {{-- <div>
+                    @if($targetUserId !== null && !in_array($targetUserId, $uniqueSenderIds))
+                    <div class="p-4 bg-gray-100 dark:bg-gray-700 cursor-pointer">
+                        <div class="flex items-start">
+                            <a class="flex flex-row" href="{{ url('user/' . $targetUser->id) }}">
+                                <a class="flex flex-row" href="{{ url('user/' . $targetUser->id) }}">
+                                    <img class="w-12 h-12 rounded-full shadow-lg hover:outline hover:outline-2 hover:outline-black/10" alt="Avatar de {{ $targetUser->name }}" src="{{ $targetUser->getAvatar() }}"/>
+                                    <div class="flex self-center ml-3 text-sm font-medium text-gray-900 hover:underline hover:dark:underline dark:text-white transition ease-in-out duration-150">
+                                        {{ $targetUser->name }}
+                                    </div>
+                                </a>
+                            </a>
                         </div>
                     </div>
-                @endforeach
-            </div>
-        </div>
+                    @endif
+
+                    @foreach ($uniqueSenderIds as $uniqueSenderId)
+                        @php
+                            $sender = \App\Models\User::find($uniqueSenderId);
+                        @endphp
+                        <div wire:click='setSelectedUser({{ $uniqueSenderId }})' wire:key='conversation_{{ $uniqueSenderId }}'
+                            class="p-4 max-h-[calc(100vh-200px)] hover:bg-gray-200 dark:hover:bg-gray-900 cursor-pointer overflow-y-auto 
+                            @if ($uniqueSenderId == $targetUserId) bg-gray-100 dark:bg-gray-700 @endif">
+                            <div class="flex items-center">
+                                <img class="h-10 w-10 rounded-full" src="{{ $sender->getAvatar() }}" alt="Avatar de {{ $sender->name }}"/>
+                                <div class="ml-3 text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $sender->name }}
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div> --}}
+                <div class="overflow-y-auto space-y-2" style="max-height: calc(100vh - 200px);">
+                    <!-- Utilisateur ciblé -->
+                    @if($targetUserId !== null && !in_array($targetUserId, $uniqueSenderIds))
+                    <div wire:click="setSelectedUser({{ $targetUserId }})"
+                         class="p-4 flex items-center rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer shadow-sm transition ease-in-out duration-150">
+                        <img class="h-12 w-12 rounded-full" src="{{ $targetUser->getAvatar() }}" alt="Avatar de {{ $targetUser->name }}">
+                        <div class="ml-3">
+                            <div class="text-sm font-medium text-gray-800 dark:text-white">{{ $targetUser->name }}</div>
+                        </div>
+                    </div>
+                    @endif
+                
+                    <!-- Liste des utilisateurs uniques -->
+                    @foreach ($uniqueSenderIds as $uniqueSenderId)
+                        @php
+                            $sender = \App\Models\User::find($uniqueSenderId);
+                        @endphp
+                        <div wire:click="setSelectedUser({{ $uniqueSenderId }})" wire:key="conversation_{{ $uniqueSenderId }}"
+                             class="p-4 flex items-center rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer shadow-sm 
+                             @if ($uniqueSenderId == $targetUserId) bg-gray-200 dark:bg-gray-700 border-l-4 border-indigo-500 @else bg-white dark:bg-gray-800 @endif 
+                             transition ease-in-out duration-150">
+                            <img class="h-10 w-10 rounded-full" src="{{ $sender->getAvatar() }}" alt="Avatar de {{ $sender->name }}">
+                            <div class="ml-3">
+                                <div class="text-sm font-medium text-gray-800 dark:text-white">{{ $sender->name }}</div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                
+            </div>      
         @endif
     </div>
 
