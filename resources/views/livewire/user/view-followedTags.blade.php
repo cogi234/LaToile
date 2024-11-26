@@ -52,7 +52,8 @@ new class extends Component {
             </button>
         </div>
 
-        <!-- Barre de recherche -->
+        <!-- Barre de recherche (affichée uniquement s'il y a plus d'un tag suivi) -->
+        @if ($followedtags->count() > 1)
         <div class="relative mb-4">
             <input type="text" id="searchTags" placeholder="Rechercher un tag..." 
                 class="w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500">
@@ -60,17 +61,26 @@ new class extends Component {
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m3-7a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
         </div>
+        @endif
 
         <!-- Liste des tags -->
         <ul class="space-y-3 overflow-y-auto max-h-64" id="tagList">
-            @foreach ($followedtags as $followedtag)
+            @forelse ($followedtags as $followedtag)
                 <li class="flex justify-between items-center py-2 px-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md">
                     <a href="/tag/{{ $followedtag->id }}" title="{{ $followedtag->name }}" class="flex items-center text-gray-800 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400">
                         <span>#{{ $followedtag->name }}</span>
                     </a>
                     <livewire:tags.follow :tagId="$followedtag->id" :key="$followedtag->id" />
                 </li>
-            @endforeach
+            @empty
+                <!-- Message affiché si aucun tag n'est suivi -->
+                <li class="text-center py-4 text-gray-600 dark:text-gray-400">
+                    @php
+                        $user = User::find($userId);
+                    @endphp
+                    {{$user->name}} ne suit aucun tag pour le moment.
+                </li>
+            @endforelse
         </ul>
     </div>
     <script>
@@ -79,21 +89,20 @@ new class extends Component {
                 new CustomEvent('open-fTags-menu')
             );
         }
-    
-        document.getElementById('searchTags').addEventListener('input', function () {
+
+        document.getElementById('searchTags')?.addEventListener('input', function () {
             const query = this.value.toLowerCase();
             const tagList = document.getElementById('tagList');
             const tags = tagList.querySelectorAll('li');
-    
+
             tags.forEach(tag => {
-                const tagName = tag.querySelector('a span').textContent.toLowerCase();
-                if (tagName.includes(query)) {
+                const tagName = tag.querySelector('a span')?.textContent.toLowerCase();
+                if (tagName?.includes(query)) {
                     tag.style.display = 'flex';
                 } else {
                     tag.style.display = 'none';
                 }
             });
         });
-    
     </script>
 </div>
