@@ -4,6 +4,10 @@
             <div class="text-4xl text-center mb-10">
                 À propos de ce site
             </div>
+            <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/zH-_R7Cz9g4?si=lnDlitnptJpbeo4r" title="YouTube video player"
+                frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen
+                class="mx-auto mb-5"></iframe>
             <div class="mb-5">
                 Ce site web à été créé par Colin Bougie, Jérémy Racine, Mathieu Leroux et Vincent Lajoie en automne 2024 comme projet d'école.
             </div>
