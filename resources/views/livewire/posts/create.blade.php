@@ -62,7 +62,7 @@ new class extends Component {
     public function insertTag() {
         $index = sizeof($this->tags) - 1;
         if (mb_strlen(trim($this->tags[$index])) > 0 ) {
-            array_splice($this->tags, $index + 1, 0, '');
+            array_splice($this->tags, $index + 1 - $numberToReplace, 0 + $numberToReplace, '');
         }
     }
 
@@ -70,18 +70,21 @@ new class extends Component {
         switch ($type) {
             case 'text':
                 $newInput = ['type' => 'text', 'content' => ''];
-                array_splice($this->inputs, $index + 1, 0, [$newInput]);
+                array_splice($this->inputs, $index + 1 - $numberToReplace, 0 + $numberToReplace, [$newInput]);
                 $this->dispatch('focus-input', index: $index + 1);
                 $this->dispatch('init-emoji-input', index: $index + 1);
                 break;
             case 'image':
                 $newInput = ['type' => 'image', 'content' => null, 'url' => null];
                 $newTextInput = ['type' => 'text', 'content' => ''];
+                $numberToReplace = 0;
+                if ($this->inputs[$index]['type'] == 'text' && strlen(trim($this->inputs[$index]['content'])) == 0)
+                    $numberToReplace = 1;
                 //We add a new image input. If the next one isn't text, we add text after.
                 if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
-                    array_splice($this->inputs, $index + 1, 0, [$newInput]);
+                    array_splice($this->inputs, $index + 1 - $numberToReplace, 0 + $numberToReplace, [$newInput]);
                 else {
-                    array_splice($this->inputs, $index + 1, 0, [$newInput, $newTextInput]);
+                    array_splice($this->inputs, $index + 1 - $numberToReplace, 0 + $numberToReplace, [$newInput, $newTextInput]);
                     $this->dispatch('init-emoji-input', index: $index + 2);
                 }
                 $this->dispatch('focus-input', index: $index + 2);
@@ -89,11 +92,14 @@ new class extends Component {
             case 'video':
                 $newInput = ['type' => 'video', 'content' => null, 'url' => null];
                 $newTextInput = ['type' => 'text', 'content' => ''];
+                $numberToReplace = 0;
+                if ($this->inputs[$index]['type'] == 'text' && strlen(trim($this->inputs[$index]['content'])) == 0)
+                    $numberToReplace = 1;
                 //We add a new video input. If the next one isn't text, we add text after.
                 if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
-                    array_splice($this->inputs, $index + 1, 0, [$newInput]);
+                    array_splice($this->inputs, $index + 1 - $numberToReplace, 0 + $numberToReplace, [$newInput]);
                 else {
-                    array_splice($this->inputs, $index + 1, 0, [$newInput, $newTextInput]);
+                    array_splice($this->inputs, $index + 1 - $numberToReplace, 0 + $numberToReplace, [$newInput, $newTextInput]);
                     $this->dispatch('init-emoji-input', index: $index + 2);
                 }
                 $this->dispatch('focus-input', index: $index + 2);
@@ -101,11 +107,14 @@ new class extends Component {
             case 'audio':
                 $newInput = ['type' => 'audio', 'content' => null, 'url' => null];
                 $newTextInput = ['type' => 'text', 'content' => ''];
+                $numberToReplace = 0;
+                if ($this->inputs[$index]['type'] == 'text' && strlen(trim($this->inputs[$index]['content'])) == 0)
+                    $numberToReplace = 1;
                 //We add a new audio input. If the next one isn't text, we add text after.
                 if (isset($this->inputs[$index + 1]) && $this->inputs[$index + 1]['type'] == 'text')
-                    array_splice($this->inputs, $index + 1, 0, [$newInput]);
+                    array_splice($this->inputs, $index + 1 - $numberToReplace, 0 + $numberToReplace, [$newInput]);
                 else {
-                    array_splice($this->inputs, $index + 1, 0, [$newInput, $newTextInput]);
+                    array_splice($this->inputs, $index + 1 - $numberToReplace, 0 + $numberToReplace, [$newInput, $newTextInput]);
                     $this->dispatch('init-emoji-input', index: $index + 2);
                 }
                 $this->dispatch('focus-input', index: $index + 2);
@@ -481,7 +490,7 @@ new class extends Component {
         foreach ($this->inputs as $input) {
             if ($input['type'] == 'text')
                 $textLength += mb_strlen($input['content']);
-            else if ($input['content'] != null && $input['url'] != null)
+            else if ($input['content'] != null || $input['url'] != null)
                 $mediaCount++;
         }
         if ($this->sharedPostId < 0 && $textLength == 0 && $mediaCount == 0) {
@@ -582,6 +591,9 @@ new class extends Component {
         <!-- Inputs -->
         <div>
             <div class="flex flex-col rounded-md border-[1px] border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-1">
+                @php
+                    $firstText = true;
+                @endphp
                 @foreach ($inputs as $input)
                 <div class="group">
                 @switch($input['type'])
@@ -590,15 +602,17 @@ new class extends Component {
                     <textarea wire:key='input_{{ $loop->index }}' wire:model="inputs.{{ $loop->index }}.content"
                         wire:keydown.enter.prevent='insertInput({{ $loop->index }}, "text")' id="input_{{ $loop->index }}"
                         wire:keydown.backspace='deleteInTextInput({{ $loop->index }})'
-                        @if ($loop->first) placeholder="Partagez vos pensées"  autofocus @endif
+                        @if ($firstText) placeholder="Partagez vos pensées"  autofocus @endif
                         oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
                         class="block w-full h-10 !border-none !ring-0 resize-none bg-white dark:bg-gray-800 text-black dark:text-white"></textarea>
                     <div class="hidden group-hover:flex group-last:flex flex-row">
+                        <!-- Emoji button
                         <button type="button" id="emoji_button_{{ $loop->index }}" class="mx-2" title="Émojis">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 dark:text-gray-100 hover:text-orange-500 dark:hover:text-yellow-400">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 0 1-6.364 0M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75Zm-.375 0h.008v.015h-.008V9.75Z" />
                             </svg>                      
                         </button>
+                        -->
                         <button wire:click='insertInput({{ $loop->index }}, "image")' type="button" class="mx-2" title="Ajouter une image">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                 class="size-6 dark:text-gray-100 hover:text-orange-500 dark:hover:text-yellow-400">
@@ -618,6 +632,9 @@ new class extends Component {
                             </svg>
                         </button>
                     </div>
+                    @php
+                        $firstText = false;
+                    @endphp
                     @break
                     @case('image')
                     <!-- Image input -->
